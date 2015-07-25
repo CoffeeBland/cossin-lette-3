@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.coffeebland.cossinlette3.game.GameCamera;
 import com.coffeebland.cossinlette3.game.GameWorld;
-import com.coffeebland.cossinlette3.game.file.WorldFile;
+import com.coffeebland.cossinlette3.game.file.PersonDef;
 import com.coffeebland.cossinlette3.game.visual.ImageStrips;
 import com.coffeebland.cossinlette3.utils.Const;
 import org.jetbrains.annotations.NotNull;
@@ -22,13 +22,13 @@ public class Person extends Actor implements GameCamera.PositionSource {
 
     @Nullable protected Body body;
     @NotNull protected final BitSet flags = new BitSet();
-    @NotNull public final WorldFile.PersonDef def;
+    @NotNull public final PersonDef def;
     @NotNull public final ImageStrips imageStrips = new ImageStrips();
 
     public float speed;
     public float orientation;
 
-    public Person(@NotNull WorldFile.PersonDef def) {
+    public Person(@NotNull PersonDef def) {
         super(def);
         this.def = def;
         this.speed = def.speed;

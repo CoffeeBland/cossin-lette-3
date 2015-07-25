@@ -49,6 +49,9 @@ public class TileLayerChooser extends HorizontalGroup {
 
         return this;
     }
+    @Nullable public TileLayer getTileLayer() {
+        return tileLayers.size() > 0 ? tileLayers.get(selectedTileLayer) : null;
+    }
 
     public void updateToTileLayers() {
         tileLayers.clear();
@@ -76,8 +79,8 @@ public class TileLayerChooser extends HorizontalGroup {
             btns.add(tileBtn);
         }
 
-        if (tileChooser != null && tileLayers.size() > 0) {
-            tileChooser.setTileLayer(tileLayers.get(selectedTileLayer));
+        if (tileChooser != null) {
+            tileChooser.setTileLayer(tileLayers.size() > 0 ? tileLayers.get(selectedTileLayer) : null);
         }
 
         addActor(addBtn);

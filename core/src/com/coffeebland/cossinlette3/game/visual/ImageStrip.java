@@ -2,7 +2,7 @@ package com.coffeebland.cossinlette3.game.visual;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.coffeebland.cossinlette3.game.file.WorldFile;
+import com.coffeebland.cossinlette3.game.file.ImageStripDef;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class ImageStrip extends ImageSheet {
         this.frames = frames;
         this.fps = fps;
     }
-    public ImageStrip(WorldFile.ImageStripDef def) {
+    public ImageStrip(ImageStripDef def) {
         super(def);
         fps = def.fps;
         frames = new ArrayList<>();

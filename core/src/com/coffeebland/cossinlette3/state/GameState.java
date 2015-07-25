@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.coffeebland.cossinlette3.game.*;
 import com.coffeebland.cossinlette3.game.entity.Person;
+import com.coffeebland.cossinlette3.game.file.PersonDef;
 import com.coffeebland.cossinlette3.game.file.SaveFile;
 import com.coffeebland.cossinlette3.game.file.WorldFile;
 import com.coffeebland.cossinlette3.game.visual.ImageStrip;
@@ -47,7 +48,7 @@ public class GameState extends State<SaveFile> {
         world = worldFile.createGameWorld(saveFile);
         setBackgroundColor(world.backgroundColor);
 
-        WorldFile.PersonDef def = new WorldFile.PersonDef();
+        PersonDef def = new PersonDef();
         def.radius = 0.40f;
         def.x = 0;
         def.y = 5;

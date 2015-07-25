@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.coffeebland.cossinlette3.game.GameCamera;
 import com.coffeebland.cossinlette3.game.GameWorld;
-import com.coffeebland.cossinlette3.game.file.WorldFile;
+import com.coffeebland.cossinlette3.game.file.TileLayerDef;
 import com.coffeebland.cossinlette3.utils.Textures;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,10 +16,10 @@ public class TileLayer extends Actor {
     public static final int TAG_ANIM = -1;
 
     @Nullable protected Texture texture;
-    @NotNull public WorldFile.TileLayerDef def;
+    @NotNull public TileLayerDef def;
     protected float cumulatedSeconds = 0;
 
-    public TileLayer(@NotNull WorldFile.TileLayerDef def) {
+    public TileLayer(@NotNull TileLayerDef def) {
         super(def);
 
         this.def = def;
@@ -27,15 +27,15 @@ public class TileLayer extends Actor {
 
     @Nullable public Texture getTexture() { return texture; }
     public int getTextureTilesX() {
-        return texture == null ? 0 : (texture.getWidth() / def.tileSize);
+        return texture == null ? 0 : (texture.getWidth() / def.getTilesetDef().tileSize);
     }
     public int getTextureTilesY() {
-        return texture == null ? 0 : (texture.getHeight() / def.tileSize);
+        return texture == null ? 0 : (texture.getHeight() / def.getTilesetDef().tileSize);
     }
 
     @Override public void addToWorld(@NotNull GameWorld world) {
         super.addToWorld(world);
-        texture = Textures.get(def.src);
+        texture = Textures.get(def.getTilesetDef().src);
     }
 
     @Override public void removeFromWorld() {
@@ -57,27 +57,25 @@ public class TileLayer extends Actor {
                     int tileX, tileY;
 
                     if (first == TAG_ANIM) {
-                        int[] anim = def.animations[second];
+                        int[] anim = def.getTilesetDef().animations[second];
                         int frameCount = anim[0];
                         int fps = anim[1];
 
                         int frameOffset = (int)((cumulatedSeconds * fps) % frameCount) + 1;
                         tileX = anim[frameOffset * 2];
                         tileY = anim[frameOffset * 2 + 1];
-
-                        i += frameCount * 2;
                     } else {
                         tileX = first;
                         tileY = second;
                     }
 
                     batch.draw(texture,
-                            (def.x - camera.getPos().x) / METERS_PER_PIXEL + x * def.tileSize,
-                            (def.y - camera.getPos().y) / METERS_PER_PIXEL + y * def.tileSize,
-                            tileX * def.tileSize,
-                            tileY * def.tileSize,
-                            def.tileSize,
-                            def.tileSize
+                            (def.x - camera.getPos().x) / METERS_PER_PIXEL + x * def.getTilesetDef().tileSize,
+                            (def.y - camera.getPos().y) / METERS_PER_PIXEL + y * def.getTilesetDef().tileSize,
+                            tileX * def.getTilesetDef().tileSize,
+                            tileY * def.getTilesetDef().tileSize,
+                            def.getTilesetDef().tileSize,
+                            def.getTilesetDef().tileSize
                     );
                 }
             }

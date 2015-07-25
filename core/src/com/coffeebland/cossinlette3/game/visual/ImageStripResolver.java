@@ -1,6 +1,6 @@
 package com.coffeebland.cossinlette3.game.visual;
 
-import com.coffeebland.cossinlette3.game.file.WorldFile;
+import com.coffeebland.cossinlette3.game.file.FlagResolverDef;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.BitSet;
@@ -29,7 +29,7 @@ public abstract class ImageStripResolver implements Comparable<ImageStripResolve
             super(priority, imageStrip);
             this.flags = flags;
         }
-        public FlagResolver(WorldFile.FlagResolverDef def) {
+        public FlagResolver(FlagResolverDef def) {
             this(def.priority, new ImageStrip(def.imageStripDef), def.flags);
         }
 

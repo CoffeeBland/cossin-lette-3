@@ -3,7 +3,7 @@ package com.coffeebland.cossinlette3.game.visual;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.coffeebland.cossinlette3.game.file.WorldFile;
+import com.coffeebland.cossinlette3.game.file.ImageSheetDef;
 import com.coffeebland.cossinlette3.utils.Textures;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +22,7 @@ public class ImageSheet {
         this.decalX = decalX;
         this.decalY = decalY;
     }
-    public ImageSheet(WorldFile.ImageSheetDef def) {
+    public ImageSheet(ImageSheetDef def) {
         this(def.src, def.frameWidth, def.frameHeight, def.decalX, def.decalY);
     }
 

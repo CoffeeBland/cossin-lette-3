@@ -3,7 +3,7 @@ package com.coffeebland.cossinlette3.game.entity;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.coffeebland.cossinlette3.game.GameCamera;
 import com.coffeebland.cossinlette3.game.GameWorld;
-import com.coffeebland.cossinlette3.game.file.WorldFile;
+import com.coffeebland.cossinlette3.game.file.ActorDef;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +15,7 @@ public class Actor {
     public Actor(float priority) {
         this.priority = priority;
     }
-    public Actor(WorldFile.ActorDef def) {
+    public Actor(ActorDef def) {
         this(def.priority);
     }
 

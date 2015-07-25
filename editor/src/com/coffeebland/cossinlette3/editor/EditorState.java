@@ -7,22 +7,25 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.coffeebland.cossinlette3.editor.ui.FileChooser;
 import com.coffeebland.cossinlette3.editor.ui.TileChooser;
 import com.coffeebland.cossinlette3.editor.ui.TileLayerChooser;
 import com.coffeebland.cossinlette3.game.GameWorld;
+import com.coffeebland.cossinlette3.game.entity.TileLayer;
 import com.coffeebland.cossinlette3.game.file.WorldFile;
 import com.coffeebland.cossinlette3.state.State;
+import com.coffeebland.cossinlette3.utils.Const;
 import com.coffeebland.cossinlette3.utils.VPool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,18 +63,21 @@ public class EditorState extends State<FileHandle> {
         table.top().left();
 
         HorizontalGroup topbar = new HorizontalGroup();
+        Container<HorizontalGroup> topbarContainer = new Container<>(topbar).left().background(skin.getDrawable("default-round"));
 
         TextButton newBtn = new TextButton("Nouveau", skin);
-        newBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) {
+        newBtn.pad(4);
+        newBtn.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent event, float x, float y) {
                 setWorldFile(new WorldFile());
             }
         });
         topbar.addActor(newBtn);
 
         TextButton loadBtn = new TextButton("Charger", skin);
-        loadBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) {
+        loadBtn.pad(4);
+        loadBtn.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent event, float x, float y) {
                 FileChooser
                         .createLoadDialog("Ouvrir une carte", skin, Gdx.files.local("worlds"))
                         .setFilter((file) -> file.isDirectory() || file.getName().endsWith(".json"))
@@ -84,14 +90,30 @@ public class EditorState extends State<FileHandle> {
         });
         topbar.addActor(loadBtn);
 
+        TextButton saveBtn = new TextButton("Sauvegarder", skin);
+        saveBtn.pad(4);
+        saveBtn.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent event, float x, float y) {
+                FileChooser.createSaveDialog("Sauvegarder la carte", skin, Gdx.files.local("worlds"))
+                        .setFilter((file) -> file.isDirectory() || file.getName().endsWith(".json"))
+                        .setResultListener((success, result) -> {
+                            if (success) saveWorldFile(result);
+                            return success;
+                        })
+                        .show(stage);
+            }
+        });
+        topbar.addActor(saveBtn);
+
         table.row();
-        table.add(topbar).colspan(2).expandX().fillX();
+        table.add(topbarContainer).colspan(3).expandX().fillX();
 
         Table tileTable = new Table(skin);
 
         tileLayerChooser = new TileLayerChooser(skin, () -> world);
+        Container<TileLayerChooser> tileLayerChooserContainer = new Container<>(tileLayerChooser).left().background(skin.getDrawable("default-round"));
         tileTable.row();
-        tileTable.add(tileLayerChooser).fillX();
+        tileTable.add(tileLayerChooserContainer).fillX();
 
         tileChooser = new TileChooser();
         tileLayerChooser.setTileChooser(tileChooser);
@@ -108,7 +130,24 @@ public class EditorState extends State<FileHandle> {
 
         table.row().expandY().fill();
         table.add(tileTable);
-        table.add(gameWorldWidget = new Widget()).expandX();
+
+        gameWorldWidget = new Widget();
+        gameWorldWidget.addListener(new WorldClickListener(Input.Buttons.LEFT) {
+            @Override public void handleClick(TileLayer tileLayer, int tileX, int tileY, int[] current) {
+                int[] newTiles = Arrays.copyOf(current, current.length + 2);
+                newTiles[current.length] = tileChooser.getSelectedTileX();
+                newTiles[current.length + 1] = tileChooser.getSelectedTileY();
+                tileLayer.def.tiles[tileY][tileX] = newTiles;
+            }
+        });
+        gameWorldWidget.addListener(new WorldClickListener(Input.Buttons.RIGHT) {
+            @Override public void handleClick(TileLayer tileLayer, int tileX, int tileY, int[] current) {
+                if (current.length >= 2) {
+                    tileLayer.def.tiles[tileY][tileX] = Arrays.copyOf(current, current.length - 2);
+                }
+            }
+        });
+        table.add(gameWorldWidget).expandX();
 
         stage.addActor(table);
     }
@@ -124,6 +163,9 @@ public class EditorState extends State<FileHandle> {
         world.camera.setTo(cameraPos);
         tileLayerChooser.updateToTileLayers();
         tileChooser.invalidateHierarchy();
+    }
+    public void saveWorldFile(FileHandle fileHandle) {
+        worldFile.write(fileHandle);
     }
 
     @Nullable @Override public InputProcessor getInputProcessor() { return multiplexer; }
@@ -183,5 +225,39 @@ public class EditorState extends State<FileHandle> {
     @Override public boolean keyUp(int keycode) {
         keycodes.remove(keycode);
         return true;
+    }
+
+    public abstract class WorldClickListener extends ClickListener {
+
+        public WorldClickListener(int button) {
+            super(button);
+        }
+
+        @Override public void clicked(InputEvent event, float x, float y) {
+            TileLayer tileLayer = tileLayerChooser.getTileLayer();
+            if (tileLayer == null) return;
+
+            int tileX = (int) (
+                    (Gdx.input.getX() - Gdx.graphics.getWidth() / 2
+                            - (cameraPos.x + tileLayer.def.x) / Const.METERS_PER_PIXEL
+                    )  / tileLayer.def.getTilesetDef().tileSize);
+
+            int tileY = (int) (
+                    (Gdx.graphics.getHeight() / 2 - Gdx.input.getY()
+                            - (cameraPos.y + tileLayer.def.y) / Const.METERS_PER_PIXEL
+                    ) / tileLayer.def.getTilesetDef().tileSize);
+
+            if (tileX < 0
+                    || tileX >= tileLayer.getTextureTilesX()
+                    || tileY < 0
+                    || tileY >= tileLayer.getTextureTilesY()) {
+                return;
+            }
+
+            int[] current = tileLayer.def.tiles[tileY][tileX];
+            handleClick(tileLayer, tileX, tileY, current);
+        }
+
+        public abstract void handleClick(TileLayer tileLayer, int tileX, int tileY, int[] current);
     }
 }

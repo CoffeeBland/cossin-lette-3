@@ -1,6 +1,6 @@
 package com.coffeebland.cossinlette3.game.visual;
 
-import com.coffeebland.cossinlette3.game.file.WorldFile;
+import com.coffeebland.cossinlette3.game.file.OrientationFrameDef;
 
 public class OrientationFrame {
     public final int frameY;
@@ -16,7 +16,7 @@ public class OrientationFrame {
     public OrientationFrame(int frameY, boolean flip, double startAngle, double endAngle) {
         this(frameY, flip, (float)startAngle, (float)endAngle);
     }
-    public OrientationFrame(WorldFile.OrientationFrameDef def) {
+    public OrientationFrame(OrientationFrameDef def) {
         this(def.frameY, def.flip, def.startAngle, def.endAngle);;
     }
 }

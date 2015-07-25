@@ -25,16 +25,20 @@ public class TileChooser extends Widget {
                 if (tileLayer != null) {
                     int tileX = (int) ((x - 1) / (getTileSize() + 1));
                     int tileY = (int) ((getHeight() - y + 1) / (getTileSize() + 1));
-                    selectedTileY = tileY % tileLayer.getTextureTilesY();
+                    int selectedTileY = tileY % tileLayer.getTextureTilesY();
                     int xTileBatch = (tileY / tileLayer.getTextureTilesY());
-                    selectedTileX = tileX + xTileBatch * tileLayer.getTextureTilesY();
+                    int selectedTileX = tileX + xTileBatch * tileLayer.getTextureTilesY();
+                    if (selectedTileX < tileLayer.getTextureTilesX() && selectedTileY < tileLayer.getTextureTilesY()) {
+                        TileChooser.this.selectedTileX = selectedTileX;
+                        TileChooser.this.selectedTileY = selectedTileY;
+                    }
                 }
             }
         });
     }
 
     public int getTileSize() {
-        return tileLayer != null ? tileLayer.def.tileSize : 24;
+        return tileLayer != null ? tileLayer.def.getTilesetDef().tileSize : 24;
     }
     @Override public float getPrefWidth() {
         return WIDTH;
@@ -52,9 +56,9 @@ public class TileChooser extends Widget {
         this.selectedTileX = 0;
         this.selectedTileY = 0;
         if (tileLayer != null) {
-            tilesX = WIDTH / tileLayer.def.tileSize;
+            tilesX = WIDTH / tileLayer.def.getTilesetDef().tileSize;
             checkeredTexture = Textures.getCheckeredTexture(
-                    tileLayer.def.tileSize / 4,
+                    tileLayer.def.getTilesetDef().tileSize / 4,
                     new Color(0x4e4a55ff),
                     new Color(0x413d46ff)
             );
@@ -66,10 +70,7 @@ public class TileChooser extends Widget {
     public int getSelectedTileY() { return selectedTileY; }
 
     @SuppressWarnings("UnnecessaryLocalVariable")
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-
+    public void performDrawFor(Drawer drawer) {
         if (tileLayer != null && tileLayer.getTexture() != null) {
             int textTilesX = tileLayer.getTextureTilesX();
             int textTilesY = tileLayer.getTextureTilesY();
@@ -77,55 +78,79 @@ public class TileChooser extends Widget {
             int xTileBatches = (int)Math.ceil(textTilesX / (float)tilesX);
             for (int xTileBatch = 0; xTileBatch < xTileBatches; xTileBatch++) {
                 // Calculate the remainder x tiles
-                int tilesX = Math.min(this.tilesX, textTilesX - xTileBatch * this.tilesX);
+                int tilesX = Math.min(this.tilesX, textTilesX - xTileBatch * textTilesY);
 
                 for (int tileX = 0; tileX < tilesX; tileX++) {
                     for (int tileY = 0, tilesY = textTilesY; tileY < tilesY; tileY++) {
                         int textTileX = tileX + xTileBatch * tilesY;
                         int textTileY = tileY;
 
-                        int x = tileX;
-                        int y = tileY + xTileBatch * tilesY;
-
-                        int drawX = (int)getX() +  x * (tileLayer.def.tileSize + 1) + 1;
-                        int drawY = (int)getY() + (int)(getHeight() - (tileLayer.def.tileSize + 1) - y * (tileLayer.def.tileSize + 1));
-
-
-                        batch.draw(
-                                checkeredTexture,
-                                drawX, drawY,
-                                0, 0,
-                                tileLayer.def.tileSize,
-                                tileLayer.def.tileSize
+                        int drawX = (int)getX() +
+                                tileX * (tileLayer.def.getTilesetDef().tileSize + 1) + 1;
+                        int drawY = (int)getY() + (int)(getHeight() -
+                                (tileY + xTileBatch * tilesY + 1) * (tileLayer.def.getTilesetDef().tileSize + 1)
                         );
 
-                        batch.draw(
-                                tileLayer.getTexture(),
-                                drawX, drawY,
-                                textTileX * tileLayer.def.tileSize,
-                                textTileY * tileLayer.def.tileSize,
-                                tileLayer.def.tileSize,
-                                tileLayer.def.tileSize
-                        );
-
-                        if (selectedTileX == textTileX && selectedTileY == textTileY) {
-                            Textures.drawRect(batch, Color.BLACK,
-                                    drawX - 1, drawY - 1,
-                                    tileLayer.def.tileSize + 2,
-                                    tileLayer.def.tileSize + 2,
-                                    1
-                            );
-
-                            Textures.drawRect(batch, Color.WHITE,
-                                    drawX, drawY,
-                                    tileLayer.def.tileSize,
-                                    tileLayer.def.tileSize,
-                                    1
-                            );
-                        }
+                        drawer.draw(drawX, drawY, textTileX, textTileY);
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+
+        if (tileLayer != null) {
+            performDrawFor((drawX, drawY, textTileX, textTileY) -> {
+                batch.draw(
+                        checkeredTexture,
+                        drawX, drawY,
+                        0, 0,
+                        tileLayer.def.getTilesetDef().tileSize,
+                        tileLayer.def.getTilesetDef().tileSize
+                );
+            });
+            
+            performDrawFor((drawX, drawY, textTileX, textTileY) -> {
+                batch.draw(
+                        tileLayer.getTexture(),
+                        drawX, drawY,
+                        textTileX * tileLayer.def.getTilesetDef().tileSize,
+                        textTileY * tileLayer.def.getTilesetDef().tileSize,
+                        tileLayer.def.getTilesetDef().tileSize,
+                        tileLayer.def.getTilesetDef().tileSize
+                );
+            });
+
+            int xTileBatch = selectedTileX / tilesX;
+            int tileX = selectedTileX % tileLayer.getTextureTilesY();
+            int tileY = selectedTileY + xTileBatch * tileLayer.getTextureTilesY();
+
+            int drawX = (int)getX() +
+                    tileX * (tileLayer.def.getTilesetDef().tileSize + 1) + 1;
+            int drawY = (int)getY() + (int)(getHeight() -
+                    (tileY + 1) * (tileLayer.def.getTilesetDef().tileSize + 1)
+            );
+
+            Textures.drawRect(batch, Color.BLACK,
+                    drawX - 1, drawY - 1,
+                    tileLayer.def.getTilesetDef().tileSize + 2,
+                    tileLayer.def.getTilesetDef().tileSize + 2,
+                    1
+            );
+
+            Textures.drawRect(batch, Color.WHITE,
+                    drawX, drawY,
+                    tileLayer.def.getTilesetDef().tileSize,
+                    tileLayer.def.getTilesetDef().tileSize,
+                    1
+            );
+        }
+    }
+
+    public interface Drawer {
+        void draw(int drawX, int drawY, int textTileX, int textTileY);
     }
 }

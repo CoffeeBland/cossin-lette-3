@@ -5,16 +5,16 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.coffeebland.cossinlette3.game.GameWorld;
-import com.coffeebland.cossinlette3.game.file.WorldFile;
+import com.coffeebland.cossinlette3.game.file.PolygonDef;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PolygonActor extends Actor {
 
-    @NotNull protected WorldFile.PolygonDef def;
+    @NotNull protected PolygonDef def;
     @Nullable protected Body body;
 
-    public PolygonActor(@NotNull WorldFile.PolygonDef def) {
+    public PolygonActor(@NotNull PolygonDef def) {
         super(def);
         this.def = def;
     }

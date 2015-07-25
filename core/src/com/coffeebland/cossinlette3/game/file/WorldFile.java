@@ -23,7 +23,7 @@ public class WorldFile {
     public void write(FileHandle handle) {
         Json json = new Json();
         json.setOutputType(JsonWriter.OutputType.json);
-        json.writeValue(this);
+        handle.writeString(json.prettyPrint(this), false);
     }
 
     public static WorldFile read(WorldFiles file) {
@@ -53,61 +53,4 @@ public class WorldFile {
         return gameWorld;
     }
 
-    public static class ActorDef {
-        public float priority;
-
-        public ActorDef() {}
-    }
-    public static class PolygonDef extends ActorDef {
-        public float x, y;
-        public float[] points;
-
-        public PolygonDef() {}
-    }
-    public static class PersonDef extends ActorDef {
-        public float radius, x, y, headHeight, speed, density;
-
-        public PersonDef() {}
-    }
-    public static class ImageSheetDef {
-        public String src;
-        public int frameWidth, frameHeight, decalX, decalY;
-
-        public ImageSheetDef() {}
-    }
-    public static class OrientationFrameDef {
-        public int frameY;
-        public boolean flip;
-        public float startAngle, endAngle;
-
-        public OrientationFrameDef() {}
-    }
-    public static class ImageStripDef extends ImageSheetDef {
-        public float fps;
-        public List<OrientationFrameDef> orientationFrameDefs;
-
-        public ImageStripDef() {}
-    }
-    public static class FlagResolverDef {
-        public List<Integer> flags;
-        public int priority;
-        public ImageStripDef imageStripDef;
-
-        public FlagResolverDef() {}
-    }
-    public static class ImageStripsDef {
-        public List<FlagResolverDef> resolverDefs;
-
-        public ImageStripsDef() {}
-    }
-    public static class TileLayerDef extends ActorDef {
-        public String src;
-        public int tileSize;
-        public int[][][] tiles;
-        public int[][] animations;
-        public float x, y;
-        public int width, height;
-
-        public TileLayerDef() {}
-    }
 }

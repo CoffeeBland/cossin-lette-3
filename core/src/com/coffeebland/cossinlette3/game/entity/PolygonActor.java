@@ -1,24 +1,25 @@
-package com.coffeebland.cossinlette3.game;
+package com.coffeebland.cossinlette3.game.entity;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.coffeebland.cossinlette3.game.GameWorld;
+import com.coffeebland.cossinlette3.game.file.WorldFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PolygonActor extends Actor {
 
-    @NotNull
-    protected WorldFile.PolygonDef def;
-    @Nullable
-    protected Body body;
+    @NotNull protected WorldFile.PolygonDef def;
+    @Nullable protected Body body;
 
     public PolygonActor(@NotNull WorldFile.PolygonDef def) {
+        super(def);
         this.def = def;
     }
 
-    @Override
-    public void addToWorld(@NotNull GameWorld world) {
+    @Override public void addToWorld(@NotNull GameWorld world) {
         super.addToWorld(world);
 
         BodyDef bodyDef = new BodyDef();
@@ -28,14 +29,17 @@ public class PolygonActor extends Actor {
         body = world.box2D.createBody(bodyDef);
         assert body != null;
 
-        PolygonShape polygonShape = new PolygonShape();
-        polygonShape.set(def.points);
+        PolygonShape shape = new PolygonShape();
+        shape.set(def.points);
 
-        body.createFixture(polygonShape, 0.0f);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.density = 0;
+        fixtureDef.shape = shape;
+
+        body.createFixture(fixtureDef);
     }
 
-    @Override
-    public void removeFromWorld() {
+    @Override public void removeFromWorld() {
         assert world != null && body != null;
 
         world.box2D.destroyBody(body);
@@ -43,4 +47,6 @@ public class PolygonActor extends Actor {
 
         super.removeFromWorld();
     }
+
+    @Override public void dispose() {}
 }

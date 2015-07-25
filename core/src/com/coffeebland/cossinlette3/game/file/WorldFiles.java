@@ -1,4 +1,4 @@
-package com.coffeebland.cossinlette3.game;
+package com.coffeebland.cossinlette3.game.file;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;

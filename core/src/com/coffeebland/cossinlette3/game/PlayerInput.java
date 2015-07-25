@@ -3,6 +3,7 @@ package com.coffeebland.cossinlette3.game;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
+import com.coffeebland.cossinlette3.game.entity.Person;
 import com.coffeebland.cossinlette3.utils.VPool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -74,10 +75,12 @@ public class PlayerInput implements InputProcessor {
             if (vec.len2() > 0) {
                 person.animFlag(Person.FLAG_WALKING);
                 person.orientation = vec.angleRad();
+                person.move(vec);
             } else {
                 person.animUnflag(Person.FLAG_WALKING);
+                person.stop();
             }
-            person.move(vec);
+
             VPool.claim(vec);
         }
     }

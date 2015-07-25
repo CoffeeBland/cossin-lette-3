@@ -1,8 +1,10 @@
 package com.coffeebland.cossinlette3.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
@@ -11,7 +13,7 @@ import java.util.Map;
 public class Textures {
     public static final Texture WHITE_PIXEL;
 
-    private static final Map<String, SoftReference<Texture>> images = new HashMap<>();
+    protected static final Map<String, SoftReference<Texture>> images = new HashMap<>();
     public static Texture get(String ref) {
 
         Texture texture;
@@ -38,5 +40,64 @@ public class Textures {
         whitePixelPixmap.dispose();
     }
 
-    private Textures() {}
+    public static Texture getCheckeredTexture(int checkerSize, Color colorA, Color colorB) {
+        Pixmap pixmap = new Pixmap(checkerSize * 2, checkerSize * 2, Pixmap.Format.RGB888);
+
+        pixmap.setColor(colorA);
+        pixmap.fillRectangle(0, 0, checkerSize, checkerSize);
+        pixmap.fillRectangle(checkerSize, checkerSize, checkerSize, checkerSize);
+
+        pixmap.setColor(colorB);
+        pixmap.fillRectangle(checkerSize, 0, checkerSize, checkerSize);
+        pixmap.fillRectangle(0, checkerSize, checkerSize, checkerSize);
+
+        Texture texture = new Texture(pixmap);
+        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        return texture;
+    }
+
+    public static void drawFilledRect(Batch batch, Color color, int x, int y, int w, int h) {
+        Color previousColor = batch.getColor();
+        batch.setColor(color);
+
+        batch.draw(
+                Textures.WHITE_PIXEL,
+                x, y,
+                w, h
+        );
+
+        batch.setColor(previousColor);
+    }
+    public static void drawRect(Batch batch, Color color, int x, int y, int w, int h, int thickness) {
+        Color previousColor = batch.getColor();
+        batch.setColor(color);
+
+        batch.draw(
+                Textures.WHITE_PIXEL,
+                x, y,
+                thickness, h
+        );
+
+        batch.draw(
+                Textures.WHITE_PIXEL,
+                x + w - thickness, y,
+                thickness, h
+        );
+
+        batch.draw(
+                Textures.WHITE_PIXEL,
+                x, y,
+                w, thickness
+        );
+
+        batch.draw(
+                Textures.WHITE_PIXEL,
+                x, y + h - thickness,
+                w, thickness
+        );
+
+        batch.setColor(previousColor);
+    }
+
+    protected Textures() {}
 }

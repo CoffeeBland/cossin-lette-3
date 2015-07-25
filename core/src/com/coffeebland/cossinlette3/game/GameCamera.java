@@ -23,6 +23,7 @@ public class GameCamera {
     public OrthographicCamera underlyingCamera() {
         return camera;
     }
+    public Vector2 getPos() { return pos; }
 
     public void updateToSize(int width, int height) {
         camera.setToOrtho(
@@ -49,6 +50,10 @@ public class GameCamera {
     }
     public void setTo(@NotNull Vector2 pos) {
         setTo(() -> pos);
+    }
+
+    public void setMoveRatio(float ratio) {
+        moveRatio = ratio;
     }
 
     public void update(float delta) {

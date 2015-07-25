@@ -4,6 +4,12 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.coffeebland.cossinlette3.game.*;
+import com.coffeebland.cossinlette3.game.entity.Person;
+import com.coffeebland.cossinlette3.game.file.SaveFile;
+import com.coffeebland.cossinlette3.game.file.WorldFile;
+import com.coffeebland.cossinlette3.game.visual.ImageStrip;
+import com.coffeebland.cossinlette3.game.visual.ImageStripResolver;
+import com.coffeebland.cossinlette3.game.visual.OrientationFrame;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,39 +45,46 @@ public class GameState extends State<SaveFile> {
 
         WorldFile worldFile = WorldFile.read(saveFile.worldFile);
         world = worldFile.createGameWorld(saveFile);
-        setBackgroundColor(world.getBackgroundColor());
+        setBackgroundColor(world.backgroundColor);
 
-        player = new Person(new WorldFile.PersonDef(0.5f, 1f, 0.01f, 0, 5));
+        WorldFile.PersonDef def = new WorldFile.PersonDef();
+        def.radius = 0.40f;
+        def.x = 0;
+        def.y = 5;
+        def.speed = 3f;
+        def.headHeight = 1f;
+        def.density = 1f;
+        player = new Person(def);
         assert world != null;
         player.addToWorld(world);
-        world.getCamera().moveTo(player);
+        world.camera.moveTo(player);
 
-        player.imageStrips.resolvers.add(new Person.ImageStripResolver(0,
-                new Person.ImageStrip("sprites/still.png", 64, 80, 32, 10, 12, Arrays.asList(
-                        new Person.OrientationFrames(0, -7.0/8.0 * PI, -5.0/8.0 * PI),
-                        new Person.OrientationFrames(1, -5.0/8.0 * PI, -3.0/8.0 * PI),
-                        new Person.OrientationFrames(2, -3.0/8.0 * PI, -1.0/8.0 * PI),
-                        new Person.OrientationFrames(3, -1.0/8.0 * PI, 1.0/8.0 * PI),
-                        new Person.OrientationFrames(4, 1.0/8.0 * PI, 3.0/8.0 * PI),
-                        new Person.OrientationFrames(5, 3.0/8.0 * PI, 5.0/8.0 * PI),
-                        new Person.OrientationFrames(6, 5.0/8.0 * PI, 7.0/8.0 * PI),
-                        new Person.OrientationFrames(7, 7.0/8.0 * PI, 9.0/8.0 * PI)
+        player.imageStrips.resolvers.add(new ImageStripResolver(0,
+                new ImageStrip("sprites/charset_neutre.png", 64, 96, 32, 20, 4, Arrays.asList(
+                        new OrientationFrame(1, true, -7.0 / 8.0 * PI, -5.0 / 8.0 * PI),
+                        new OrientationFrame(0, false, -5.0 / 8.0 * PI, -3.0 / 8.0 * PI),
+                        new OrientationFrame(1, false, -3.0 / 8.0 * PI, -1.0 / 8.0 * PI),
+                        new OrientationFrame(2, false, -1.0 / 8.0 * PI, 1.0 / 8.0 * PI),
+                        new OrientationFrame(3, false, 1.0 / 8.0 * PI, 3.0 / 8.0 * PI),
+                        new OrientationFrame(4, false, 3.0 / 8.0 * PI, 5.0 / 8.0 * PI),
+                        new OrientationFrame(3, true, 5.0 / 8.0 * PI, 7.0 / 8.0 * PI),
+                        new OrientationFrame(2, true, 7.0 / 8.0 * PI, 9.0 / 8.0 * PI)
                 ))
         ) {
             @Override public boolean conditionsMet(@NotNull BitSet flags) {
                 return true;
             }
         });
-        player.imageStrips.resolvers.add(new Person.ImageStripResolver(1,
-                new Person.ImageStrip("sprites/walk.png", 64, 80, 32, 10, 12, Arrays.asList(
-                        new Person.OrientationFrames(0, -7.0/8.0 * PI, -5.0/8.0 * PI),
-                        new Person.OrientationFrames(1, -5.0/8.0 * PI, -3.0/8.0 * PI),
-                        new Person.OrientationFrames(2, -3.0/8.0 * PI, -1.0/8.0 * PI),
-                        new Person.OrientationFrames(3, -1.0/8.0 * PI, 1.0/8.0 * PI),
-                        new Person.OrientationFrames(4, 1.0/8.0 * PI, 3.0/8.0 * PI),
-                        new Person.OrientationFrames(5, 3.0/8.0 * PI, 5.0/8.0 * PI),
-                        new Person.OrientationFrames(6, 5.0/8.0 * PI, 7.0/8.0 * PI),
-                        new Person.OrientationFrames(7, 7.0/8.0 * PI, 9.0/8.0 * PI)
+        player.imageStrips.resolvers.add(new ImageStripResolver(1,
+                new ImageStrip("sprites/charset_marche.png", 64, 96, 32, 20, 10, Arrays.asList(
+                        new OrientationFrame(1, true, -7.0 / 8.0 * PI, -5.0 / 8.0 * PI),
+                        new OrientationFrame(0, false, -5.0 / 8.0 * PI, -3.0 / 8.0 * PI),
+                        new OrientationFrame(1, false, -3.0 / 8.0 * PI, -1.0 / 8.0 * PI),
+                        new OrientationFrame(2, false, -1.0 / 8.0 * PI, 1.0 / 8.0 * PI),
+                        new OrientationFrame(3, false, 1.0 / 8.0 * PI, 3.0 / 8.0 * PI),
+                        new OrientationFrame(4, false, 3.0 / 8.0 * PI, 5.0 / 8.0 * PI),
+                        new OrientationFrame(3, true, 5.0 / 8.0 * PI, 7.0 / 8.0 * PI),
+                        new OrientationFrame(2, true, 7.0 / 8.0 * PI, 9.0 / 8.0 * PI)
                 ))
         ) {
             @Override public boolean conditionsMet(@NotNull BitSet flags) {
@@ -81,6 +94,9 @@ public class GameState extends State<SaveFile> {
         player.resolveImageStrips();
 
         playerInput = new PlayerInput(player);
+    }
+    @Override public void onTransitionOutFinish() {
+        if (world != null) world.dispose();
     }
 
     @Override

@@ -1,5 +1,5 @@
 {
-duplicatePadding: false,
+duplicatePadding: true,
 paddingX: 1,
 paddingY: 1
 }

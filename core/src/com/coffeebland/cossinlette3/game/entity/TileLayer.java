@@ -16,7 +16,7 @@ public class TileLayer extends Actor {
     public static final int TAG_ANIM = -1;
 
     @Nullable protected Texture texture;
-    @NotNull public TileLayerDef def;
+    @NotNull protected TileLayerDef def;
     protected float cumulatedSeconds = 0;
 
     public TileLayer(@NotNull TileLayerDef def) {
@@ -25,7 +25,20 @@ public class TileLayer extends Actor {
         this.def = def;
     }
 
+    public float getX() { return def.x; }
+    public float getY() { return def.y; }
+    public int getWidth() { return def.width; }
+    public int getHeight() { return def.height; }
+    public int[] getTile(int tileX, int tileY) { return def.tiles[tileY][tileX]; }
+    public void setTile(int tileX, int tileY, int[] tile) { def.tiles[tileY][tileX] = tile; }
+
+    @NotNull public int[][] getAnimations() { return def.getTilesetDef().animations; }
+    @NotNull public int[] getAnimation(int anim) { return getAnimations()[anim]; }
+
+    public int getTileSize() { return def.getTilesetDef().tileSize; }
+
     @Nullable public Texture getTexture() { return texture; }
+
     public int getTextureTilesX() {
         return texture == null ? 0 : (texture.getWidth() / def.getTilesetDef().tileSize);
     }
@@ -46,6 +59,13 @@ public class TileLayer extends Actor {
         }
     }
 
+    public int getFrameOffset(int[] anim) {
+        int frameCount = anim[0];
+        int fps = anim[1];
+
+        return (int)((cumulatedSeconds * fps) % frameCount) + 1;
+    }
+
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Override public void render(@NotNull SpriteBatch batch, @NotNull GameCamera camera) {
         for (int y = 0; y < def.height; y++) {
@@ -58,10 +78,8 @@ public class TileLayer extends Actor {
 
                     if (first == TAG_ANIM) {
                         int[] anim = def.getTilesetDef().animations[second];
-                        int frameCount = anim[0];
-                        int fps = anim[1];
+                        int frameOffset = getFrameOffset(anim);
 
-                        int frameOffset = (int)((cumulatedSeconds * fps) % frameCount) + 1;
                         tileX = anim[frameOffset * 2];
                         tileY = anim[frameOffset * 2 + 1];
                     } else {

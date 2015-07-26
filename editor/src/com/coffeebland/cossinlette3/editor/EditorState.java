@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -20,8 +21,7 @@ import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.entity.TileLayer;
 import com.coffeebland.cossinlette3.game.file.WorldFile;
 import com.coffeebland.cossinlette3.state.State;
-import com.coffeebland.cossinlette3.utils.Const;
-import com.coffeebland.cossinlette3.utils.VPool;
+import com.coffeebland.cossinlette3.utils.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,8 +82,9 @@ public class EditorState extends State<FileHandle> {
                         .createLoadDialog("Ouvrir une carte", skin, Gdx.files.local("worlds"))
                         .setFilter((file) -> file.isDirectory() || file.getName().endsWith(".json"))
                         .setResultListener((success, result) -> {
+                            if (result.isDirectory()) return false;
                             if (success) setWorldFile(WorldFile.read(result));
-                            return success;
+                            return true;
                         })
                         .show(stage);
             }
@@ -97,8 +98,9 @@ public class EditorState extends State<FileHandle> {
                 FileChooser.createSaveDialog("Sauvegarder la carte", skin, Gdx.files.local("worlds"))
                         .setFilter((file) -> file.isDirectory() || file.getName().endsWith(".json"))
                         .setResultListener((success, result) -> {
+                            if (result.isDirectory()) return false;
                             if (success) saveWorldFile(result);
-                            return success;
+                            return true;
                         })
                         .show(stage);
             }
@@ -137,13 +139,13 @@ public class EditorState extends State<FileHandle> {
                 int[] newTiles = Arrays.copyOf(current, current.length + 2);
                 newTiles[current.length] = tileChooser.getSelectedTileX();
                 newTiles[current.length + 1] = tileChooser.getSelectedTileY();
-                tileLayer.def.tiles[tileY][tileX] = newTiles;
+                tileLayer.setTile(tileX, tileY, newTiles);
             }
         });
         gameWorldWidget.addListener(new WorldClickListener(Input.Buttons.RIGHT) {
             @Override public void handleClick(TileLayer tileLayer, int tileX, int tileY, int[] current) {
                 if (current.length >= 2) {
-                    tileLayer.def.tiles[tileY][tileX] = Arrays.copyOf(current, current.length - 2);
+                    tileLayer.setTile(tileX, tileY, Arrays.copyOf(current, current.length - 2));
                 }
             }
         });
@@ -159,8 +161,6 @@ public class EditorState extends State<FileHandle> {
 
         worldFile = file;
         world = file.createGameWorld(null);
-        world.camera.setMoveRatio(1);
-        world.camera.setTo(cameraPos);
         tileLayerChooser.updateToTileLayers();
         tileChooser.invalidateHierarchy();
     }
@@ -186,8 +186,51 @@ public class EditorState extends State<FileHandle> {
         world.resize(width, height);
     }
 
+    public void renderTileCursor(SpriteBatch batch) {
+
+        TileLayer tileLayer = tileLayerChooser.getTileLayer();
+        if (tileLayer == null) return;
+
+        Vector2 tilePos = getTiledCoordinates(Gdx.input.getX(), Gdx.input.getY());
+        if (tilePos == null) return;
+
+        if (tilePos.x < 0 || tilePos.x >= tileLayer.getWidth()
+                || tilePos.y < 0 || tilePos.y >= tileLayer.getHeight()) {
+            return;
+        }
+
+        Vector2 screenPos = getScreenTiledCoordinates(tilePos);
+        int tileSize = tileLayer.getTileSize();
+
+        Textures.drawRect(batch, Color.BLACK, (int) screenPos.x - 1, (int) screenPos.y - 1, tileSize + 2, tileSize + 2, 1);
+        Textures.drawRect(batch, Color.WHITE, (int) screenPos.x, (int) screenPos.y, tileSize, tileSize, 1);
+
+        VPool.claim(tilePos);
+    }
+    public void renderTilelayerBounds(SpriteBatch batch) {
+        TileLayer currentTileLayer = tileLayerChooser.getTileLayer();
+        for (TileLayer tileLayer : tileLayerChooser.getTileLayers()) {
+            Color color = tileLayer == currentTileLayer ? Color.WHITE : Color.GRAY;
+            Textures.drawRect(batch, color,
+                    (int)Dst.getAsPixels(tileLayer.getX() - cameraPos.x) + Gdx.graphics.getWidth() / 2,
+                    (int)Dst.getAsPixels(tileLayer.getY() - cameraPos.y) + Gdx.graphics.getHeight() / 2,
+                    (tileLayer.getWidth() * tileLayer.getTileSize()),
+                    (tileLayer.getHeight() * tileLayer.getTileSize()),
+                    1
+            );
+        }
+    }
     @Override public void render(@NotNull SpriteBatch batch) {
+        world.camera.setTo(cameraPos);
         world.render(batch);
+
+        batch.begin();
+
+        renderTilelayerBounds(batch);
+        renderTileCursor(batch);
+
+        batch.end();
+
         stage.draw();
     }
     @Override public void update(float delta) {
@@ -227,6 +270,38 @@ public class EditorState extends State<FileHandle> {
         return true;
     }
 
+    @Nullable public Vector2 getTiledCoordinates(int x, int y) {
+        TileLayer tileLayer = tileLayerChooser.getTileLayer();
+        if (tileLayer == null) return null;
+
+        int tileSize = tileLayer.getTileSize();
+
+        float xShift = (tileLayer.getX() - cameraPos.x) / Const.METERS_PER_PIXEL;
+        float yShift = (tileLayer.getY() - cameraPos.y) / Const.METERS_PER_PIXEL;
+
+        Vector2 tilePos = VPool.V2(
+                Gdx.input.getX() - Gdx.graphics.getWidth() / 2 - xShift,
+                Gdx.graphics.getHeight() / 2 - Gdx.input.getY() - yShift
+        );
+        tilePos.set((int) Math.floor(tilePos.x / (float) tileSize), (int) Math.floor(tilePos.y / (float) tileSize));
+
+        return tilePos;
+    }
+    @NotNull public Vector2 getScreenTiledCoordinates(@NotNull Vector2 tilePos) {
+        TileLayer tileLayer = tileLayerChooser.getTileLayer();
+        assert tileLayer != null;
+
+        int tileSize = tileLayer.getTileSize();
+
+        float xShift = (tileLayer.getX() - cameraPos.x) / Const.METERS_PER_PIXEL;
+        float yShift = (tileLayer.getY() - cameraPos.y) / Const.METERS_PER_PIXEL;
+
+        tilePos.scl(tileSize)
+                .add(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2)
+                .add(xShift, yShift);
+
+        return tilePos;
+    }
     public abstract class WorldClickListener extends ClickListener {
 
         public WorldClickListener(int button) {
@@ -237,24 +312,18 @@ public class EditorState extends State<FileHandle> {
             TileLayer tileLayer = tileLayerChooser.getTileLayer();
             if (tileLayer == null) return;
 
-            int tileX = (int) (
-                    (Gdx.input.getX() - Gdx.graphics.getWidth() / 2
-                            - (cameraPos.x + tileLayer.def.x) / Const.METERS_PER_PIXEL
-                    )  / tileLayer.def.getTilesetDef().tileSize);
+            Vector2 tilePos = getTiledCoordinates(Gdx.input.getX(), Gdx.input.getY());
+            if (tilePos == null) return;
+            int tileX = (int)tilePos.x;
+            int tileY = (int)tilePos.y;
+            VPool.claim(tilePos);
 
-            int tileY = (int) (
-                    (Gdx.graphics.getHeight() / 2 - Gdx.input.getY()
-                            - (cameraPos.y + tileLayer.def.y) / Const.METERS_PER_PIXEL
-                    ) / tileLayer.def.getTilesetDef().tileSize);
-
-            if (tileX < 0
-                    || tileX >= tileLayer.getTextureTilesX()
-                    || tileY < 0
-                    || tileY >= tileLayer.getTextureTilesY()) {
+            if (tileX < 0 || tileX >= tileLayer.getWidth()
+                    || tileY < 0 || tileY >= tileLayer.getHeight()) {
                 return;
             }
 
-            int[] current = tileLayer.def.tiles[tileY][tileX];
+            int[] current = tileLayer.getTile(tileX, tileY);
             handleClick(tileLayer, tileX, tileY, current);
         }
 

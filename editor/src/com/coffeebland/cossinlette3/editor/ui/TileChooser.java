@@ -21,8 +21,9 @@ public class TileChooser extends Widget {
         addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 if (tileLayer != null) {
-                    int tileX = (int) (x / (getTileSize() + 1));
-                    int tileY = (int) ((getHeight() - y) / (getTileSize() + 1));
+                    int tileSize = getTileSize();
+                    int tileX = (int) (x / (tileSize + 1));
+                    int tileY = (int) ((getHeight() - y) / (tileSize + 1));
 
                     int[][] animations = tileLayer.getAnimations();
                     int animRows = (int)Math.ceil(animations.length / (float)tilesX);
@@ -58,7 +59,8 @@ public class TileChooser extends Widget {
     @Override public float getPrefHeight() {
         if (tileLayer != null) {
             int xTileBatches = (int) Math.ceil(tileLayer.getTextureTilesX() / (float)tilesX);
-            return xTileBatches * tileLayer.getTextureTilesY() * (getTileSize() + 1) - 1;
+            int animRows = (int)Math.ceil(tileLayer.getAnimations().length / (float)tilesX);
+            return (animRows + xTileBatches * tileLayer.getTextureTilesY()) * (getTileSize() + 1) - 1;
         }
         return super.getPrefHeight();
     }
@@ -68,7 +70,7 @@ public class TileChooser extends Widget {
         this.selectedTileX = 0;
         this.selectedTileY = 0;
         if (tileLayer != null) {
-            tilesX = WIDTH / (tileLayer.getTileSize() + 1);
+            tilesX = WIDTH / (getTileSize() + 1);
         }
         invalidateHierarchy();
     }
@@ -82,18 +84,20 @@ public class TileChooser extends Widget {
 
             // First off, consider the animations
             int[][] animations = tileLayer.getAnimations();
+            int tileSize = getTileSize();
             for (int animI = 0; animI < animations.length; animI++) {
                 int tileX = animI % tilesX;
                 int tileY = animI / tilesX;
 
-                int drawX = (int)getX() + tileX * (tileLayer.getTileSize() + 1);
+                int drawX = (int)getX() + tileX * (tileSize + 1);
                 int drawY = (int)getY() + (int)(getHeight() + 1 -
-                        (tileY + 1) * (tileLayer.getTileSize() + 1)
+                        (tileY + 1) * (tileSize + 1)
                 );
 
                 drawer.draw(drawX, drawY, -1, animI);
             }
 
+            // Render the regular tiles
             int textTilesX = tileLayer.getTextureTilesX();
             int textTilesY = tileLayer.getTextureTilesY();
             int animRows = (int)Math.ceil(animations.length / (float)tilesX);
@@ -108,9 +112,9 @@ public class TileChooser extends Widget {
                         int textTileX = tileX + xTileBatch * this.tilesX;
                         int textTileY = tileY;
 
-                        int drawX = (int)getX() + tileX * (tileLayer.getTileSize() + 1);
+                        int drawX = (int)getX() + tileX * (tileSize + 1);
                         int drawY = (int)getY() + (int)(getHeight() + 1 -
-                                (tileY + xTileBatch * tilesY + 1 + animRows) * (tileLayer.getTileSize() + 1)
+                                (tileY + xTileBatch * tilesY + 1 + animRows) * (tileSize + 1)
                         );
 
                         drawer.draw(drawX, drawY, textTileX, textTileY);
@@ -134,17 +138,19 @@ public class TileChooser extends Widget {
                     textTileY = anim[frameOffset * 2 + 1];
                 }
 
+                int tileSize = getTileSize();
                 batch.draw(
                         tileLayer.getTexture(),
                         drawX, drawY,
-                        textTileX * tileLayer.getTileSize(),
-                        textTileY * tileLayer.getTileSize(),
-                        tileLayer.getTileSize(),
-                        tileLayer.getTileSize()
+                        textTileX * tileSize,
+                        textTileY * tileSize,
+                        tileSize,
+                        tileSize
                 );
             });
 
             int tileX, tileY;
+            int tileSize = getTileSize();
             if (selectedTileX == TileLayer.TAG_ANIM) {
                 tileX = selectedTileY % tilesX;
                 tileY = selectedTileY / tilesX;
@@ -156,20 +162,20 @@ public class TileChooser extends Widget {
                 tileY = selectedTileY + xTileBatch * tileLayer.getTextureTilesY() + animRows;
             }
 
-            int drawX = (int) getX() + tileX * (tileLayer.getTileSize() + 1);
-            int drawY = (int) getY() + (int) (getHeight() - (tileY + 1) * (tileLayer.getTileSize() + 1)) + 1;
+            int drawX = (int) getX() + tileX * (tileSize + 1);
+            int drawY = (int) getY() + (int) (getHeight() - (tileY + 1) * (tileSize + 1)) + 1;
 
             Textures.drawRect(batch, Color.WHITE,
                     drawX, drawY,
-                    tileLayer.getTileSize(),
-                    tileLayer.getTileSize(),
+                    tileSize,
+                    tileSize,
                     1
             );
 
             Textures.drawRect(batch, Color.BLACK,
                     drawX - 1, drawY - 1,
-                    tileLayer.getTileSize() + 2,
-                    tileLayer.getTileSize() + 2,
+                    tileSize + 2,
+                    tileSize + 2,
                     1
             );
         }

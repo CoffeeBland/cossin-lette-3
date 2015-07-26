@@ -21,10 +21,14 @@ import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.entity.TileLayer;
 import com.coffeebland.cossinlette3.game.file.WorldFile;
 import com.coffeebland.cossinlette3.state.State;
-import com.coffeebland.cossinlette3.utils.*;
+import com.coffeebland.cossinlette3.utils.Const;
+import com.coffeebland.cossinlette3.utils.Dst;
+import com.coffeebland.cossinlette3.utils.Textures;
+import com.coffeebland.cossinlette3.utils.VPool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.tools.Tool;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +50,11 @@ public class EditorState extends State<FileHandle> {
     protected ScrollPane tileChooserScroller;
     protected TileChooser tileChooser;
     protected Widget gameWorldWidget;
+
+    protected Tool currentTool;
+    protected Tool addTool;
+    protected Tool removeTool;
+    protected Tool replaceTool;
 
     protected Vector2 cameraPos;
     protected float cameraSpeed;
@@ -134,7 +143,7 @@ public class EditorState extends State<FileHandle> {
         table.add(tileTable);
 
         gameWorldWidget = new Widget();
-        gameWorldWidget.addListener(new WorldClickListener(Input.Buttons.LEFT) {
+        gameWorldWidget.addListener(new WorldClickListener(this, Input.Buttons.LEFT) {
             @Override public void handleClick(TileLayer tileLayer, int tileX, int tileY, int[] current) {
                 int[] newTiles = Arrays.copyOf(current, current.length + 2);
                 newTiles[current.length] = tileChooser.getSelectedTileX();
@@ -142,7 +151,7 @@ public class EditorState extends State<FileHandle> {
                 tileLayer.setTile(tileX, tileY, newTiles);
             }
         });
-        gameWorldWidget.addListener(new WorldClickListener(Input.Buttons.RIGHT) {
+        gameWorldWidget.addListener(new WorldClickListener(this, Input.Buttons.RIGHT) {
             @Override public void handleClick(TileLayer tileLayer, int tileX, int tileY, int[] current) {
                 if (current.length >= 2) {
                     tileLayer.setTile(tileX, tileY, Arrays.copyOf(current, current.length - 2));
@@ -191,21 +200,21 @@ public class EditorState extends State<FileHandle> {
         TileLayer tileLayer = tileLayerChooser.getTileLayer();
         if (tileLayer == null) return;
 
-        Vector2 tilePos = getTiledCoordinates(Gdx.input.getX(), Gdx.input.getY());
-        if (tilePos == null) return;
+        Vector2 pos = getTiledCoordinates(VPool.V2(Gdx.input.getX(), Gdx.input.getY()));
 
-        if (tilePos.x < 0 || tilePos.x >= tileLayer.getWidth()
-                || tilePos.y < 0 || tilePos.y >= tileLayer.getHeight()) {
+        if (pos.x < 0 || pos.x >= tileLayer.getWidth()
+                || pos.y < 0 || pos.y >= tileLayer.getHeight()) {
+            VPool.claim(pos);
             return;
         }
 
-        Vector2 screenPos = getScreenTiledCoordinates(tilePos);
+        getScreenTiledCoordinates(pos);
         int tileSize = tileLayer.getTileSize();
 
-        Textures.drawRect(batch, Color.BLACK, (int) screenPos.x - 1, (int) screenPos.y - 1, tileSize + 2, tileSize + 2, 1);
-        Textures.drawRect(batch, Color.WHITE, (int) screenPos.x, (int) screenPos.y, tileSize, tileSize, 1);
+        Textures.drawRect(batch, Color.BLACK, (int) pos.x - 1, (int) pos.y - 1, tileSize + 2, tileSize + 2, 1);
+        Textures.drawRect(batch, Color.WHITE, (int) pos.x, (int) pos.y, tileSize, tileSize, 1);
 
-        VPool.claim(tilePos);
+        VPool.claim(pos);
     }
     public void renderTilelayerBounds(SpriteBatch batch) {
         TileLayer currentTileLayer = tileLayerChooser.getTileLayer();
@@ -270,22 +279,26 @@ public class EditorState extends State<FileHandle> {
         return true;
     }
 
-    @Nullable public Vector2 getTiledCoordinates(int x, int y) {
-        TileLayer tileLayer = tileLayerChooser.getTileLayer();
-        if (tileLayer == null) return null;
+    @NotNull public Vector2 getTiledCoordinates(@NotNull Vector2 pos, int tileSize, float metersX, float metersY) {
+        float xShift = (metersX - cameraPos.x) / Const.METERS_PER_PIXEL;
+        float yShift = (metersY - cameraPos.y) / Const.METERS_PER_PIXEL;
 
-        int tileSize = tileLayer.getTileSize();
-
-        float xShift = (tileLayer.getX() - cameraPos.x) / Const.METERS_PER_PIXEL;
-        float yShift = (tileLayer.getY() - cameraPos.y) / Const.METERS_PER_PIXEL;
-
-        Vector2 tilePos = VPool.V2(
-                Gdx.input.getX() - Gdx.graphics.getWidth() / 2 - xShift,
-                Gdx.graphics.getHeight() / 2 - Gdx.input.getY() - yShift
+        pos.set(
+                pos.x - Gdx.graphics.getWidth() / 2 - xShift,
+                Gdx.graphics.getHeight() / 2 - pos.y - yShift
         );
-        tilePos.set((int) Math.floor(tilePos.x / (float) tileSize), (int) Math.floor(tilePos.y / (float) tileSize));
+        pos.set((int) Math.floor(pos.x / (float) tileSize), (int) Math.floor(pos.y / (float) tileSize));
 
-        return tilePos;
+        return pos;
+    }
+    @NotNull public Vector2 getTiledCoordinates(@NotNull Vector2 pos) {
+        TileLayer tileLayer = tileLayerChooser.getTileLayer();
+        if (tileLayer == null) return pos;
+
+        return getTiledCoordinates(pos,
+                tileLayer.getTileSize(),
+                tileLayer.getX(), tileLayer.getY()
+        );
     }
     @NotNull public Vector2 getScreenTiledCoordinates(@NotNull Vector2 tilePos) {
         TileLayer tileLayer = tileLayerChooser.getTileLayer();
@@ -301,32 +314,5 @@ public class EditorState extends State<FileHandle> {
                 .add(xShift, yShift);
 
         return tilePos;
-    }
-    public abstract class WorldClickListener extends ClickListener {
-
-        public WorldClickListener(int button) {
-            super(button);
-        }
-
-        @Override public void clicked(InputEvent event, float x, float y) {
-            TileLayer tileLayer = tileLayerChooser.getTileLayer();
-            if (tileLayer == null) return;
-
-            Vector2 tilePos = getTiledCoordinates(Gdx.input.getX(), Gdx.input.getY());
-            if (tilePos == null) return;
-            int tileX = (int)tilePos.x;
-            int tileY = (int)tilePos.y;
-            VPool.claim(tilePos);
-
-            if (tileX < 0 || tileX >= tileLayer.getWidth()
-                    || tileY < 0 || tileY >= tileLayer.getHeight()) {
-                return;
-            }
-
-            int[] current = tileLayer.getTile(tileX, tileY);
-            handleClick(tileLayer, tileX, tileY, current);
-        }
-
-        public abstract void handleClick(TileLayer tileLayer, int tileX, int tileY, int[] current);
     }
 }

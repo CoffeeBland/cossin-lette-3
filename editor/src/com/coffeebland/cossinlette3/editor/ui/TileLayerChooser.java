@@ -36,17 +36,17 @@ public class TileLayerChooser extends HorizontalGroup {
         this.source = source;
         tileLayers = new ArrayList<>();
 
-        addBtn = new TextButton(" + ", skin);
-        addBtn.pad(0, 4, 0, 4);
-        addBtn.addListener(new ChangeListener() {
+        editBtn = new TextButton(" # ", skin);
+        editBtn.pad(0, 4, 0, 4);
+        editBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent event, Actor actor) {
                 updateToTileLayers();
             }
         });
 
-        editBtn = new TextButton(" * ", skin);
-        editBtn.pad(0, 4, 0, 4);
-        editBtn.addListener(new ChangeListener() {
+        addBtn = new TextButton(" + ", skin);
+        addBtn.pad(0, 4, 0, 4);
+        addBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent event, Actor actor) {
                 updateToTileLayers();
             }
@@ -109,8 +109,8 @@ public class TileLayerChooser extends HorizontalGroup {
             tileChooser.setTileLayer(tileLayers.size() > 0 ? tileLayers.get(selectedTileLayer) : null);
         }
 
-        addActor(addBtn);
         addActor(editBtn);
+        addActor(addBtn);
         addActor(deleteBtn);
     }
 

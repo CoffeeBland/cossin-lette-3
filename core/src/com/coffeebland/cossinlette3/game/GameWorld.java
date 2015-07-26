@@ -49,7 +49,7 @@ public class GameWorld {
         batch.end();
         batch.getTransformMatrix().translate(-hW, -hH, 0);
 
-        //debugRenderer.render(box2D, camera.underlyingCamera().combined);
+        debugRenderer.render(box2D, camera.underlyingCamera().combined);
     }
 
     public void update(float delta) {

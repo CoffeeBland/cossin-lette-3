@@ -13,7 +13,7 @@ allprojects {
 
     version = '1.0'
     ext {
-        appName = 'The One Kingdom'
+        appName = 'Cossin Lette 3 : Rédemption'
         gdxVersion = '1.6.3'
         roboVMVersion = '1.0.0'
         box2DLightsVersion = '1.3'

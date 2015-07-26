@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.utils.Const;
 import com.coffeebland.cossinlette3.utils.VPool;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class GameCamera {
@@ -23,7 +23,7 @@ public class GameCamera {
     public OrthographicCamera underlyingCamera() {
         return camera;
     }
-    public Vector2 getPos() { return pos; }
+    @NotNull public Vector2 getPos() { return pos; }
 
     public void updateToSize(int width, int height) {
         camera.setToOrtho(

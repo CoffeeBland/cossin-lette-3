@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 public class Actor {
 
     @Nullable protected GameWorld world;
-    protected final float priority;
+    protected float priority;
 
     public Actor(float priority) {
         this.priority = priority;
@@ -20,6 +20,9 @@ public class Actor {
     }
 
     public float getPriority() { return priority; }
+    public void setPriority(float priority) {
+        this.priority = priority;
+    }
 
     public void addToWorld(@NotNull GameWorld world) {
         if (this.world != null) throw new RuntimeException("Actors was already attached to a world");

@@ -20,6 +20,8 @@ public class GameWorld {
     @NotNull public final Color backgroundColor;
     @NotNull public final Box2DDebugRenderer debugRenderer;
 
+    
+
     public GameWorld() {
         box2D = new World(VPool.V2(), false);
         actors = new ArrayList<>();

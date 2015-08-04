@@ -4,6 +4,7 @@ buildscript {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
     dependencies {
+        classpath "com.badlogicgames.gdx:gdx-tools:1.6.3"
     }
 }
 
@@ -71,6 +72,22 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
     }
+}
+
+task packTextures << {
+    logger.info "Packing game textures"
+    com.badlogic.gdx.tools.texturepacker.TexturePacker.process(
+            'core/assets_raw/game',
+            'core/assets/img/game',
+            'main'
+    )
+
+    logger.info "Packing editor textures"
+    com.badlogic.gdx.tools.texturepacker.TexturePacker.process(
+            'core/assets_raw/editor',
+            'core/assets/img/editor',
+            'main'
+    )
 }
 
 tasks.eclipse.doLast {

@@ -65,7 +65,7 @@ public class EditorState extends State<FileHandle> {
         stage = new Stage(viewport = new ScreenViewport());
         multiplexer = new InputMultiplexer(stage, this);
 
-        skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        skin = new Skin(Gdx.files.internal("ui/main.json"));
 
         Table table = new Table(skin);
         table.setFillParent(true);

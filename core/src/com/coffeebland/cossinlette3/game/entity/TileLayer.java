@@ -1,106 +1,108 @@
 package com.coffeebland.cossinlette3.game.entity;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.coffeebland.cossinlette3.game.GameCamera;
 import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.file.TileLayerDef;
-import com.coffeebland.cossinlette3.utils.Textures;
+import com.coffeebland.cossinlette3.game.file.TilesetDef;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import static com.coffeebland.cossinlette3.game.file.TileLayerDef.*;
 import static com.coffeebland.cossinlette3.utils.Const.METERS_PER_PIXEL;
 
 public class TileLayer extends Actor {
 
-    public static final int TAG_ANIM = -1;
+    public static final int
+            TYPE_STILL = 0,
+            TYPE_VAR = 1,
+            TYPE_ANIM = 2;
 
-    @Nullable protected Texture texture;
     @NotNull protected TileLayerDef def;
+    @NotNull protected TilesetDef tileset;
+    @NotNull protected TextureAtlas atlas;
+    
     protected float cumulatedSeconds = 0;
 
-    public TileLayer(@NotNull TileLayerDef def) {
+    public TileLayer(@NotNull TileLayerDef def, @NotNull TilesetDef tileset, @NotNull TextureAtlas atlas) {
         super(def);
 
         this.def = def;
-    }
-
-    public float getX() { return def.x; }
-    public float getY() { return def.y; }
-    public int getWidth() { return def.width; }
-    public int getHeight() { return def.height; }
-    public int[] getTile(int tileX, int tileY) { return def.tiles[tileY][tileX]; }
-    public void setTile(int tileX, int tileY, int[] tile) { def.tiles[tileY][tileX] = tile; }
-
-    @NotNull public int[][] getAnimations() { return def.getTilesetDef().animations; }
-    @NotNull public int[] getAnimation(int anim) { return getAnimations()[anim]; }
-
-    public int getTileSize() { return def.getTilesetDef().tileSize; }
-
-    @Nullable public Texture getTexture() { return texture; }
-
-    public int getTextureTilesX() {
-        return texture == null ? 0 : (texture.getWidth() / def.getTilesetDef().tileSize);
-    }
-    public int getTextureTilesY() {
-        return texture == null ? 0 : (texture.getHeight() / def.getTilesetDef().tileSize);
+        this.tileset = tileset;
+        this.atlas = atlas;
     }
 
     @Override public void addToWorld(@NotNull GameWorld world) {
         super.addToWorld(world);
-        texture = Textures.get(def.getTilesetDef().src);
     }
 
     @Override public void removeFromWorld() {
         super.removeFromWorld();
-        if (texture != null) {
-            texture.dispose();
-            texture = null;
-        }
     }
 
-    public int getFrameOffset(int[] anim) {
-        int frameCount = anim[0];
-        int fps = anim[1];
-
+    public int getFrameOffset(int frameCount, int fps) {
         return (int)((cumulatedSeconds * fps) % frameCount) + 1;
-    }
-
-    @SuppressWarnings("UnnecessaryLocalVariable")
-    @Override public void render(@NotNull SpriteBatch batch, @NotNull GameCamera camera) {
-        for (int y = 0; y < def.height; y++) {
-            int[][] row = def.tiles[y];
-            for (int x = 0; x < def.width; x++) {
-                int[] tile = row[x];
-                for (int i = 0; i < tile.length; i += 2) {
-                    int first = tile[i], second = tile[i + 1];
-                    int tileX, tileY;
-
-                    if (first == TAG_ANIM) {
-                        int[] anim = def.getTilesetDef().animations[second];
-                        int frameOffset = getFrameOffset(anim);
-
-                        tileX = anim[frameOffset * 2];
-                        tileY = anim[frameOffset * 2 + 1];
-                    } else {
-                        tileX = first;
-                        tileY = second;
-                    }
-
-                    batch.draw(texture,
-                            (def.x - camera.getPos().x) / METERS_PER_PIXEL + x * def.getTilesetDef().tileSize,
-                            (def.y - camera.getPos().y) / METERS_PER_PIXEL + y * def.getTilesetDef().tileSize,
-                            tileX * def.getTilesetDef().tileSize,
-                            tileY * def.getTilesetDef().tileSize,
-                            def.getTilesetDef().tileSize,
-                            def.getTilesetDef().tileSize
-                    );
-                }
-            }
-        }
     }
 
     @Override public void update(float delta) {
         cumulatedSeconds = (cumulatedSeconds + delta / 1000) % 1000;
+    }
+
+    public class TileRow extends Actor {
+
+        protected int row;
+
+        public TileRow(int row) {
+            super(--row);
+            this.row = row;
+        }
+
+        @SuppressWarnings("PointlessBitwiseExpression")
+        @Override
+        public void render(@NotNull SpriteBatch batch, @NotNull GameCamera camera) {
+            super.render(batch, camera);
+
+            long[][] rowTiles = def.tiles[row];
+
+            int y = row;
+            for (int x = 0, tilesX = rowTiles.length; x < tilesX; x++) {
+                long[] tiles = rowTiles[x];
+
+                for (int i = 0; i < tiles.length; i++) {
+                    long tile = tiles[i];
+
+                    int type = (int)((tile & TYPE_MASK) >> TYPE_MASK_SHIFT);
+                    int typeIndex = (int)((tile & INDEX_MASK) >> INDEX_MASK_SHIFT);
+                    int tileX = (int)((tile & TILE_X_MASK) >> TILE_X_MASK_SHIFT);
+                    int tileY = (int)((tile & TILE_Y_MASK) >> TILE_Y_MASK_SHIFT);
+
+                    TextureAtlas.AtlasRegion region;
+                    switch (type) {
+                        case TYPE_STILL:
+                            region = tileset.stills[typeIndex].getRegion(atlas);
+                            break;
+                        case TYPE_VAR:
+                            region = tileset.variations[typeIndex].getRegion(atlas);
+                            break;
+                        case TYPE_ANIM:
+                            region = tileset.animations[typeIndex].getRegion(atlas);
+                            tileY +=;
+                            break;
+                        default:
+                            throw new RuntimeException("Unexpected tile type");
+                    }
+
+                    batch.draw(region,
+                            -camera.getPos().x / METERS_PER_PIXEL + x * tileset.tileSize,
+                            -camera.getPos().y / METERS_PER_PIXEL + y * tileset.tileSize,
+                            tileX * tileset.tileSize,
+                            tileY * tileset.tileSize,
+                            tileset.tileSize,
+                            tileset.tileSize,
+                            1, 1, 0
+                    );
+                }
+            }
+        }
     }
 }

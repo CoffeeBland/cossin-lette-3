@@ -1,0 +1,62 @@
+
+main.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+anim-1x1-water-tileset
+  rotate: false
+  xy: 288, 528
+  size: 48, 144
+  orig: 48, 144
+  offset: 0, 0
+  index: -1
+anim-2x2-water-tileset
+  rotate: false
+  xy: 288, 672
+  size: 576, 288
+  orig: 576, 288
+  offset: 0, 0
+  index: -1
+anim-3x3-water-tileset
+  rotate: false
+  xy: 288, 48
+  size: 288, 432
+  orig: 288, 432
+  offset: 0, 0
+  index: -1
+charset-marche
+  rotate: false
+  xy: 864, 480
+  size: 128, 480
+  orig: 128, 480
+  offset: 0, 0
+  index: -1
+charset-neutre
+  rotate: false
+  xy: 792, 0
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: -1
+still-land-tileset
+  rotate: false
+  xy: 0, 72
+  size: 288, 888
+  orig: 288, 888
+  offset: 0, 0
+  index: -1
+var-1x1-flowers-tileset
+  rotate: false
+  xy: 992, 528
+  size: 24, 432
+  orig: 24, 432
+  offset: 0, 0
+  index: -1
+var-3x3-land-tileset
+  rotate: false
+  xy: 576, 240
+  size: 216, 432
+  orig: 216, 432
+  offset: 0, 0
+  index: -1

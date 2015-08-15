@@ -2,7 +2,6 @@ package com.coffeebland.cossinlette3.game.visual;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.coffeebland.cossinlette3.game.file.ImageStripsDef;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,12 +9,11 @@ import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 public class ImageStrips {
 
     public enum NewStripFlags {
-        KEEP_FRAME, KEEP_REMAINING;
+        KEEP_FRAME, KEEP_REMAINING
     }
 
     @NotNull public final SortedSet<ImageStripResolver> resolvers = new TreeSet<>();
@@ -24,9 +22,6 @@ public class ImageStrips {
     protected int frameX;
 
     public ImageStrips() { }
-    public ImageStrips(ImageStripsDef def) {
-        resolvers.addAll(def.resolverDefs.stream().map(ImageStripResolver.FlagResolver::new).collect(Collectors.toList()));
-    }
 
     public void resolve(@NotNull BitSet flags, EnumSet<NewStripFlags> newStripFlags) {
         resolveStrip:

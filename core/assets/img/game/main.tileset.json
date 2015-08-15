@@ -1,5 +1,5 @@
 {
-  "tileSize": 24,
+  "tileSize": 0.5,
   "stills": [
     {
       "src": "still-land-tileset"

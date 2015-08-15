@@ -1,14 +1,22 @@
 package com.coffeebland.cossinlette3.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Json;
 import com.coffeebland.cossinlette3.game.entity.Actor;
+import com.coffeebland.cossinlette3.game.entity.PolygonActor;
+import com.coffeebland.cossinlette3.game.entity.TileLayer;
+import com.coffeebland.cossinlette3.game.entity.Tileset;
+import com.coffeebland.cossinlette3.game.file.*;
 import com.coffeebland.cossinlette3.utils.Const;
 import com.coffeebland.cossinlette3.utils.VPool;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -17,20 +25,53 @@ public class GameWorld {
     @NotNull public final List<Actor> actors;
     @NotNull protected Comparator<Actor> comparator;
     @NotNull public final GameCamera camera;
-    @NotNull public final Color backgroundColor;
     @NotNull public final Box2DDebugRenderer debugRenderer;
 
-    
+    @NotNull protected WorldDef def;
+    @Nullable protected TextureAtlas atlas;
+    @Nullable protected Tileset tileset;
 
-    public GameWorld() {
+    public GameWorld(@NotNull WorldDef def, @Nullable SaveFile saveFile) {
+        this.def = def;
+
         box2D = new World(VPool.V2(), false);
         actors = new ArrayList<>();
         comparator = (lhs, rhs) -> Float.compare(lhs.getPriority(), rhs.getPriority());
         camera = new GameCamera();
-        backgroundColor = Color.BLACK.cpy();
         debugRenderer = new Box2DDebugRenderer();
+
+        for (PolygonDef polyDef: def.staticPolygons) {
+            PolygonActor poly = new PolygonActor(polyDef);
+            poly.addToWorld(this);
+        }
+
+        for (TileLayerDef tileLayerDef : def.tileLayers) {
+            TileLayer layer = new TileLayer(tileLayerDef, getTileset());
+            layer.addToWorld(this);
+        }
+
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
+
+    @NotNull public TextureAtlas getAtlas() {
+        if (atlas == null) {
+            FileHandle fileHandle = Gdx.files.internal("img/game/" + def.imgSrc + ".atlas");
+            atlas = new TextureAtlas(fileHandle);
+        }
+        return atlas;
+    }
+    @NotNull public Tileset getTileset() {
+        if (tileset == null) {
+            FileHandle fileHandle = Gdx.files.internal("img/game/" + def.imgSrc + ".tileset.json");
+            Json json = new Json();
+            tileset = new Tileset(getAtlas(), json.fromJson(TilesetDef.class, fileHandle));
+        }
+        return tileset;
+    }
+
+    public int getWidth() { return def.width; }
+    public int getHeight() { return def.height; }
+    public Color getBackgroundColor() { return def.backgroundColor; }
 
     public void resize(int width, int height) {
         camera.updateToSize(width, height);
@@ -74,8 +115,6 @@ public class GameWorld {
     }
 
     public void dispose() {
-        for (Actor actor : actors) {
-            actor.dispose();
-        }
+        actors.forEach(Actor::dispose);
     }
 }

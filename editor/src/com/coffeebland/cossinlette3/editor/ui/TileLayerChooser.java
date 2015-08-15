@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.entity.TileLayer;
+import com.coffeebland.cossinlette3.game.file.TileLayerDef;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,6 +49,13 @@ public class TileLayerChooser extends HorizontalGroup {
         addBtn.pad(0, 4, 0, 4);
         addBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent event, Actor actor) {
+                TileLayerDef tileLayerDef = new TileLayerDef();
+                tileLayerDef.priority = 0;
+                tileLayerDef.tiles = new long
+                        [(int)(source.getWorld().getWidth() / source.getWorld().getTilesetDef().getTileSizeMeters())]
+                        [(int)(source.getWorld().getHeight() / source.getWorld().getTilesetDef().getTileSizeMeters())]
+                        [0];
+                tileLayers.add(new TileLayer(tileLayerDef, source.getWorld().getTilesetDef(), source.getWorld().getAtlas()));
                 updateToTileLayers();
             }
         });

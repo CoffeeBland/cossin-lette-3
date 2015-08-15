@@ -11,31 +11,30 @@ import org.jetbrains.annotations.Nullable;
 
 public class PolygonActor extends Actor {
 
-    @NotNull protected PolygonDef def;
     @Nullable protected Body body;
+
+    @NotNull BodyDef bodyDef;
+    @NotNull FixtureDef fixtureDef;
 
     public PolygonActor(@NotNull PolygonDef def) {
         super(def);
-        this.def = def;
+
+        bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(def.x, def.y);
+
+        PolygonShape shape = new PolygonShape();
+        shape.set(def.points);
+
+        fixtureDef = new FixtureDef();
+        fixtureDef.density = 0;
+        fixtureDef.shape = shape;
     }
 
     @Override public void addToWorld(@NotNull GameWorld world) {
         super.addToWorld(world);
 
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(def.x, def.y);
-
         body = world.box2D.createBody(bodyDef);
-        assert body != null;
-
-        PolygonShape shape = new PolygonShape();
-        shape.set(def.points);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.density = 0;
-        fixtureDef.shape = shape;
-
         body.createFixture(fixtureDef);
     }
 

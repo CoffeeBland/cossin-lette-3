@@ -74,7 +74,6 @@ public class PlayerInput implements InputProcessor {
             if (isPressed(Input.Keys.DOWN)) vec.add(0, -1);
             if (vec.len2() > 0) {
                 person.animFlag(Person.FLAG_WALKING);
-                person.orientation = vec.angleRad();
                 person.move(vec);
             } else {
                 person.animUnflag(Person.FLAG_WALKING);

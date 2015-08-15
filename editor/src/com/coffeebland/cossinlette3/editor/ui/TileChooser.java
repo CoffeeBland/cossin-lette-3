@@ -1,12 +1,10 @@
 package com.coffeebland.cossinlette3.editor.ui;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.coffeebland.cossinlette3.game.entity.TileLayer;
-import com.coffeebland.cossinlette3.utils.Textures;
 import org.jetbrains.annotations.Nullable;
 
 public class TileChooser extends Widget {
@@ -21,7 +19,7 @@ public class TileChooser extends Widget {
         addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 if (tileLayer != null) {
-                    int tileSize = getTileSize();
+                    /*int tileSize = getTileSize();
                     int tileX = (int) (x / (tileSize + 1));
                     int tileY = (int) ((getHeight() - y) / (tileSize + 1));
 
@@ -44,23 +42,23 @@ public class TileChooser extends Widget {
                             TileChooser.this.selectedTileX = selectedTileX;
                             TileChooser.this.selectedTileY = selectedTileY;
                         }
-                    }
+                    }*/
                 }
             }
         });
     }
 
     public int getTileSize() {
-        return tileLayer != null ? tileLayer.getTileSize() : 24;
+        return tileLayer != null ? tileLayer.getTileset().getTileSizePixels() : 24;
     }
     @Override public float getPrefWidth() {
         return WIDTH;
     }
     @Override public float getPrefHeight() {
         if (tileLayer != null) {
-            int xTileBatches = (int) Math.ceil(tileLayer.getTextureTilesX() / (float)tilesX);
+            /*int xTileBatches = (int) Math.ceil(tileLayer.getTextureTilesX() / (float)tilesX);
             int animRows = (int)Math.ceil(tileLayer.getAnimations().length / (float)tilesX);
-            return (animRows + xTileBatches * tileLayer.getTextureTilesY()) * (getTileSize() + 1) - 1;
+            return (animRows + xTileBatches * tileLayer.getTextureTilesY()) * (getTileSize() + 1) - 1;*/
         }
         return super.getPrefHeight();
     }
@@ -78,7 +76,7 @@ public class TileChooser extends Widget {
     public int getSelectedTileX() { return selectedTileX; }
     public int getSelectedTileY() { return selectedTileY; }
 
-    @SuppressWarnings("UnnecessaryLocalVariable")
+    /*@SuppressWarnings("UnnecessaryLocalVariable")
     public void performDrawFor(Drawer drawer) {
         if (tileLayer != null && tileLayer.getTexture() != null) {
 
@@ -122,13 +120,13 @@ public class TileChooser extends Widget {
                 }
             }
         }
-    }
+    }*/
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-        if (tileLayer != null) {
+        /*if (tileLayer != null) {
             performDrawFor((drawX, drawY, textTileX, textTileY) -> {
                 if (textTileX == TileLayer.TAG_ANIM) {
                     int[] anim = tileLayer.getAnimation(textTileY);
@@ -178,7 +176,7 @@ public class TileChooser extends Widget {
                     tileSize + 2,
                     1
             );
-        }
+        }*/
     }
 
     public interface Drawer {

@@ -1,39 +1,35 @@
 package com.coffeebland.cossinlette3.game.visual;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.coffeebland.cossinlette3.game.file.ImageSheetDef;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.coffeebland.cossinlette3.utils.Textures;
 import org.jetbrains.annotations.NotNull;
 
 public class ImageSheet {
     @NotNull public final String src;
-    @NotNull public final Texture texture;
+    @NotNull public final TextureRegion[][] textures;
     public final int frameWidth, frameHeight, framesX, framesY, decalX, decalY;
 
-    public ImageSheet(@NotNull String src, int frameWidth, int frameHeight, int decalX, int decalY) {
+    public ImageSheet(@NotNull TextureAtlas atlas, @NotNull String src, int frameWidth, int frameHeight, int decalX, int decalY) {
         this.src = src;
-        this.texture = Textures.get(src);
+        this.textures = Textures.get(atlas, src, frameWidth, frameHeight);
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
-        this.framesX = texture.getWidth() / frameWidth;
-        this.framesY = texture.getHeight() / frameHeight;
+        this.framesX = textures[0].length;
+        this.framesY = textures.length;
         this.decalX = decalX;
         this.decalY = decalY;
     }
-    public ImageSheet(ImageSheetDef def) {
-        this(def.src, def.frameWidth, def.frameHeight, def.decalX, def.decalY);
-    }
 
     public void render(@NotNull SpriteBatch batch, float x, float y, int imageX, int imageY, float scale, boolean flip) {
-        batch.draw(texture,
+        batch.draw(
+                textures[imageY][imageX],
                 x - decalX, y - decalY,
-                frameWidth * scale, frameHeight * scale,
-                frameWidth * imageX,
-                frameHeight * imageY,
+                decalX, decalY,
                 frameWidth, frameHeight,
-                flip, false
+                (flip ? -1 : 1) * scale, scale, 0
         );
     }
     public void render(@NotNull SpriteBatch batch, float x, float y, int imageX, int imageY, float scale, boolean flip, @NotNull Color tint) {

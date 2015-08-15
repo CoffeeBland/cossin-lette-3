@@ -27,20 +27,20 @@ public class TileLayerDef extends ActorDef {
     @SuppressWarnings("PointlessBitwiseExpression")
     public long getTile(int type, int typeIndex, int tileX, int tileY) {
         return (
-                (long)type << TYPE_MASK_SHIFT +
-                (long)typeIndex << INDEX_MASK_SHIFT +
-                (long)tileX << TILE_X_MASK_SHIFT +
+                (long)type << TYPE_MASK_SHIFT |
+                (long)typeIndex << INDEX_MASK_SHIFT |
+                (long)tileX << TILE_X_MASK_SHIFT |
                 (long)tileY << TILE_Y_MASK_SHIFT
         );
     }
     public void addTile(int x, int y, int type, int typeIndex, int tileX, int tileY) {
-        long[] tileDefs = tiles[x][y];
+        long[] tileDefs = tiles[y][x];
         long[] newTiles = Arrays.copyOf(tileDefs, tileDefs.length + 1);
         newTiles[tileDefs.length] = getTile(type, typeIndex, tileX, tileY);
-        tiles[x][y] = newTiles;
+        tiles[y][x] = newTiles;
     }
     public void removeTile(int x, int y) {
-        long[] tileDefs = tiles[x][y];
+        long[] tileDefs = tiles[y][x];
         tiles[x][y] = Arrays.copyOf(tileDefs, Math.max(tileDefs.length - 1, 0));
     }
     public void setTile(int x, int y, int type, int typeIndex, int tileX, int tileY) {

@@ -58,6 +58,7 @@ public class CossinLette3 extends ApplicationAdapter {
 		long nanoTime = System.nanoTime();
 		if (lastNanoTime != -1) {
 			float delta = Time.nano_to_milli((nanoTime - lastNanoTime));
+
 			accumulator += delta;
 
 			if (accumulator > 0) {

@@ -1,23 +1,20 @@
 package com.coffeebland.cossinlette3.state;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.coffeebland.cossinlette3.game.*;
+import com.coffeebland.cossinlette3.game.GameWorld;
+import com.coffeebland.cossinlette3.game.PlayerInput;
 import com.coffeebland.cossinlette3.game.entity.Person;
+import com.coffeebland.cossinlette3.game.entity.TileLayer;
 import com.coffeebland.cossinlette3.game.file.PersonDef;
 import com.coffeebland.cossinlette3.game.file.SaveFile;
-import com.coffeebland.cossinlette3.game.file.WorldFile;
-import com.coffeebland.cossinlette3.game.visual.ImageStrip;
-import com.coffeebland.cossinlette3.game.visual.ImageStripResolver;
-import com.coffeebland.cossinlette3.game.visual.OrientationFrame;
+import com.coffeebland.cossinlette3.game.file.TileLayerDef;
+import com.coffeebland.cossinlette3.game.file.WorldDef;
+import com.coffeebland.cossinlette3.game.visual.Charset;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
-import java.util.BitSet;
-
-import static java.lang.Math.PI;
 
 public class GameState extends State<SaveFile> {
 
@@ -44,55 +41,40 @@ public class GameState extends State<SaveFile> {
             saveFile = SaveFile.getNewSaveFile();
         }
 
-        WorldFile worldFile = WorldFile.read(saveFile.worldFile);
-        world = worldFile.createGameWorld(saveFile);
-        setBackgroundColor(world.backgroundColor);
+        WorldDef worldDef = WorldDef.read(saveFile.worldFile);
+
+        TileLayerDef tlDef = new TileLayerDef();
+        tlDef.tiles = new long[worldDef.height][worldDef.width][0];
+        tlDef.addTile(0, 1, TileLayer.TYPE_ANIM, 1, 0, 1);
+        tlDef.addTile(1, 1, TileLayer.TYPE_ANIM, 1, 1, 1);
+        tlDef.addTile(0, 2, TileLayer.TYPE_ANIM, 1, 0, 0);
+        tlDef.addTile(1, 2, TileLayer.TYPE_ANIM, 1, 1, 0);
+        worldDef.tileLayers.add(tlDef);
+
+        TileLayerDef tlDef2 =new TileLayerDef();
+        tlDef2.tiles = new long[worldDef.height][worldDef.width][0];
+        tlDef2.priority = 1;
+        tlDef2.addTile(0, 2, TileLayer.TYPE_STILL, 0, 8, 0);
+        worldDef.tileLayers.add(tlDef2);
+
+        world = new GameWorld(worldDef, saveFile);
+        setBackgroundColor(world.getBackgroundColor());
 
         PersonDef def = new PersonDef();
         def.radius = 0.40f;
         def.x = 0;
         def.y = 5;
         def.speed = 3f;
-        def.headHeight = 1f;
         def.density = 1f;
         player = new Person(def);
         assert world != null;
         player.addToWorld(world);
         world.camera.moveTo(player);
 
-        player.imageStrips.resolvers.add(new ImageStripResolver(0,
-                new ImageStrip("sprites/charset_neutre.png", 64, 96, 32, 20, 4, Arrays.asList(
-                        new OrientationFrame(1, true, -7.0 / 8.0 * PI, -5.0 / 8.0 * PI),
-                        new OrientationFrame(0, false, -5.0 / 8.0 * PI, -3.0 / 8.0 * PI),
-                        new OrientationFrame(1, false, -3.0 / 8.0 * PI, -1.0 / 8.0 * PI),
-                        new OrientationFrame(2, false, -1.0 / 8.0 * PI, 1.0 / 8.0 * PI),
-                        new OrientationFrame(3, false, 1.0 / 8.0 * PI, 3.0 / 8.0 * PI),
-                        new OrientationFrame(4, false, 3.0 / 8.0 * PI, 5.0 / 8.0 * PI),
-                        new OrientationFrame(3, true, 5.0 / 8.0 * PI, 7.0 / 8.0 * PI),
-                        new OrientationFrame(2, true, 7.0 / 8.0 * PI, 9.0 / 8.0 * PI)
-                ))
-        ) {
-            @Override public boolean conditionsMet(@NotNull BitSet flags) {
-                return true;
-            }
-        });
-        player.imageStrips.resolvers.add(new ImageStripResolver(1,
-                new ImageStrip("sprites/charset_marche.png", 64, 96, 32, 20, 10, Arrays.asList(
-                        new OrientationFrame(1, true, -7.0 / 8.0 * PI, -5.0 / 8.0 * PI),
-                        new OrientationFrame(0, false, -5.0 / 8.0 * PI, -3.0 / 8.0 * PI),
-                        new OrientationFrame(1, false, -3.0 / 8.0 * PI, -1.0 / 8.0 * PI),
-                        new OrientationFrame(2, false, -1.0 / 8.0 * PI, 1.0 / 8.0 * PI),
-                        new OrientationFrame(3, false, 1.0 / 8.0 * PI, 3.0 / 8.0 * PI),
-                        new OrientationFrame(4, false, 3.0 / 8.0 * PI, 5.0 / 8.0 * PI),
-                        new OrientationFrame(3, true, 5.0 / 8.0 * PI, 7.0 / 8.0 * PI),
-                        new OrientationFrame(2, true, 7.0 / 8.0 * PI, 9.0 / 8.0 * PI)
-                ))
-        ) {
-            @Override public boolean conditionsMet(@NotNull BitSet flags) {
-                return flags.get(Person.FLAG_WALKING);
-            }
-        });
-        player.resolveImageStrips();
+        player.setImageStrips(new Charset(
+                world.getAtlas(),
+                Gdx.files.internal("img/game/cossin.charset.json")
+        ));
 
         playerInput = new PlayerInput(player);
     }

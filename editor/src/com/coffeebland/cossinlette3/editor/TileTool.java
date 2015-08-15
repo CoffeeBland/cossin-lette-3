@@ -14,7 +14,7 @@ public abstract class TileTool extends ClickTool {
     }
 
     @NotNull @Override public Vector2 transformCoordinates(@NotNull Vector2 pos) {
-        return state.getTiledCoordinates(pos, tileSizeSource.getTileSize(), tileSizeSource.getX(), tileSizeSource.getY());
+        return state.getTiledCoordinates(pos, tileSizeSource.getTileSize());
     }
 
     public interface TileSizeSource {

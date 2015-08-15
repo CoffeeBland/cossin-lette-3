@@ -5,6 +5,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
@@ -33,11 +36,17 @@ public class Textures {
         return texture;
     }
 
-    static {
-        Pixmap whitePixelPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        whitePixelPixmap.drawPixel(0, 0, 0xFFFFFFFF);
-        WHITE_PIXEL = new Texture(whitePixelPixmap);
-        whitePixelPixmap.dispose();
+    protected static final Map<String, TextureRegion[][]> tiles = new HashMap<>();
+    public static TextureRegion[][] get(@NotNull TextureAtlas atlas, @NotNull String ref, int tileWidth, int tileHeight) {
+        if (tiles.containsKey(ref)) {
+            return tiles.get(ref);
+        }
+
+        TextureRegion[][] regions = atlas.findRegion(ref).split(tileWidth, tileHeight);
+
+        tiles.put(ref, regions);
+
+        return regions;
     }
 
     public static Texture getCheckeredTexture(int checkerSize, Color colorA, Color colorB) {
@@ -97,6 +106,13 @@ public class Textures {
         );
 
         batch.setColor(previousColor);
+    }
+
+    static {
+        Pixmap whitePixelPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        whitePixelPixmap.drawPixel(0, 0, 0xFFFFFFFF);
+        WHITE_PIXEL = new Texture(whitePixelPixmap);
+        whitePixelPixmap.dispose();
     }
 
     protected Textures() {}

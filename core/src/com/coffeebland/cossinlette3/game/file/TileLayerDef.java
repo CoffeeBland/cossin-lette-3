@@ -1,5 +1,7 @@
 package com.coffeebland.cossinlette3.game.file;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 
 public class TileLayerDef extends ActorDef {
@@ -22,6 +24,10 @@ public class TileLayerDef extends ActorDef {
     public long[][][] tiles;
 
     public TileLayerDef() {}
+    public TileLayerDef(@NotNull WorldDef def, float priority) {
+        tiles = new long[def.height][def.width][0];
+        this.priority = priority;
+    }
 
     public long[] getTiles(int x, int y) { return tiles[x][y]; }
     @SuppressWarnings("PointlessBitwiseExpression")

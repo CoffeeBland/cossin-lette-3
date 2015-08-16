@@ -86,13 +86,13 @@ public class TileLayer extends Actor {
                     TextureRegion[][] regions;
                     switch (type) {
                         case TYPE_STILL:
-                            regions = tileset.getStills(typeIndex);
+                            regions = tileset.getStills()[typeIndex].getRegions();
                             break;
                         case TYPE_VAR:
-                            regions = tileset.getVariations(typeIndex);
+                            regions = tileset.getVariations()[typeIndex].getRegions();
                             break;
                         case TYPE_ANIM:
-                            Tileset.AnimationRegions aRegions = tileset.getAnimations(typeIndex);
+                            Tileset.AnimationRegions aRegions = tileset.getAnimations()[typeIndex];
                             regions = aRegions.regions;
                             tileY += aRegions.getFrameOffset(cumulatedSeconds);
                             break;

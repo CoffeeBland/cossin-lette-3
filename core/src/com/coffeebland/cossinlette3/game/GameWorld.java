@@ -63,8 +63,8 @@ public class GameWorld {
     @NotNull public Tileset getTileset() {
         if (tileset == null) {
             FileHandle fileHandle = Gdx.files.internal("img/game/" + def.imgSrc + ".tileset.json");
-            Json json = new Json();
-            tileset = new Tileset(getAtlas(), json.fromJson(TilesetDef.class, fileHandle));
+            TilesetDef tilesetDef = new Json().fromJson(TilesetDef.class, fileHandle);
+            tileset = new Tileset(getAtlas(), tilesetDef);
         }
         return tileset;
     }

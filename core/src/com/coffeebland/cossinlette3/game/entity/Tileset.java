@@ -12,8 +12,8 @@ public class Tileset {
 
     protected float tileSize;
     protected int tileSizePixels;
-    protected TextureRegion[][][] stills;
-    protected TextureRegion[][][] variations;
+    protected Regions[] stills;
+    protected VariationRegions[] variations;
     protected AnimationRegions[] animations;
 
     public Tileset(@NotNull TextureAtlas atlas, @NotNull TilesetDef def) {
@@ -21,43 +21,67 @@ public class Tileset {
         this.tileSizePixels = (int) Dst.getAsPixels(tileSize);
 
         stills = Stream.of(def.stills)
-                .map(sDef -> sDef.getRegions(atlas, tileSizePixels, tileSizePixels))
-                .toArray(TextureRegion[][][]::new);
+                .map(sDef -> new Regions(sDef, tileSizePixels, atlas))
+                .toArray(Regions[]::new);
 
         variations = Stream.of(def.variations)
-                .map(vDef -> vDef.getRegions(atlas, tileSizePixels, tileSizePixels))
-                .toArray(TextureRegion[][][]::new);
+                .map(vDef -> new VariationRegions(vDef, tileSizePixels, atlas))
+                .toArray(VariationRegions[]::new);
 
         animations = Stream.of(def.animations)
-                .map(aDef -> new AnimationRegions(aDef, aDef.getRegions(atlas, tileSizePixels, tileSizePixels)))
+                .map(aDef -> new AnimationRegions(aDef, tileSizePixels, atlas))
                 .toArray(AnimationRegions[]::new);
     }
 
     public float getTileSizeMeters() { return tileSize; }
     public int getTileSizePixels() { return tileSizePixels; }
 
-    public TextureRegion[][] getStills(int typeIndex) {
-        return stills[typeIndex];
+    public Regions[] getStills() {
+        return stills;
     }
-    public TextureRegion[][] getVariations(int typeIndex) {
-        return variations[typeIndex];
+    public VariationRegions[] getVariations() {
+        return variations;
     }
-    public AnimationRegions getAnimations(int typeIndex) {
-        return animations[typeIndex];
+    public AnimationRegions[] getAnimations() {
+        return animations;
     }
 
-    public static class AnimationRegions {
+    public static class Regions {
         protected TextureRegion[][] regions;
-        protected float fps;
-        protected int frameCount;
-        protected int tilesY;
+        protected int tilesX, tilesY;
 
-        public AnimationRegions(TilesetDef.AnimationDef def, TextureRegion[][] regions) {
-            this.regions = regions;
-            this.fps = def.fps;
+        public Regions(@NotNull TilesetDef.PartialDef def, int tileSize, @NotNull TextureAtlas atlas) {
+            this.regions = def.getRegions(atlas, tileSize, tileSize);
+            this.tilesX = regions[0].length;
+            this.tilesY = regions.length;
+        }
+
+        public TextureRegion[][] getRegions() { return regions; }
+        public int getTilesX() { return tilesX; }
+        public int getTilesY() { return tilesY; }
+        public int getBlockCount() { return 1; }
+    }
+    public static class VariationRegions extends Regions {
+        protected int frameCount;
+
+        public VariationRegions(@NotNull TilesetDef.VariationDef def, int tileSize, @NotNull TextureAtlas atlas) {
+            super(def, tileSize, atlas);
+            this.tilesX = def.tilesX;
             this.tilesY = def.tilesY;
             this.frameCount = regions.length / def.tilesY;
         }
+
+        public int getFrameCount() { return frameCount; }
+        @Override public int getBlockCount() { return regions[0].length / getTilesX(); }
+    }
+    public static class AnimationRegions extends VariationRegions {
+        protected float fps;
+
+        public AnimationRegions(@NotNull TilesetDef.AnimationDef def, int tileSize, @NotNull TextureAtlas atlas) {
+            super(def, tileSize, atlas);
+            this.fps = def.fps;
+        }
+        public float getFps() { return fps; }
 
         public int getFrameOffset(float cumulatedSeconds) {
             return (int)((cumulatedSeconds * fps) % frameCount) * tilesY;

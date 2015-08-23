@@ -18,6 +18,7 @@ import java.util.function.BiFunction;
 public class TileChooser extends Widget {
 
     public static final int WIDTH = 12 * (24 + 1) + 1;
+    public static final Color TILE_BG = new Color(0, 0, 0, 0.2f);
 
     @NotNull protected Tileset tileset;
     protected int tilesX;
@@ -141,7 +142,7 @@ public class TileChooser extends Widget {
         return (int)(drawX - getX() - 1) / (tileset.getTileSizePixels() + 1);
     }
     protected float getDrawY(int tileDrawY) {
-        return getY() + getHeight() - ((tileDrawY + 1) * (tileset.getTileSizePixels() + 1) + 1);
+        return getY() + getHeight() - ((tileDrawY + 1) * (tileset.getTileSizePixels() + 1) + 1) + 1;
     }
     protected int getTileY(float drawY) {
         return (int)(getY() + getHeight() - drawY - 1)  / (tileset.getTileSizePixels() + 1);
@@ -176,7 +177,7 @@ public class TileChooser extends Widget {
 
         public void drawBackground(@NotNull Batch batch) {
             Textures.drawFilledRect(
-                    batch, new Color(0, 0, 0, 0.2f),
+                    batch, TILE_BG,
                     (int) getDrawX(tileDrawX), (int) getDrawY(tileDrawY) - (getTilesY() - 1) * (tileset.getTileSizePixels() + 1),
                     getTilesX() * (tileset.getTileSizePixels() + 1) - 1, getTilesY() * (tileset.getTileSizePixels() + 1) - 1
             );

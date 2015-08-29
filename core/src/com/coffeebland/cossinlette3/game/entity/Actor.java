@@ -1,5 +1,6 @@
 package com.coffeebland.cossinlette3.game.entity;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.coffeebland.cossinlette3.game.GameCamera;
 import com.coffeebland.cossinlette3.game.GameWorld;
@@ -37,7 +38,7 @@ public class Actor {
         return world == null;
     }
 
-    public void render(@NotNull SpriteBatch batch, @NotNull GameCamera camera) { }
+    public void render(@NotNull Batch batch, @NotNull GameCamera camera) { }
     public void update(float delta) { }
     public void dispose() {
         removeFromWorld();

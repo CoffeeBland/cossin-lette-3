@@ -1,7 +1,7 @@
 package com.coffeebland.cossinlette3.game.visual;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.coffeebland.cossinlette3.utils.Textures;
@@ -23,7 +23,7 @@ public class ImageSheet {
         this.decalY = decalY;
     }
 
-    public void render(@NotNull SpriteBatch batch, float x, float y, int imageX, int imageY, float scale, boolean flip) {
+    public void render(@NotNull Batch batch, float x, float y, int imageX, int imageY, float scale, boolean flip) {
         batch.draw(
                 textures[imageY][imageX],
                 x - decalX, y - decalY,
@@ -32,7 +32,7 @@ public class ImageSheet {
                 (flip ? -1 : 1) * scale, scale, 0
         );
     }
-    public void render(@NotNull SpriteBatch batch, float x, float y, int imageX, int imageY, float scale, boolean flip, @NotNull Color tint) {
+    public void render(@NotNull Batch batch, float x, float y, int imageX, int imageY, float scale, boolean flip, @NotNull Color tint) {
         batch.setColor(tint);
         render(batch, x, y, imageX, imageY, scale, flip);
         batch.setColor(Color.WHITE);

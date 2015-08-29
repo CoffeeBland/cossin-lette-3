@@ -17,6 +17,7 @@ import com.coffeebland.cossinlette3.editor.ui.FileChooser;
 import com.coffeebland.cossinlette3.editor.ui.TileChooser;
 import com.coffeebland.cossinlette3.editor.ui.TileLayerChooser;
 import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
+import com.coffeebland.cossinlette3.game.entity.TileLayer;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.TileLayerDef;
 import com.coffeebland.cossinlette3.game.file.TilesetDef;
@@ -140,6 +141,7 @@ public class EditorState extends State<FileHandle> {
         table.add(worldWidget).expandX();
 
         stage.addActor(table);
+        stage.setKeyboardFocus(worldWidget);
     }
 
     public void setNewWorldDef(int widthMeters, int heightMeters, @NotNull String imgSrc) {
@@ -149,6 +151,9 @@ public class EditorState extends State<FileHandle> {
         def.imgSrc = imgSrc;
         def.staticPolygons = new ArrayList<>();
         def.tileLayers = IntStream.range(0, 5).mapToObj(i -> new TileLayerDef(def, i)).collect(Collectors.toList());
+        // TODO: don't add unused tiles
+        def.tileLayers.get(0).addTile(0, 0, TileLayer.TYPE_STILL, 0, 0, 2);
+        def.tileLayers.get(1).addTile(0, 0, TileLayer.TYPE_STILL, 0, 0, 3);
         setWorldDef(def);
     }
     public void setWorldDef(WorldDef file) {

@@ -7,7 +7,7 @@ import com.coffeebland.cossinlette3.CossinLette3;
 public class EditorLauncher {
     public static void main(String[] arg) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.title = "Cossin Lette 3 - Éditeur";
+        config.title = "Cossin Lette 3: R\u00E9demption - \u00C9diteur";
         new LwjglApplication(new CossinLette3Editor(), config);
     }
 }

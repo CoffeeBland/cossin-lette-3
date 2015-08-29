@@ -1,6 +1,7 @@
-package com.coffeebland.cossinlette3.editor;
+package com.coffeebland.cossinlette3.editor.ui;
 
 import com.badlogic.gdx.math.Vector2;
+import com.coffeebland.cossinlette3.editor.EditorState;
 import com.coffeebland.cossinlette3.editor.ui.ClickTool;
 import org.jetbrains.annotations.NotNull;
 

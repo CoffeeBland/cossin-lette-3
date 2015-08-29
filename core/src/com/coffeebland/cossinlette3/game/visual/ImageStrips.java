@@ -1,7 +1,7 @@
 package com.coffeebland.cossinlette3.game.visual;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,12 +48,12 @@ public class ImageStrips {
         resolve(flags, EnumSet.noneOf(NewStripFlags.class));
     }
 
-    public void render(@NotNull SpriteBatch batch, float x, float y, float orientation, float scale) {
+    public void render(@NotNull Batch batch, float x, float y, float orientation, float scale) {
         if (currentStrip != null) {
             currentStrip.render(batch, x, y, frameX, orientation, scale);
         }
     }
-    public void render(@NotNull SpriteBatch batch, float x, float y, float orientation, float scale, @NotNull Color color) {
+    public void render(@NotNull Batch batch, float x, float y, float orientation, float scale, @NotNull Color color) {
         if (currentStrip != null) {
             currentStrip.render(batch, x, y, frameX, orientation, scale, color);
         }

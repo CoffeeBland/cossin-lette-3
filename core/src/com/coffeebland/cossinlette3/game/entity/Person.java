@@ -1,5 +1,6 @@
 package com.coffeebland.cossinlette3.game.entity;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -114,7 +115,7 @@ public class Person extends Actor implements GameCamera.PositionSource {
         if (body != null) body.setLinearVelocity(Vector2.Zero);
     }
 
-    @Override public void render(@NotNull SpriteBatch batch, @NotNull GameCamera camera) {
+    @Override public void render(@NotNull Batch batch, @NotNull GameCamera camera) {
         Vector2 pos = getPosition();
         if (pos != null) {
             if (imageStrips != null) {

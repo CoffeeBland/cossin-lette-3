@@ -1,7 +1,8 @@
 package com.coffeebland.cossinlette3.game.entity;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.game.GameCamera;
 import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.file.TileLayerDef;
@@ -21,33 +22,36 @@ public class TileLayer extends Actor {
     @NotNull protected Tileset tileset;
     
     protected float cumulatedSeconds = 0;
-    @NotNull protected TileRow[] rows;
+    @NotNull protected Row[] rows;
 
     public TileLayer(@NotNull TileLayerDef def, @NotNull Tileset tileset) {
         super(def);
 
         this.tiles = def.tiles;
         this.tileset = tileset;
-        rows = new TileRow[def.tiles.length];
+        rows = new Row[def.tiles.length];
         for (int rowI = 0; rowI < rows.length; rowI++) {
-            rows[rowI] = new TileRow(rowI);
+            rows[rowI] = new Row(rowI);
         }
     }
 
     @NotNull public Tileset getTileset() {
         return tileset;
     }
+    @NotNull public Row[] getRows() {
+        return rows;
+    }
 
     @Override public void addToWorld(@NotNull GameWorld world) {
         super.addToWorld(world);
-        for (TileRow row : rows) {
+        for (Row row : rows) {
             row.addToWorld(world);
         }
     }
 
     @Override public void removeFromWorld() {
         super.removeFromWorld();
-        for (TileRow row : rows) {
+        for (Row row : rows) {
             row.removeFromWorld();
         }
     }
@@ -56,20 +60,24 @@ public class TileLayer extends Actor {
         cumulatedSeconds = (cumulatedSeconds + delta / 1000) % 1000;
     }
 
-    public class TileRow extends Actor {
+    public class Row extends Actor {
 
         protected int row;
 
-        public TileRow(int row) {
+        public Row(int row) {
             super(-row * tileset.getTileSizeMeters() + TileLayer.this.priority);
             this.row = row;
         }
 
         @SuppressWarnings("PointlessBitwiseExpression")
         @Override
-        public void render(@NotNull SpriteBatch batch, @NotNull GameCamera camera) {
+        public void render(@NotNull Batch batch, @NotNull GameCamera camera) {
             super.render(batch, camera);
+            render(batch, camera.getPos());
+        }
 
+        @SuppressWarnings("PointlessBitwiseExpression")
+        public void render(@NotNull Batch batch, @NotNull Vector2 pos) {
             long[][] rowTiles = tiles[row];
 
             int y = row;
@@ -101,8 +109,8 @@ public class TileLayer extends Actor {
                     }
 
                     batch.draw(regions[tileY][tileX],
-                            -camera.getPos().x / METERS_PER_PIXEL + x * tilePixels,
-                            -camera.getPos().y / METERS_PER_PIXEL + y * tilePixels,
+                            -pos.x / METERS_PER_PIXEL + x * tilePixels,
+                            -pos.y / METERS_PER_PIXEL + y * tilePixels,
                             tileX * tilePixels,
                             tileY * tilePixels,
                             tilePixels,

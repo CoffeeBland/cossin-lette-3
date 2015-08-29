@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public abstract class KeyInputListener extends InputListener {
-    @NotNull protected Map<Integer, Long> keycodes = new HashMap<>();
-    @NotNull protected Set<Integer> relevantKeys;
+    @NotNull protected final Map<Integer, Long> keycodes = new HashMap<>();
+    @NotNull protected final Set<Integer> relevantKeys;
 
     public KeyInputListener(@NotNull Integer... relevantKeys) {
         this.relevantKeys = new HashSet<>(Arrays.asList(relevantKeys));
@@ -24,7 +24,7 @@ public abstract class KeyInputListener extends InputListener {
     }
 
     @Override public boolean keyUp(InputEvent event, int keycode) {
-        if (relevantKeys.contains(keycode)) {
+        if (keycodes.containsKey(keycode)) {
             onInputUp(keycode, keycodes.get(keycode));
             keycodes.remove(keycode);
             return true;

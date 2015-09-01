@@ -1,6 +1,7 @@
 package com.coffeebland.cossinlette3.editor;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
@@ -13,11 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.coffeebland.cossinlette3.editor.ui.FileChooser;
-import com.coffeebland.cossinlette3.editor.ui.TileChooser;
-import com.coffeebland.cossinlette3.editor.ui.TileLayerChooser;
-import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
-import com.coffeebland.cossinlette3.game.entity.TileLayer;
+import com.coffeebland.cossinlette3.editor.tools.AddTool;
+import com.coffeebland.cossinlette3.editor.tools.RemoveTool;
+import com.coffeebland.cossinlette3.editor.ui.*;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.TileLayerDef;
 import com.coffeebland.cossinlette3.game.file.TilesetDef;
@@ -26,12 +25,12 @@ import com.coffeebland.cossinlette3.state.State;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.tools.Tool;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class EditorState extends State<FileHandle> {
+public class EditorState extends State<FileHandle> implements OperationExecutor {
 
     protected InputMultiplexer multiplexer;
 
@@ -47,11 +46,11 @@ public class EditorState extends State<FileHandle> {
     protected ScrollPane tileChooserScroller;
     protected TileChooser tileChooser;
     protected WorldWidget worldWidget;
+    protected AddTool addTool;
+    protected RemoveTool removeTool;
 
-    protected Tool currentTool;
-    protected Tool addTool;
-    protected Tool removeTool;
-    protected Tool replaceTool;
+    protected List<Operation> operations = new ArrayList<>();
+    protected int operationIndex;
 
     public EditorState() {
         stage = new Stage(viewport = new ScreenViewport());
@@ -70,7 +69,8 @@ public class EditorState extends State<FileHandle> {
         TextButton newBtn = new TextButton("Nouveau", skin);
         newBtn.pad(4);
         newBtn.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
                 // TODO prompt for size
                 setNewWorldDef(40, 40, "main");
             }
@@ -81,7 +81,8 @@ public class EditorState extends State<FileHandle> {
         TextButton loadBtn = new TextButton("Charger", skin);
         loadBtn.pad(4);
         loadBtn.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
                 FileChooser
                         .createLoadDialog("Ouvrir une carte", skin, Gdx.files.local("worlds"))
                         .setFilter((file) -> file.isDirectory() || file.getName().endsWith(".json"))
@@ -98,7 +99,8 @@ public class EditorState extends State<FileHandle> {
         TextButton saveBtn = new TextButton("Sauvegarder", skin);
         saveBtn.pad(4);
         saveBtn.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
                 FileChooser.createSaveDialog("Sauvegarder la carte", skin, Gdx.files.local("worlds"))
                         .setFilter((file) -> file.isDirectory() || file.getName().endsWith(".json"))
                         .setResultListener((success, result) -> {
@@ -137,7 +139,10 @@ public class EditorState extends State<FileHandle> {
         table.row().expandY().fill();
         table.add(tileTable);
 
-        worldWidget = new WorldWidget(tileset);
+        worldWidget = new WorldWidget(tileset, tileLayerChooser, this);
+        addTool = new AddTool(tileChooser, true);
+        removeTool = new RemoveTool(tileChooser, true);
+        worldWidget.setTileTool(addTool);
         table.add(worldWidget).expandX();
 
         stage.addActor(table);
@@ -151,9 +156,6 @@ public class EditorState extends State<FileHandle> {
         def.imgSrc = imgSrc;
         def.staticPolygons = new ArrayList<>();
         def.tileLayers = IntStream.range(0, 5).mapToObj(i -> new TileLayerDef(def, i)).collect(Collectors.toList());
-        // TODO: don't add unused tiles
-        def.tileLayers.get(0).addTile(0, 0, TileLayer.TYPE_STILL, 0, 0, 2);
-        def.tileLayers.get(1).addTile(0, 0, TileLayer.TYPE_STILL, 0, 0, 3);
         setWorldDef(def);
     }
     public void setWorldDef(WorldDef file) {
@@ -172,6 +174,25 @@ public class EditorState extends State<FileHandle> {
     }
     public void saveWorldFile(FileHandle fileHandle) {
         worldDef.write(fileHandle);
+    }
+
+    @Override public void execute(@NotNull Operation operation, boolean runOp) {
+        operations.subList(operationIndex, operations.size()).clear();
+        if (runOp) operation.execute();
+        operations.add(operation);
+        operationIndex = operations.size();
+    }
+    @Override public void undo() {
+        if (operationIndex > 0 && operationIndex <= operations.size()) {
+            operations.get(operationIndex - 1).cancel();
+            operationIndex--;
+        }
+    }
+    @Override public void redo() {
+        if (operationIndex < operations.size()) {
+            operations.get(operationIndex).execute();
+            operationIndex++;
+        }
     }
 
     @Nullable @Override public InputProcessor getInputProcessor() { return multiplexer; }
@@ -197,44 +218,36 @@ public class EditorState extends State<FileHandle> {
         stage.act(delta);
     }
 
-    @Override public boolean keyDown(int keycode) {
-        return true;
+    @Override
+    public boolean keyDown(int keycode) {
+        switch (keycode) {
+            case Input.Keys.ALT_LEFT:
+                worldWidget.setTileTool(removeTool);
+                return true;
+            case Input.Keys.SHIFT_LEFT:
+                if (worldWidget.getTileTool() != null) {
+                    worldWidget.getTileTool().setFromTop(
+                            !worldWidget.getTileTool().isFromTop()
+                    );
+                }
+                return true;
+        }
+        return super.keyDown(keycode);
     }
-    @Override public boolean keyUp(int keycode) {
-        return true;
+    @Override
+    public boolean keyUp(int keycode) {
+        switch (keycode) {
+            case Input.Keys.ALT_LEFT:
+                worldWidget.setTileTool(addTool);
+                return true;
+            case Input.Keys.SHIFT_LEFT:
+                if (worldWidget.getTileTool() != null) {
+                    worldWidget.getTileTool().setFromTop(
+                            !worldWidget.getTileTool().isFromTop()
+                    );
+                }
+                return true;
+        }
+        return super.keyUp(keycode);
     }
-
-    /*@NotNull public Vector2 getTiledCoordinates(@NotNull Vector2 pos) {
-        float xShift = -cameraPos.x / Const.METERS_PER_PIXEL;
-        float yShift = -cameraPos.y / Const.METERS_PER_PIXEL;
-
-        pos.set(
-                pos.x - Gdx.graphics.getWidth() / 2 - xShift,
-                Gdx.graphics.getHeight() / 2 - pos.y - yShift
-        );
-        pos.set((int) Math.floor(pos.x / tileset.getTileSizeMeters()), (int) Math.floor(pos.y / tileset.getTileSizeMeters()));
-
-        return pos;
-    }
-    @NotNull public Vector2 getTiledCoordinates(@NotNull Vector2 pos) {
-        TileLayer tileLayer = tileLayerChooser.getTileLayer();
-        if (tileLayer == null) return pos;
-
-        return getTiledCoordinates(pos, tileLayer.getTileset().getTileSizeMeters());
-    }
-    @NotNull public Vector2 getScreenTiledCoordinates(@NotNull Vector2 tilePos) {
-        TileLayer tileLayer = tileLayerChooser.getTileLayer();
-        assert tileLayer != null;
-
-        int tileSizePixels = (int)tileLayer.getTileset().getTileSizePixels();
-
-        float xShift = -cameraPos.x / Const.METERS_PER_PIXEL;
-        float yShift = - cameraPos.y / Const.METERS_PER_PIXEL;
-
-        tilePos.scl(tileSizePixels)
-                .add(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2)
-                .add(xShift, yShift);
-
-        return tilePos;
-    }*/
 }

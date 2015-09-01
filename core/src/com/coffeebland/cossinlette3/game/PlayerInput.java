@@ -4,7 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.game.entity.Person;
-import com.coffeebland.cossinlette3.utils.VPool;
+import com.coffeebland.cossinlette3.utils.V2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,7 +67,7 @@ public class PlayerInput implements InputProcessor {
 
     public void update(float delta) {
         if (person != null) {
-            @NotNull Vector2 vec = VPool.V2();
+            @NotNull Vector2 vec = V2.get();
             if (isPressed(Input.Keys.LEFT)) vec.add(-1, 0);
             if (isPressed(Input.Keys.UP)) vec.add(0, 1);
             if (isPressed(Input.Keys.RIGHT)) vec.add(1, 0);
@@ -80,7 +80,7 @@ public class PlayerInput implements InputProcessor {
                 person.stop();
             }
 
-            VPool.claim(vec);
+            V2.claim(vec);
         }
     }
 }

@@ -14,7 +14,7 @@ import com.coffeebland.cossinlette3.game.entity.TileLayer;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.*;
 import com.coffeebland.cossinlette3.utils.Const;
-import com.coffeebland.cossinlette3.utils.VPool;
+import com.coffeebland.cossinlette3.utils.V2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,7 @@ public class GameWorld {
     public GameWorld(@NotNull WorldDef def, @Nullable SaveFile saveFile) {
         this.def = def;
 
-        box2D = new World(VPool.V2(), false);
+        box2D = new World(V2.get(), false);
         actors = new ArrayList<>();
         comparator = (lhs, rhs) -> Float.compare(lhs.getPriority(), rhs.getPriority());
         camera = new GameCamera();

@@ -65,7 +65,7 @@ public class Textures {
         return texture;
     }
 
-    public static void drawFilledRect(Batch batch, Color color, int x, int y, int w, int h) {
+    public static void drawFilledRect(@NotNull Batch batch, @NotNull Color color, int x, int y, int w, int h) {
         Color previousColor = batch.getColor();
         batch.setColor(color);
 
@@ -77,7 +77,13 @@ public class Textures {
 
         batch.setColor(previousColor);
     }
-    public static void drawRect(Batch batch, Color color, int x, int y, int w, int h, int thickness) {
+    public static void drawFilledRect(@NotNull Batch batch, @NotNull Color color, float x, float y, float w, float h) {
+        drawFilledRect(batch, color,
+                (int)Math.floor(x), (int)Math.floor(y),
+                (int)Math.floor(w), (int)Math.floor(h)
+        );
+    }
+    public static void drawRect(@NotNull Batch batch, @NotNull Color color, int x, int y, int w, int h, int thickness) {
         Color previousColor = batch.getColor();
         batch.setColor(color);
 
@@ -106,6 +112,15 @@ public class Textures {
         );
 
         batch.setColor(previousColor);
+    }
+    public static void drawRect(@NotNull Batch batch, @NotNull Color color, float x, float y, float w, float h, int thickness) {
+        drawRect(batch, color,
+                (int)Math.floor(x),
+                (int)Math.floor(y),
+                (int)Math.floor(w),
+                (int)Math.floor(h),
+                thickness
+        );
     }
 
     static {

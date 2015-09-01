@@ -20,6 +20,8 @@ public class TileLayerDef extends ActorDef {
             TILE_X_MASK =   0x0000_0000_FFFF_0000l,
             TILE_Y_MASK =   0x0000_0000_0000_FFFFl;
 
+    public static final int NO_TILE = -1;
+
     // Mapped by rows, then columns, with each tile being an array of longs; each long is a tile comprised of 4 16-bit numbers; type, index, x, y
     public long[][][] tiles;
 
@@ -29,7 +31,7 @@ public class TileLayerDef extends ActorDef {
         this.priority = priority;
     }
 
-    public long[] getTiles(int x, int y) { return tiles[x][y]; }
+    public long[] getTiles(int x, int y) { return tiles[y][x]; }
     @SuppressWarnings("PointlessBitwiseExpression")
     public long getTile(int type, int typeIndex, int tileX, int tileY) {
         return (
@@ -39,17 +41,43 @@ public class TileLayerDef extends ActorDef {
                 (long)tileY << TILE_Y_MASK_SHIFT
         );
     }
-    public void addTile(int x, int y, int type, int typeIndex, int tileX, int tileY) {
+    public void addTile(int x, int y, int type, int typeIndex, int tileX, int tileY, boolean fromTop) {
+        addTile(x, y, getTile(type, typeIndex, tileX, tileY), fromTop);
+    }
+    public void addTile(int x, int y, long tile, boolean fromTop) {
         long[] tileDefs = tiles[y][x];
         long[] newTiles = Arrays.copyOf(tileDefs, tileDefs.length + 1);
-        newTiles[tileDefs.length] = getTile(type, typeIndex, tileX, tileY);
+        if (fromTop) {
+            newTiles[tileDefs.length] = tile;
+        } else {
+            for (int i = newTiles.length - 2; i >= 0; i--) newTiles[i + 1] = newTiles[i];
+            newTiles[0] = tile;
+        }
         tiles[y][x] = newTiles;
     }
-    public void removeTile(int x, int y) {
+
+    /**
+     * Removes the requested tile and returns whatever tile was removed.
+     * @NO_TILE if no tile could be removed
+     */
+    public long removeTile(int x, int y, boolean fromTop) {
         long[] tileDefs = tiles[y][x];
-        tiles[x][y] = Arrays.copyOf(tileDefs, Math.max(tileDefs.length - 1, 0));
+        if (tileDefs.length == 0) return NO_TILE;
+        if (tileDefs.length == 1) {
+            tiles[y][x] = new long[0];
+            return tileDefs[0];
+        }
+        if (fromTop) {
+            tiles[y][x] = Arrays.copyOf(tileDefs, tileDefs.length - 1);
+            return tileDefs[tileDefs.length - 1];
+        } else {
+            tiles[y][x] = Arrays.copyOfRange(tileDefs, 1, tileDefs.length);
+            return tileDefs[0];
+        }
     }
-    public void setTile(int x, int y, int type, int typeIndex, int tileX, int tileY) {
-        tiles[x][y] = new long[] { getTile(type, typeIndex, tileX, tileY) };
+    public long[] setTile(int x, int y, int type, int typeIndex, int tileX, int tileY) {
+        long[] oldTile = tiles[y][x];
+        tiles[y][x] = new long[] { getTile(type, typeIndex, tileX, tileY) };
+        return oldTile;
     }
 }

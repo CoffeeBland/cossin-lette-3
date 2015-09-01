@@ -2,6 +2,7 @@ package com.coffeebland.cossinlette3.game.entity;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.game.file.TilesetDef;
 import com.coffeebland.cossinlette3.utils.Dst;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +36,31 @@ public class Tileset {
 
     public float getTileSizeMeters() { return tileSize; }
     public int getTileSizePixels() { return tileSizePixels; }
+
+    public float getTileFromMeters(float meters) {
+        return meters / tileSize;
+    }
+    @NotNull public Vector2 getTileFromMeters(@NotNull Vector2 meters) {
+        return meters.scl(1f / tileSize);
+    }
+    public float getMetersFromTile(float tile) {
+        return tile * tileSize;
+    }
+    @NotNull public Vector2 getMetersFromTile(@NotNull Vector2 tiles) {
+        return tiles.scl(tileSize);
+    }
+    public float getTileFromPixels(float pixels) {
+        return pixels / tileSizePixels;
+    }
+    @NotNull public Vector2 getTileFromPixels(@NotNull Vector2 pixels) {
+        return pixels.scl(1f / tileSizePixels);
+    }
+    public float getPixelsFromTile(float tile) {
+        return tile * tileSizePixels;
+    }
+    @NotNull public Vector2 getPixelsFromTile(Vector2 tiles) {
+        return tiles.scl(tileSizePixels);
+    }
 
     public Regions[] getStills() {
         return stills;

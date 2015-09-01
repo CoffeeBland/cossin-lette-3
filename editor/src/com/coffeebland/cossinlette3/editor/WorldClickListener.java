@@ -19,10 +19,10 @@ public abstract class WorldClickListener extends ClickListener {
         TileLayer tileLayer = editorState.tileLayerChooser.getTileLayer();
         if (tileLayer == null) return;
 
-        Vector2 tilePos = editorState.getTiledCoordinates(VPool.V2(Gdx.input.getX(), Gdx.input.getY()));
+        Vector2 tilePos = editorState.getTiledCoordinates(get.get(Gdx.input.getX(), Gdx.input.getY()));
         int tileX = (int)tilePos.x;
         int tileY = (int)tilePos.y;
-        VPool.claim(tilePos);
+        get.claim(tilePos);
 
         if (tileX < 0 || tileX >= world.getWidth()
                 || tileY < 0 || tileY >= world.getHeight()) {

@@ -5,7 +5,11 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.coffeebland.cossinlette3.editor.tools.TileBlockSource;
+import com.coffeebland.cossinlette3.editor.tools.TileSource;
+import com.coffeebland.cossinlette3.game.entity.TileLayer;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
+import com.coffeebland.cossinlette3.utils.func.QuadFunction;
 import com.coffeebland.cossinlette3.utils.Textures;
 import com.coffeebland.cossinlette3.utils.Time;
 import org.jetbrains.annotations.NotNull;
@@ -13,9 +17,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
 
-public class TileChooser extends Widget {
+public class TileChooser extends Widget implements TileSource {
 
     public static final int WIDTH = 12 * (24 + 1) + 1;
     public static final Color TILE_BG = new Color(0, 0, 0, 0.2f);
@@ -35,19 +38,21 @@ public class TileChooser extends Widget {
         tilesX = Math.max(WIDTH / (tileset.getTileSizePixels() + 1), 1);
 
         int tileDrawY = 0;
-        tileDrawY = addBlocks(tileset.getAnimations(), tileDrawY, AnimationBlock::new, true);
-        tileDrawY = addBlocks(tileset.getVariations(), tileDrawY, VariationBlock::new, false);
-        tileDrawY = addBlocks(tileset.getVariations(), tileDrawY, StillBlock::new, false);
-        tileDrawY = addBlocks(tileset.getStills(), tileDrawY, StillBlock::new, true);
+        tileDrawY = addBlocks(tileset.getAnimations(), TileLayer.TYPE_ANIM, tileDrawY, AnimationBlock::new, true);
+        tileDrawY = addBlocks(tileset.getVariations(), TileLayer.TYPE_VAR, tileDrawY, VariationBlock::new, false);
+        tileDrawY = addBlocks(tileset.getVariations(), TileLayer.TYPE_VAR, tileDrawY, StillBlock::new, false);
+        tileDrawY = addBlocks(tileset.getStills(), TileLayer.TYPE_STILL, tileDrawY, StillBlock::new, true);
 
         invalidateHierarchy();
         addListener(new ClickListener() {
 
             int downTileX = -1, downTileY = -1;
 
-            @Override public void touchDragged(InputEvent event, float x, float y, int pointer) {
+            @Override
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
                 super.touchDragged(event, x, y, pointer);
-                drag: if (isPressed()) {
+                drag:
+                if (isPressed()) {
                     if (downTileX == -1 || downTileY == -1) break drag;
                     TileBlock<?> current = tileBlocks.get(selectedBlockIndex);
                     int tileX = Math.min(Math.max(getTileX(x), current.tileDrawX), current.tileDrawX + current.getTilesX() - 1);
@@ -71,9 +76,11 @@ public class TileChooser extends Widget {
                 }
             }
 
-            @Override public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 boolean parent = super.touchDown(event, x, y, pointer, button);
-                down: if (parent) {
+                down:
+                if (parent) {
                     downTileX = getTileX(x);
                     downTileY = getTileY(y);
                     Optional<TileBlock<?>> oBlock = tileBlocks.stream().filter(block -> block.isInside(downTileX, downTileY)).findAny();
@@ -104,13 +111,14 @@ public class TileChooser extends Widget {
         tileBlocks.add(block);
     }
     public <T extends Tileset.Regions> int addBlocks
-            (T[] tileRegions, int tileDrawY, BiFunction<T, Integer, TileBlock<T>> creator, boolean preventSizeOverlaps) {
+            (T[] tileRegions, int type, int tileDrawY, QuadFunction<T, Integer, Integer, Integer, TileBlock<T>> creator, boolean preventSizeOverlaps) {
         int tileDrawX = 0;
         int remainderJump = 0;
-        for (T tileRegion : tileRegions) {
+        for (int index = 0; index < tileRegions.length; index++) {
+            T tileRegion = tileRegions[index];
             if (preventSizeOverlaps) tileDrawX = 0;
-            for (int i = 0; i < tileRegion.getBlockCount(); i++) {
-                TileBlock<T> block = creator.apply(tileRegion, i);
+            for (int blockIndex = 0; blockIndex < tileRegion.getBlockCount(); blockIndex++) {
+                TileBlock<T> block = creator.apply(tileRegion, blockIndex, type, index);
                 if (tileDrawX + block.getTilesX() > tilesX) tileDrawX = 0;
                 addBlock(block, tileDrawX, tileDrawY);
                 tileDrawX += block.getTilesX();
@@ -134,6 +142,16 @@ public class TileChooser extends Widget {
         TileBlock block = oBlock.get();
         return (block.tileDrawY + block.getTilesY()) * (tileset.getTileSizePixels() + 1) + 1;
     }
+
+    @Override @NotNull public Tileset getTileset() { return tileset; }
+    @Override public TileBlockSource getTileBlockSource() { return tileBlocks.get(selectedBlockIndex); }
+    @Override public int getSelectedTileX() {
+        TileBlock tileBlock = tileBlocks.get(selectedBlockIndex);
+        return selectedTileX + tileBlock.block * tileBlock.getTilesX();
+    }
+    @Override public int getSelectedTileY() { return selectedTileY; }
+    @Override public int getSelectedWidth() { return selectedWidth; }
+    @Override public int getSelectedHeight() { return selectedHeight; }
 
     protected float getDrawX(int tileDrawX) {
         return getX() + tileDrawX * (tileset.getTileSizePixels() + 1) + 1;
@@ -164,37 +182,46 @@ public class TileChooser extends Widget {
         tileBlocks.get(selectedBlockIndex).drawSelection(batch);
     }
 
-    public abstract class TileBlock<T extends Tileset.Regions> {
+    public abstract class TileBlock<T extends Tileset.Regions> implements TileBlockSource {
 
         protected int tileDrawX, tileDrawY;
         protected @NotNull T regions;
         protected int block;
+        protected int type, typeIndex;
 
-        public TileBlock(@NotNull T regions, int block) {
+        public TileBlock(@NotNull T regions, int block, int type, int typeIndex) {
             this.regions = regions;
             this.block = block;
+            this.type = type;
+            this.typeIndex = typeIndex;
         }
 
         public void drawBackground(@NotNull Batch batch) {
             Textures.drawFilledRect(
                     batch, TILE_BG,
-                    (int) getDrawX(tileDrawX), (int) getDrawY(tileDrawY) - (getTilesY() - 1) * (tileset.getTileSizePixels() + 1),
-                    getTilesX() * (tileset.getTileSizePixels() + 1) - 1, getTilesY() * (tileset.getTileSizePixels() + 1) - 1
+                    getDrawX(tileDrawX),
+                    getDrawY(tileDrawY) - (getTilesY() - 1) * (tileset.getTileSizePixels() + 1),
+                    getTilesX() * (tileset.getTileSizePixels() + 1) - 1,
+                    getTilesY() * (tileset.getTileSizePixels() + 1) - 1
             );
         }
         public abstract void draw(@NotNull Batch batch);
         public void drawSelection(@NotNull Batch batch) {
             Textures.drawRect(
                     batch, Color.WHITE,
-                    (int) getDrawX(tileDrawX + selectedTileX), (int) getDrawY(tileDrawY + selectedTileY),
-                    selectedWidth * (tileset.getTileSizePixels() + 1) - 1, selectedHeight * (tileset.getTileSizePixels() + 1) - 1,
+                    getDrawX(tileDrawX + selectedTileX),
+                    getDrawY(tileDrawY + selectedTileY),
+                    selectedWidth * (tileset.getTileSizePixels() + 1) - 1,
+                    selectedHeight * (tileset.getTileSizePixels() + 1) - 1,
                     1
             );
 
             Textures.drawRect(
                     batch, Color.BLACK,
-                    (int) getDrawX(tileDrawX + selectedTileX) - 1, (int) getDrawY(tileDrawY + selectedTileY) - 1,
-                    selectedWidth * (tileset.getTileSizePixels() + 1) + 1, selectedHeight * (tileset.getTileSizePixels() + 1) + 1,
+                    getDrawX(tileDrawX + selectedTileX) - 1,
+                    getDrawY(tileDrawY + selectedTileY) - 1,
+                    selectedWidth * (tileset.getTileSizePixels() + 1) + 1,
+                    selectedHeight * (tileset.getTileSizePixels() + 1) + 1,
                     1
             );
         }
@@ -205,6 +232,8 @@ public class TileChooser extends Widget {
             int xTileBatches = (int) Math.ceil(regions.getTilesX() / (float)getTilesX());
             return regions.getTilesY() * xTileBatches;
         }
+        @Override public int getType() { return type; }
+        @Override public int getTypeIndex() { return typeIndex; }
 
         public boolean collides() {
             return tileBlocks.stream().anyMatch((tb) ->
@@ -223,8 +252,8 @@ public class TileChooser extends Widget {
     }
     public class StillBlock<T extends Tileset.Regions> extends TileBlock<T> {
 
-        public StillBlock(@NotNull T regions, int block) {
-            super(regions, block);
+        public StillBlock(@NotNull T regions, int block, int type, int typeIndex) {
+            super(regions, block, type, typeIndex);
         }
 
         @SuppressWarnings("UnnecessaryLocalVariable")
@@ -262,13 +291,18 @@ public class TileChooser extends Widget {
         @Override public int getTilesY() {
             return (int)(super.getTilesY() * (regions.getRegions().length / (float)regions.getTilesY()));
         }
+
+        @Override public int getTileOffset(float offset) { return 0; }
     }
     public class VariationBlock<T extends Tileset.VariationRegions> extends TileBlock<T> {
 
-        public VariationBlock(@NotNull T vars, int block) {
-            super(vars, block);
+        public VariationBlock(@NotNull T vars, int block, int type, int typeIndex) {
+            super(vars, block, type, typeIndex);
         }
 
+        @Override public int getTileOffset(float offset) {
+            return getFrameOffset(offset * regions.getFrameCount());
+        }
         public int getFrameOffset(float cumulatedSeconds) {
             return (int)((cumulatedSeconds) % regions.getFrameCount()) * getTilesY();
         }
@@ -294,10 +328,11 @@ public class TileChooser extends Widget {
     }
     public class AnimationBlock<T extends Tileset.AnimationRegions> extends VariationBlock<T> {
 
-        public AnimationBlock(@NotNull T vars, int block) {
-            super(vars, block);
+        public AnimationBlock(@NotNull T vars, int block, int type, int typeIndex) {
+            super(vars, block, type, typeIndex);
         }
 
+        @Override public int getTileOffset(float offset) { return 0; }
         @Override public int getFrameOffset(float cumulatedSeconds) {
             return regions.getFrameOffset(cumulatedSeconds);
         }

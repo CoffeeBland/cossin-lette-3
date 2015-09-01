@@ -33,8 +33,8 @@ public class CharsetDef {
 
             int frame = orientations[i];
             boolean flip = orientations[i + 1] == 1;
-            double startAngle = orientations[i + 2] / 8.0 * Math.PI;
-            double endAngle = orientations[i + 3] / 8.0 * Math.PI;
+            float startAngle = (float)(orientations[i + 2] / 8.0 * Math.PI);
+            float endAngle = (float)(orientations[i + 3] / 8.0 * Math.PI);
 
             frames.add(new OrientationFrame(frame, flip, startAngle, endAngle));
         }

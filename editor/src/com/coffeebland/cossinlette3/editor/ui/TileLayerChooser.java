@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class TileLayerChooser extends HorizontalGroup {
+public class TileLayerChooser extends HorizontalGroup implements WorldWidget.TileLayerSource {
 
     @NotNull protected List<TileLayerDef> tileLayerDefs;
     @NotNull protected Skin skin;
@@ -35,13 +35,18 @@ public class TileLayerChooser extends HorizontalGroup {
         return tileLayerDefs.size() > 0 ? tileLayerDefs.get(selectedTileLayer) : null;
     }
 
+    @Override
+    public int getTileLayerIndex() {
+        return selectedTileLayer;
+    }
+
     public void updateToTileLayers() {
         clearChildren();
         btns.clear();
 
         selectedTileLayer = 0;
         for (int i = 0; i < tileLayerDefs.size(); i++) {
-            TextButton tileBtn = new TextButton(" " + Integer.toString(i) + " ", skin, "toggle");
+            TextButton tileBtn = new TextButton(" " + Integer.toString(i + 1) + " ", skin, "toggle");
             tileBtn.pad(0, 4, 0, 4);
             final int tileLayer = i;
             tileBtn.addListener(new ClickListener() {

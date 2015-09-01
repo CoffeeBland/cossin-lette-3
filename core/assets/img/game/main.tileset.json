@@ -22,19 +22,19 @@
       "src": "anim-1x1-water-tileset",
       "tilesX": 1,
       "tilesY": 1,
-      "fps":5
+      "fps": 3
     },
     {
       "src": "anim-2x2-water-tileset",
       "tilesX": 2,
       "tilesY": 2,
-      "fps": 5
+      "fps": 3
     },
     {
       "src": "anim-3x3-water-tileset",
       "tilesX": 3,
       "tilesY": 3,
-      "fps": 5
+      "fps": 3
     }
   ]
 }

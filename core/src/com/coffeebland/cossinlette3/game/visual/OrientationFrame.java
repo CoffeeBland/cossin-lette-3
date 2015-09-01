@@ -11,7 +11,4 @@ public class OrientationFrame {
         this.startAngle = startAngle;
         this.endAngle = endAngle;
     }
-    public OrientationFrame(int frameY, boolean flip, double startAngle, double endAngle) {
-        this(frameY, flip, (float)startAngle, (float)endAngle);
-    }
 }

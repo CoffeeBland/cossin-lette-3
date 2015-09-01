@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.utils.Const;
-import com.coffeebland.cossinlette3.utils.VPool;
+import com.coffeebland.cossinlette3.utils.V2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +16,7 @@ public class GameCamera {
 
     public GameCamera() {
         camera = new OrthographicCamera();
-        pos = VPool.V2();
+        pos = V2.get();
         updateToSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
@@ -60,13 +60,13 @@ public class GameCamera {
         if (target != null) {
             Vector2 targetV2 = target.getPosition();
             if (targetV2 != null) {
-                Vector2 scaledPos = VPool.V2(pos).scl(1 - moveRatio);
-                Vector2 scaledTarget = VPool.V2(targetV2).scl(moveRatio);
+                Vector2 scaledPos = V2.get(pos).scl(1 - moveRatio);
+                Vector2 scaledTarget = V2.get(targetV2).scl(moveRatio);
                 pos.set(scaledPos).add(scaledTarget);
                 camera.position.set(pos, camera.position.z);
                 camera.update();
-                VPool.claim(scaledPos);
-                VPool.claim(scaledTarget);
+                V2.claim(scaledPos);
+                V2.claim(scaledTarget);
             }
         }
     }

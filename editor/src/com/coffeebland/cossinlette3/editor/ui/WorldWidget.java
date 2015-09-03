@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.coffeebland.cossinlette3.editor.OperationExecutor;
-import com.coffeebland.cossinlette3.editor.tools.TileTool;
+import com.coffeebland.cossinlette3.editor.tools.*;
 import com.coffeebland.cossinlette3.game.entity.TileLayer;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.TileLayerDef;
@@ -24,9 +24,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class WorldWidget extends Widget implements EventListener {
+
+    protected boolean displayOpaque = false;
+    protected Color rowColor = new Color(0.75f, 0.75f, 0.75f, 1);
 
     @NotNull protected Tileset tileset;
     @NotNull protected TileLayerSource tileLayerSource;
@@ -35,21 +39,46 @@ public class WorldWidget extends Widget implements EventListener {
     @Nullable protected List<TileLayer> tileLayers;
     @NotNull protected Vector2 cameraPos = V2.get();
     @NotNull protected KeyInputListener keyInputListener;
-    @Nullable protected TileTool tileTool;
+
+    protected List<TileTool> tileTools;
+    protected int currentTileToolIndex;
     protected float cameraSpeed = 5f;
 
     protected final Rectangle widgetAreaBounds = new Rectangle();
     protected final Rectangle scissorBounds = new Rectangle();
 
-    public WorldWidget(@NotNull Tileset tileset, @NotNull TileLayerSource tileLayerSource, @NotNull OperationExecutor operationExecutor) {
+    public WorldWidget(@NotNull Tileset tileset, @NotNull TileLayerSource tileLayerSource, @NotNull TileSource tileSource, @NotNull OperationExecutor operationExecutor) {
         this.tileset = tileset;
         this.tileLayerSource = tileLayerSource;
         this.operationExecutor = operationExecutor;
-        keyInputListener = new KeyInputListener(Keys.LEFT, Keys.UP, Keys.RIGHT, Keys.DOWN, Keys.ESCAPE) {
+        tileTools = Arrays.asList(
+                new AddTool(tileSource),
+                new RemoveTool(tileSource),
+                new SetTool(tileSource),
+                new ClearTool(tileSource)
+        );
+        currentTileToolIndex = 0;
+        keyInputListener = new KeyInputListener(
+                Keys.LEFT, Keys.UP, Keys.RIGHT, Keys.DOWN,
+                Keys.ESCAPE,
+                Keys.CONTROL_LEFT, Keys.CONTROL_RIGHT,
+                Keys.APOSTROPHE) {
             @Override public void onInputDown(int keyCode) {
                 switch (keyCode) {
                     case Keys.ESCAPE:
-                        if (tileTool != null) tileTool.cancel();
+                        tileTools.get(currentTileToolIndex).cancel();
+                        break;
+                    case Keys.CONTROL_LEFT:
+                    case Keys.CONTROL_RIGHT:
+                        if (worldDef != null) {
+                            TileTool current = tileTools.get(currentTileToolIndex);
+                            currentTileToolIndex = (currentTileToolIndex + 1) % tileTools.size();
+                            TileTool nextTool = tileTools.get(currentTileToolIndex);
+                            nextTool.transferState(current, worldDef, tileLayerSource.getTileLayerIndex());
+                        }
+                        break;
+                    case Keys.APOSTROPHE:
+                        setDisplayOpaque(!isDisplayOpaque());
                         break;
                 }
             }
@@ -80,13 +109,8 @@ public class WorldWidget extends Widget implements EventListener {
 
     @Nullable public WorldDef getWorldDef() { return worldDef; }
     @NotNull public Vector2 getCameraPos() { return cameraPos; }
-    @Nullable public TileTool getTileTool() { return tileTool; }
-    public void setTileTool(@Nullable TileTool tileTool) {
-        if (this.tileTool != null && tileTool != null && worldDef != null) {
-            tileTool.transferState(this.tileTool, worldDef, tileLayerSource.getTileLayerIndex());
-        }
-        this.tileTool = tileTool;
-    }
+    public void setDisplayOpaque(boolean opaque) { displayOpaque = opaque; }
+    public boolean isDisplayOpaque() { return displayOpaque; }
 
     public void resetToWorldDef(@Nullable WorldDef def) {
         worldDef = def;
@@ -122,16 +146,21 @@ public class WorldWidget extends Widget implements EventListener {
                 );
 
                 Vector2 offsetPos = V2.get(cameraPos).sub(Dst.getAsMeters(getX()), Dst.getAsMeters(getY()));
-                for (TileLayer tileLayer : tileLayers) {
+                for (int i = 0; i < tileLayers.size(); i++) {
+                    TileLayer tileLayer = tileLayers.get(i);
+                    if (displayOpaque || i == tileLayerSource.getTileLayerIndex()) {
+                        batch.setColor(Color.WHITE);
+                    } else {
+                        rowColor.a = i < tileLayerSource.getTileLayerIndex() ? 2f/3f : 1f/3f;
+                        batch.setColor(rowColor);
+                    }
                     for (TileLayer.Row row : tileLayer.getRows()) {
                         row.render(batch, offsetPos);
                     }
                 }
                 V2.claim(offsetPos);
 
-                if (tileTool != null) {
-                    tileTool.draw(this, batch);
-                }
+                tileTools.get(currentTileToolIndex).draw(this, batch);
             }
 
             batch.flush();
@@ -142,8 +171,8 @@ public class WorldWidget extends Widget implements EventListener {
     @Override public void act(float delta) {
         super.act(delta);
         keyInputListener.updateInputs(delta);
-        if (tileTool != null && worldDef != null) {
-            tileTool.update(worldDef, tileLayerSource.getTileLayerIndex());
+        if (worldDef != null) {
+            tileTools.get(currentTileToolIndex).update(worldDef, tileLayerSource.getTileLayerIndex());
         }
         if (tileLayers != null) for (TileLayer tileLayer : tileLayers) tileLayer.update(delta);
     }
@@ -152,21 +181,20 @@ public class WorldWidget extends Widget implements EventListener {
     public boolean handle(Event event) {
         if (event instanceof InputEvent) {
             InputEvent iEv = (InputEvent)event;
-            if (tileTool != null) {
-                switch (iEv.getType()) {
-                    case mouseMoved:
-                    case touchDragged:
-                        Vector2 tmp = V2.get(iEv.getStageX() - getX(), iEv.getStageY() - getY());
-                        tileTool.getPosMeters().set(Dst.getAsMeters(tmp).add(cameraPos));
-                        V2.claim(tmp);
-                        return true;
-                    case touchDown:
-                        if (worldDef != null) tileTool.begin(worldDef, tileLayerSource.getTileLayerIndex());
-                        return true;
-                    case touchUp:
-                        if (worldDef != null) tileTool.complete(operationExecutor);
-                        return true;
-                }
+            TileTool current = tileTools.get(currentTileToolIndex);
+            switch (iEv.getType()) {
+                case mouseMoved:
+                case touchDragged:
+                    Vector2 tmp = V2.get(iEv.getStageX() - getX(), iEv.getStageY() - getY());
+                    current.getPosMeters().set(Dst.getAsMeters(tmp).add(cameraPos));
+                    V2.claim(tmp);
+                    return true;
+                case touchDown:
+                    if (worldDef != null) current.begin(worldDef, tileLayerSource.getTileLayerIndex());
+                    return true;
+                case touchUp:
+                    if (worldDef != null) current.complete(operationExecutor);
+                    return true;
             }
         }
         return false;

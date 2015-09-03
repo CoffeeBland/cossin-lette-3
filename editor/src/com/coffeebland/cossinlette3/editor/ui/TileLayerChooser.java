@@ -39,6 +39,11 @@ public class TileLayerChooser extends HorizontalGroup implements WorldWidget.Til
     public int getTileLayerIndex() {
         return selectedTileLayer;
     }
+    public boolean setTileLayerIndex(int index) {
+        if (index >= tileLayerDefs.size()) return false;
+        btns.getButtons().get(selectedTileLayer = index).setChecked(true);
+        return true;
+    }
 
     public void updateToTileLayers() {
         clearChildren();

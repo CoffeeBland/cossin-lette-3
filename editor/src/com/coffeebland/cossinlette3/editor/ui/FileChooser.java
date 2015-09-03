@@ -173,7 +173,7 @@ public class FileChooser extends Dialog {
             @Override
             protected void result(Object object) {
                 if (resultListener == null) return;
-                if (!resultListener.result((boolean) object, getResult())) this.cancel();
+                resultListener.result((boolean) object, getResult());
             }
         }.setFileNameEnabled(true).setOkButtonText("Save");
 

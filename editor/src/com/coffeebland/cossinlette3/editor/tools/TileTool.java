@@ -1,5 +1,7 @@
 package com.coffeebland.cossinlette3.editor.tools;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
@@ -17,19 +19,19 @@ import org.jetbrains.annotations.Nullable;
  * Created by Guillaume on 2015-08-30.
  */
 public abstract class TileTool {
+
+    public static boolean fromTop() {
+        return !(Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT));
+    }
+
     @NotNull protected TileSource source;
     @NotNull protected Vector2 posMeters = V2.get();
     @Nullable protected Vector2 initialPosMeters;
     @Nullable protected TileToolOperation pendingOperation;
-    protected boolean fromTop;
 
-    public TileTool(@NotNull TileSource source, boolean fromTop) {
+    public TileTool(@NotNull TileSource source) {
         this.source = source;
-        this.fromTop = fromTop;
     }
-
-    public boolean isFromTop() { return fromTop; }
-    public void setFromTop(boolean fromTop) { this.fromTop = fromTop; }
 
     /**
      * Mutates the vector to correspond to the tile position of the meters given;
@@ -87,7 +89,6 @@ public abstract class TileTool {
     @NotNull public Vector2 getPosMeters() { return posMeters; }
 
     public void transferState(@NotNull TileTool tileTool, @NotNull WorldDef worldDef, int tileLayerIndex) {
-        fromTop = tileTool.fromTop;
         if (tileTool.initialPosMeters != null && tileTool.pendingOperation != null) {
             posMeters.set(tileTool.initialPosMeters);
             tileTool.cancel();
@@ -141,7 +142,7 @@ public abstract class TileTool {
             int endX = (int)Math.max(initialTilePos.x, tilePos.x);
             int endY = (int)Math.max(initialTilePos.y, tilePos.y);
             V2.claim(tilePos, initialTilePos);
-            pendingOperation.update(tileLayerIndex, startX, startY, endX, endY, fromTop);
+            pendingOperation.update(tileLayerIndex, startX, startY, endX, endY, fromTop());
         }
     }
 }

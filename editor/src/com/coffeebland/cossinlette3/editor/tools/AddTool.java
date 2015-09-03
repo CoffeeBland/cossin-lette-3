@@ -15,8 +15,8 @@ import java.util.Random;
  */
 public class AddTool extends TileTool {
 
-    public AddTool(@NotNull TileSource source, boolean fromTop) {
-        super(source, fromTop);
+    public AddTool(@NotNull TileSource source) {
+        super(source);
     }
 
     @NotNull
@@ -30,7 +30,7 @@ public class AddTool extends TileTool {
                 tileLayerIndex,
                 startX, startY,
                 endX, endY,
-                fromTop
+                fromTop()
         );
     }
 
@@ -47,7 +47,7 @@ public class AddTool extends TileTool {
                 1, 5
         );
 
-        if (fromTop) {
+        if (fromTop()) {
             Textures.drawFilledRect(
                     batch, Color.WHITE,
                     tr.x + 3, bl.y,

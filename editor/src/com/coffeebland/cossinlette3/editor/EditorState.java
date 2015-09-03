@@ -14,8 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.coffeebland.cossinlette3.editor.tools.AddTool;
-import com.coffeebland.cossinlette3.editor.tools.RemoveTool;
 import com.coffeebland.cossinlette3.editor.ui.*;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.TileLayerDef;
@@ -32,6 +30,7 @@ import java.util.stream.IntStream;
 
 public class EditorState extends State<FileHandle> implements OperationExecutor {
 
+
     protected InputMultiplexer multiplexer;
 
     protected TextureAtlas atlas;
@@ -46,8 +45,6 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
     protected ScrollPane tileChooserScroller;
     protected TileChooser tileChooser;
     protected WorldWidget worldWidget;
-    protected AddTool addTool;
-    protected RemoveTool removeTool;
 
     protected List<Operation> operations = new ArrayList<>();
     protected int operationIndex;
@@ -89,6 +86,7 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
                         .setResultListener((success, result) -> {
                             if (result.isDirectory()) return false;
                             if (success) setWorldDef(WorldDef.read(result));
+                            stage.setKeyboardFocus(worldWidget);
                             return true;
                         })
                         .show(stage);
@@ -101,11 +99,13 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
         saveBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                FileChooser.createSaveDialog("Sauvegarder la carte", skin, Gdx.files.local("worlds"))
+                FileChooser
+                        .createSaveDialog("Sauvegarder la carte", skin, Gdx.files.local("worlds"))
                         .setFilter((file) -> file.isDirectory() || file.getName().endsWith(".json"))
                         .setResultListener((success, result) -> {
                             if (result.isDirectory()) return false;
                             if (success) saveWorldFile(result);
+                            stage.setKeyboardFocus(worldWidget);
                             return true;
                         })
                         .show(stage);
@@ -139,10 +139,7 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
         table.row().expandY().fill();
         table.add(tileTable);
 
-        worldWidget = new WorldWidget(tileset, tileLayerChooser, this);
-        addTool = new AddTool(tileChooser, true);
-        removeTool = new RemoveTool(tileChooser, true);
-        worldWidget.setTileTool(addTool);
+        worldWidget = new WorldWidget(tileset, tileLayerChooser, tileChooser, this);
         table.add(worldWidget).expandX();
 
         stage.addActor(table);
@@ -221,33 +218,27 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
     @Override
     public boolean keyDown(int keycode) {
         switch (keycode) {
-            case Input.Keys.ALT_LEFT:
-                worldWidget.setTileTool(removeTool);
-                return true;
-            case Input.Keys.SHIFT_LEFT:
-                if (worldWidget.getTileTool() != null) {
-                    worldWidget.getTileTool().setFromTop(
-                            !worldWidget.getTileTool().isFromTop()
-                    );
+            case Input.Keys.Z:
+                if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                    undo();
+                    return true;
                 }
-                return true;
+                break;
+            case Input.Keys.Y:
+                if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                    redo();
+                    return true;
+                }
+                break;
         }
+        rangeKeysOver(Input.Keys.NUM_1, Input.Keys.NUM_9, keycode, tileLayerChooser::setTileLayerIndex);
+        rangeKeysOver(Input.Keys.NUMPAD_1, Input.Keys.NUMPAD_9, keycode, tileLayerChooser::setTileLayerIndex);;
         return super.keyDown(keycode);
     }
-    @Override
-    public boolean keyUp(int keycode) {
-        switch (keycode) {
-            case Input.Keys.ALT_LEFT:
-                worldWidget.setTileTool(addTool);
-                return true;
-            case Input.Keys.SHIFT_LEFT:
-                if (worldWidget.getTileTool() != null) {
-                    worldWidget.getTileTool().setFromTop(
-                            !worldWidget.getTileTool().isFromTop()
-                    );
-                }
-                return true;
-        }
-        return super.keyUp(keycode);
+    protected void rangeKeysOver(int start, int end, int keycode, Func<Integer> func) {
+        if (keycode >= start && keycode <= end) func.apply(keycode - start);
+    }
+    public interface Func<Arg> {
+        void apply(Arg arg);
     }
 }

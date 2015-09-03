@@ -1,6 +1,7 @@
 package com.coffeebland.cossinlette3.game.file;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -31,6 +32,7 @@ public class TileLayerDef extends ActorDef {
         this.priority = priority;
     }
 
+    @Nullable
     public long[] getTiles(int x, int y) { return tiles[y][x]; }
     @SuppressWarnings("PointlessBitwiseExpression")
     public long getTile(int type, int typeIndex, int tileX, int tileY) {
@@ -75,9 +77,16 @@ public class TileLayerDef extends ActorDef {
             return tileDefs[0];
         }
     }
+    @Nullable
     public long[] setTile(int x, int y, int type, int typeIndex, int tileX, int tileY) {
-        long[] oldTile = tiles[y][x];
+        long[] oldTiles = tiles[y][x];
         tiles[y][x] = new long[] { getTile(type, typeIndex, tileX, tileY) };
-        return oldTile;
+        return oldTiles;
+    }
+    @Nullable
+    public long[] setTiles(int x, int y, @Nullable long[] newTiles) {
+        long[] oldTiles = tiles[y][x];
+        tiles[y][x] = newTiles;
+        return oldTiles;
     }
 }

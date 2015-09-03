@@ -18,8 +18,8 @@ import static com.coffeebland.cossinlette3.game.file.TileLayerDef.NO_TILE;
  */
 public class RemoveTool extends TileTool {
 
-    public RemoveTool(@NotNull TileSource source, boolean fromTop) {
-        super(source, fromTop);
+    public RemoveTool(@NotNull TileSource source) {
+        super(source);
     }
 
     @NotNull
@@ -33,7 +33,7 @@ public class RemoveTool extends TileTool {
                 tileLayerIndex,
                 startX, startY,
                 endX, endY,
-                fromTop
+                fromTop()
         );
     }
 
@@ -45,7 +45,7 @@ public class RemoveTool extends TileTool {
                 5, 1
         );
 
-        if (fromTop) {
+        if (fromTop()) {
             Textures.drawFilledRect(
                     batch, Color.WHITE,
                     tr.x + 3, bl.y,
@@ -77,9 +77,7 @@ public class RemoveTool extends TileTool {
         public void execute() {
             mapOver((tileX, tileY, tilesetTileX, tilesetTileY) -> {
                 long tile = worldDef.tileLayers.get(tileLayerIndex).removeTile(tileX, tileY, fromTop);
-                if (tile != NO_TILE) {
-                    removedUnits.add(new RemoveUnit(tileX, tileY, tile));
-                }
+                if (tile != NO_TILE)  removedUnits.add(new RemoveUnit(tileX, tileY, tile));
             });
         }
 

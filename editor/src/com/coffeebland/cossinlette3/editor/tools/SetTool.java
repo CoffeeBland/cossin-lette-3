@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
+import com.coffeebland.cossinlette3.editor.ui.TileLayerSource;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.utils.Textures;
 import org.jetbrains.annotations.NotNull;
@@ -17,8 +18,8 @@ import java.util.Random;
  */
 public class SetTool extends TileTool {
 
-    public SetTool(@NotNull TileSource source) {
-        super(source);
+    public SetTool(@NotNull TileSource tileSource, @NotNull TileLayerSource tileLayerSource) {
+        super(tileSource, tileLayerSource);
     }
 
     @Override
@@ -38,8 +39,12 @@ public class SetTool extends TileTool {
 
     @NotNull
     @Override
-    public TileToolOperation createOperation(@NotNull WorldDef worldDef, int tileLayerIndex, int startX, int startY, int endX, int endY) {
-        return new SetOperation(source, worldDef, tileLayerIndex, startX, startY, endX, endY);
+    public TileToolOperation createOperation(@NotNull WorldDef worldDef, int startX, int startY, int endX, int endY) {
+        return new SetOperation(tileSource, worldDef,
+                tileLayerSource.getTileLayerIndex(),
+                startX, startY,
+                endX, endY
+        );
     }
 
     public static class SetOperation extends TileToolOperation {
@@ -55,7 +60,7 @@ public class SetTool extends TileTool {
         @Override
         public void execute() {
             mapOver((int tX, int tY, int tTX, int tTY) -> {
-                TileBlockSource tbSrc = source.getTileBlockSource();
+                TileBlockSource tbSrc = tileBlockSource;
                 long tiles[] = worldDef.tileLayers.get(tileLayerIndex).setTile(
                         tX, tY,
                         tbSrc.getType(), tbSrc.getTypeIndex(),

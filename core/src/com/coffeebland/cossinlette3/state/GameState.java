@@ -48,7 +48,7 @@ public class GameState extends State<SaveFile> {
         def.radius = 0.40f;
         def.x = 0;
         def.y = 5;
-        def.speed = 3f;
+        def.speed = 4f;
         def.density = 1f;
         player = new Person(def);
         assert world != null;

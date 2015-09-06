@@ -5,8 +5,8 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Json;
 import com.coffeebland.cossinlette3.game.entity.Actor;
 import com.coffeebland.cossinlette3.game.entity.PolygonActor;
@@ -37,8 +37,24 @@ public class GameWorld {
         box2D = new World(V2.get(), false);
         actors = new ArrayList<>();
         comparator = (lhs, rhs) -> Float.compare(lhs.getPriority(), rhs.getPriority());
-        camera = new GameCamera();
+        camera = new GameCamera(this);
         debugRenderer = new Box2DDebugRenderer();
+
+        // Bounding map
+        BodyDef boundDef = new BodyDef();
+        boundDef.type = BodyDef.BodyType.StaticBody;
+        Body bound = box2D.createBody(boundDef);
+        ChainShape chainShape = new ChainShape();
+        Vector2[] chain = new Vector2[] {
+                V2.get(0, 0),
+                V2.get(getWidth(), 0),
+                V2.get(getWidth(), getHeight()),
+                V2.get(0, getHeight()),
+                V2.get(0, 0)
+        };
+        chainShape.createChain(chain);
+        bound.createFixture(chainShape, 0);
+        V2.claim(chain);
 
         for (PolygonDef polyDef: def.staticPolygons) {
             PolygonActor poly = new PolygonActor(polyDef);

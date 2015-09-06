@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class TileLayerChooser extends HorizontalGroup implements WorldWidget.TileLayerSource {
+public class TileLayerChooser extends HorizontalGroup implements TileLayerSource {
 
     @NotNull protected List<TileLayerDef> tileLayerDefs;
     @NotNull protected Skin skin;

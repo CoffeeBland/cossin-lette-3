@@ -25,6 +25,12 @@ public class V2 {
         vector.setZero();
         V2_STACK.push(vector);
     }
+    public static void claim(@NotNull Iterable<Vector2> vectors) {
+        for (Vector2 vector : vectors) claim(vector);
+    }
+    public static void claim(@NotNull Vector2[] vectors) {
+        for (Vector2 vector : vectors) claim(vector);
+    }
     public static void claim(@NotNull Vector2 a, @NotNull Vector2 b) {
         claim(a);
         claim(b);

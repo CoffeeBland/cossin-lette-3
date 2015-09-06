@@ -3,6 +3,7 @@ package com.coffeebland.cossinlette3.editor.tools;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.coffeebland.cossinlette3.editor.ui.TileLayerSource;
 import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.utils.Textures;
@@ -10,15 +11,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Guillaume on 2015-09-03.
  */
 public class ClearTool extends TileTool {
 
-    public ClearTool(@NotNull TileSource source) {
-        super(source);
+    public ClearTool(@NotNull TileSource tileSource, @NotNull TileLayerSource tileLayerSource) {
+        super(tileSource, tileLayerSource);
     }
 
     @Override
@@ -44,13 +44,16 @@ public class ClearTool extends TileTool {
 
     @NotNull
     @Override
-    public TileToolOperation createOperation(@NotNull WorldDef worldDef, int tileLayerIndex, int startX, int startY, int endX, int endY) {
-        return new ClearOperation(source, worldDef, tileLayerIndex, startX, startY, endX, endY);
+    public TileToolOperation createOperation(@NotNull WorldDef worldDef, int startX, int startY, int endX, int endY) {
+        return new ClearOperation(
+                tileSource, worldDef,
+                tileLayerSource.getTileLayerIndex(),
+                startX, startY,
+                endX, endY
+        );
     }
 
     public static class ClearOperation extends TileToolOperation {
-
-        protected Random rnd = new Random();
 
         protected List<ClearUnit> clearUnits = new ArrayList<>();
 
@@ -61,7 +64,7 @@ public class ClearTool extends TileTool {
         @Override
         public void execute() {
             mapOver((int tX, int tY, int tTX, int tTY) -> {
-                long tiles[] = worldDef.tileLayers.get(tileLayerIndex).setTiles(tX, tY, null);
+                long tiles[] = worldDef.tileLayers.get(tileLayerIndex).setTiles(tX, tY, new long[0]);
                 if (tiles != null) clearUnits.add(new ClearUnit(tX, tY, tiles));
             });
         }

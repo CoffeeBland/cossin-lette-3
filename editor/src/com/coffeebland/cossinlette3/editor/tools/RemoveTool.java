@@ -3,6 +3,7 @@ package com.coffeebland.cossinlette3.editor.tools;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.coffeebland.cossinlette3.editor.ui.TileLayerSource;
 import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.utils.Textures;
@@ -18,19 +19,19 @@ import static com.coffeebland.cossinlette3.game.file.TileLayerDef.NO_TILE;
  */
 public class RemoveTool extends TileTool {
 
-    public RemoveTool(@NotNull TileSource source) {
-        super(source);
+    public RemoveTool(@NotNull TileSource tS, @NotNull TileLayerSource tLS) {
+        super(tS, tLS);
     }
 
     @NotNull
     @Override
     public TileToolOperation createOperation(
-            @NotNull WorldDef worldDef, int tileLayerIndex,
+            @NotNull WorldDef worldDef,
             int startX, int startY, int endX, int endY
     ) {
         return new RemoveOperation(
-                source, worldDef,
-                tileLayerIndex,
+                tileSource, worldDef,
+                tileLayerSource.getTileLayerIndex(),
                 startX, startY,
                 endX, endY,
                 fromTop()

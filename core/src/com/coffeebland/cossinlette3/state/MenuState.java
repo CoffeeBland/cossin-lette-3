@@ -116,7 +116,7 @@ public class MenuState extends State<Void> {
                 switch (selection) {
                     case 0:
                         new StateManager.TransitionArgs<>(GameState.class)
-                                .setLength(TRANSITION_SHORT, TRANSITION_LONG)
+                                .setLength(TRANSITION_LONG, TRANSITION_LONG)
                                 .beginSwitch(stateManager);
                         break;
                     case 1:

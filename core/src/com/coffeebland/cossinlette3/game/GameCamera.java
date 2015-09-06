@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.utils.Const;
+import com.coffeebland.cossinlette3.utils.Dst;
 import com.coffeebland.cossinlette3.utils.V2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,11 +13,13 @@ public class GameCamera {
     @NotNull protected OrthographicCamera camera;
     @NotNull protected Vector2 pos;
     @Nullable protected PositionSource target;
+    @NotNull protected GameWorld gameWorld;
     protected float moveRatio = 0.05f;
 
-    public GameCamera() {
+    public GameCamera(@NotNull GameWorld gameWorld) {
         camera = new OrthographicCamera();
         pos = V2.get();
+        this.gameWorld = gameWorld;
         updateToSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
@@ -31,8 +34,7 @@ public class GameCamera {
                 width * Const.METERS_PER_PIXEL,
                 height * Const.METERS_PER_PIXEL
         );
-        camera.position.set(pos.x, pos.y, camera.position.z);
-        camera.update();
+        setPosAndUpdateCamera(pos);
     }
 
     public void moveTo(@NotNull PositionSource source) {
@@ -44,12 +46,24 @@ public class GameCamera {
     public void setTo(@NotNull PositionSource source) {
         target = source;
         if (source.getPosition() != null) {
-            camera.position.set((pos.set(source.getPosition())), camera.position.z);
-            camera.update();
+            setPosAndUpdateCamera(source.getPosition());
         }
     }
     public void setTo(@NotNull Vector2 pos) {
         setTo(() -> pos);
+    }
+    protected void setPosAndUpdateCamera(@NotNull Vector2 pos) {
+        float hW = Dst.getAsMeters(Gdx.graphics.getWidth() / 2);
+        float hH  = Dst.getAsMeters(Gdx.graphics.getHeight() / 2);
+        camera.position.set(
+                V2.clamp(
+                        this.pos.set(pos),
+                        hW, (float)gameWorld.getWidth() - hW,
+                        hH, (float)gameWorld.getHeight() - hH
+                ),
+                camera.position.z
+        );
+        camera.update();
     }
 
     public void setMoveRatio(float ratio) {
@@ -62,9 +76,7 @@ public class GameCamera {
             if (targetV2 != null) {
                 Vector2 scaledPos = V2.get(pos).scl(1 - moveRatio);
                 Vector2 scaledTarget = V2.get(targetV2).scl(moveRatio);
-                pos.set(scaledPos).add(scaledTarget);
-                camera.position.set(pos, camera.position.z);
-                camera.update();
+                setPosAndUpdateCamera(pos.set(scaledPos).add(scaledTarget));
                 V2.claim(scaledPos);
                 V2.claim(scaledTarget);
             }

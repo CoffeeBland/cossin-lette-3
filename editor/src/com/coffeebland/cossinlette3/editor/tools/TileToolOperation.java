@@ -9,10 +9,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class TileToolOperation implements Operation {
 
-    @NotNull
-    protected TileSource source;
-    @NotNull
-    protected WorldDef worldDef;
+    @NotNull protected WorldDef worldDef;
+    protected int selectedTileX, selectedTileY, selectedWidth, selectedHeight;
+    @NotNull protected TileBlockSource tileBlockSource;
     protected int tileLayerIndex, startX, startY, endX, endY;
     protected boolean fromTop;
 
@@ -24,7 +23,11 @@ public abstract class TileToolOperation implements Operation {
             int endX, int endY,
             boolean fromTop
     ) {
-        this.source = source;
+        selectedTileX = source.getSelectedTileX();
+        selectedTileY = source.getSelectedTileY();
+        selectedWidth = source.getSelectedWidth();
+        selectedHeight = source.getSelectedHeight();
+        tileBlockSource = source.getTileBlockSource();
         this.worldDef = worldDef;
         this.tileLayerIndex = tileLayerIndex;
         this.startX = startX;
@@ -61,10 +64,10 @@ public abstract class TileToolOperation implements Operation {
          * r => ramp
          * f => fill
          */
-        int sTX = source.getSelectedTileX();
-        int sTY = source.getSelectedTileY();
-        int sW = source.getSelectedWidth();
-        int sH = source.getSelectedHeight();
+        int sTX = selectedTileX;
+        int sTY = selectedTileY;
+        int sW = selectedWidth;
+        int sH = selectedHeight;
 
         int tW = endX - startX + sW;
         int tH = endY - startY + sH;

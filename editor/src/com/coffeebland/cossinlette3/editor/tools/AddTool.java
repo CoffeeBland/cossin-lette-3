@@ -3,6 +3,7 @@ package com.coffeebland.cossinlette3.editor.tools;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.coffeebland.cossinlette3.editor.ui.TileLayerSource;
 import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.utils.Textures;
@@ -15,19 +16,19 @@ import java.util.Random;
  */
 public class AddTool extends TileTool {
 
-    public AddTool(@NotNull TileSource source) {
-        super(source);
+    public AddTool(@NotNull TileSource tS, @NotNull TileLayerSource tLS) {
+        super(tS, tLS);
     }
 
     @NotNull
     @Override
     public TileToolOperation createOperation(
-            @NotNull WorldDef worldDef, int tileLayerIndex,
+            @NotNull WorldDef worldDef,
             int startX, int startY, int endX, int endY
     ) {
         return new AddOperation(
-                source, worldDef,
-                tileLayerIndex,
+                tileSource, worldDef,
+                tileLayerSource.getTileLayerIndex(),
                 startX, startY,
                 endX, endY,
                 fromTop()
@@ -80,7 +81,7 @@ public class AddTool extends TileTool {
         @Override
         public void execute() {
             mapOver((int tX, int tY, int tTX, int tTY) -> {
-                TileBlockSource tbSrc = source.getTileBlockSource();
+                TileBlockSource tbSrc = tileBlockSource;
                 worldDef.tileLayers.get(tileLayerIndex).addTile(
                         tX, tY,
                         tbSrc.getType(), tbSrc.getTypeIndex(),

@@ -20,6 +20,7 @@ import com.coffeebland.cossinlette3.game.file.TileLayerDef;
 import com.coffeebland.cossinlette3.game.file.TilesetDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.state.State;
+import com.coffeebland.cossinlette3.utils.func.Func;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -238,7 +239,5 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
     protected void rangeKeysOver(int start, int end, int keycode, Func<Integer> func) {
         if (keycode >= start && keycode <= end) func.apply(keycode - start);
     }
-    public interface Func<Arg> {
-        void apply(Arg arg);
-    }
+
 }

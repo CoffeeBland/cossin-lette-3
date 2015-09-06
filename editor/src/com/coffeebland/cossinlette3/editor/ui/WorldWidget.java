@@ -40,8 +40,8 @@ public class WorldWidget extends Widget implements EventListener {
     @NotNull protected Vector2 cameraPos = V2.get();
     @NotNull protected KeyInputListener keyInputListener;
 
-    protected List<TileTool> tileTools;
-    protected int currentTileToolIndex;
+    protected List<Tool> tools;
+    protected int currentToolIndex;
     protected float cameraSpeed = 5f;
 
     protected final Rectangle widgetAreaBounds = new Rectangle();
@@ -51,13 +51,13 @@ public class WorldWidget extends Widget implements EventListener {
         this.tileset = tileset;
         this.tileLayerSource = tileLayerSource;
         this.operationExecutor = operationExecutor;
-        tileTools = Arrays.asList(
-                new AddTool(tileSource),
-                new RemoveTool(tileSource),
-                new SetTool(tileSource),
-                new ClearTool(tileSource)
+        tools = Arrays.asList(
+                new AddTool(tileSource, tileLayerSource),
+                new RemoveTool(tileSource, tileLayerSource),
+                new SetTool(tileSource, tileLayerSource),
+                new ClearTool(tileSource, tileLayerSource)
         );
-        currentTileToolIndex = 0;
+        currentToolIndex = 0;
         keyInputListener = new KeyInputListener(
                 Keys.LEFT, Keys.UP, Keys.RIGHT, Keys.DOWN,
                 Keys.ESCAPE,
@@ -66,15 +66,15 @@ public class WorldWidget extends Widget implements EventListener {
             @Override public void onInputDown(int keyCode) {
                 switch (keyCode) {
                     case Keys.ESCAPE:
-                        tileTools.get(currentTileToolIndex).cancel();
+                        tools.get(currentToolIndex).cancel();
                         break;
                     case Keys.CONTROL_LEFT:
                     case Keys.CONTROL_RIGHT:
                         if (worldDef != null) {
-                            TileTool current = tileTools.get(currentTileToolIndex);
-                            currentTileToolIndex = (currentTileToolIndex + 1) % tileTools.size();
-                            TileTool nextTool = tileTools.get(currentTileToolIndex);
-                            nextTool.transferState(current, worldDef, tileLayerSource.getTileLayerIndex());
+                            Tool current = tools.get(currentToolIndex);
+                            currentToolIndex = (currentToolIndex + 1) % tools.size();
+                            Tool nextTool = tools.get(currentToolIndex);
+                            nextTool.transferState(current, worldDef);
                         }
                         break;
                     case Keys.APOSTROPHE:
@@ -160,7 +160,7 @@ public class WorldWidget extends Widget implements EventListener {
                 }
                 V2.claim(offsetPos);
 
-                tileTools.get(currentTileToolIndex).draw(this, batch);
+                tools.get(currentToolIndex).draw(this, batch);
             }
 
             batch.flush();
@@ -172,7 +172,7 @@ public class WorldWidget extends Widget implements EventListener {
         super.act(delta);
         keyInputListener.updateInputs(delta);
         if (worldDef != null) {
-            tileTools.get(currentTileToolIndex).update(worldDef, tileLayerSource.getTileLayerIndex());
+            tools.get(currentToolIndex).update(worldDef);
         }
         if (tileLayers != null) for (TileLayer tileLayer : tileLayers) tileLayer.update(delta);
     }
@@ -181,7 +181,7 @@ public class WorldWidget extends Widget implements EventListener {
     public boolean handle(Event event) {
         if (event instanceof InputEvent) {
             InputEvent iEv = (InputEvent)event;
-            TileTool current = tileTools.get(currentTileToolIndex);
+            Tool current = tools.get(currentToolIndex);
             switch (iEv.getType()) {
                 case mouseMoved:
                 case touchDragged:
@@ -190,7 +190,7 @@ public class WorldWidget extends Widget implements EventListener {
                     V2.claim(tmp);
                     return true;
                 case touchDown:
-                    if (worldDef != null) current.begin(worldDef, tileLayerSource.getTileLayerIndex());
+                    if (worldDef != null) current.begin(worldDef);
                     return true;
                 case touchUp:
                     if (worldDef != null) current.complete(operationExecutor);
@@ -200,7 +200,4 @@ public class WorldWidget extends Widget implements EventListener {
         return false;
     }
 
-    public interface TileLayerSource {
-        int getTileLayerIndex();
-    }
 }

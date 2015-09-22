@@ -11,20 +11,19 @@ import com.coffeebland.cossinlette3.game.file.WorldDef;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TileLayerChooser extends HorizontalGroup implements TileLayerSource {
 
-    @NotNull protected List<TileLayerDef> tileLayerDefs;
+    @NotNull protected List<TileLayerDef> tileLayerDefs = new ArrayList<>();
     @NotNull protected Skin skin;
 
     @NotNull protected ButtonGroup<TextButton> btns = new ButtonGroup<>();
 
     protected int selectedTileLayer;
 
-    public TileLayerChooser(@NotNull Skin skin, @NotNull WorldDef worldDef) {
-        this.tileLayerDefs = worldDef.tileLayers;
-
+    public TileLayerChooser(@NotNull Skin skin) {
         this.skin = skin;
     }
 
@@ -45,14 +44,15 @@ public class TileLayerChooser extends HorizontalGroup implements TileLayerSource
         return true;
     }
 
-    public void updateToTileLayers() {
+    public void updateToTileLayers(@NotNull WorldDef worldDef) {
+        this.tileLayerDefs = worldDef.tileLayers;
         clearChildren();
         btns.clear();
 
         selectedTileLayer = 0;
         for (int i = 0; i < tileLayerDefs.size(); i++) {
             TextButton tileBtn = new TextButton(" " + Integer.toString(i + 1) + " ", skin, "toggle");
-            tileBtn.pad(0, 4, 0, 4);
+            tileBtn.pad(2);
             final int tileLayer = i;
             tileBtn.addListener(new ClickListener() {
                 @Override public void clicked(InputEvent event, float x, float y) {

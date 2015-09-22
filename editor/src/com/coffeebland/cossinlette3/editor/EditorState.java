@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -16,7 +17,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.coffeebland.cossinlette3.editor.ui.*;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
-import com.coffeebland.cossinlette3.game.file.TileLayerDef;
 import com.coffeebland.cossinlette3.game.file.TilesetDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.state.State;
@@ -26,8 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class EditorState extends State<FileHandle> implements OperationExecutor {
 
@@ -55,7 +53,7 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
         multiplexer = new InputMultiplexer(stage, this);
 
         skin = new Skin(Gdx.files.internal("img/editor/main.json"));
-        setNewWorldDef(40, 30, "main");
+        setNewWorldDef(40, 30, 9, Color.BLACK.cpy(), "forest");
 
         Table table = new Table(skin);
         table.setFillParent(true);
@@ -69,12 +67,12 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
         newBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // TODO prompt for size
-                setNewWorldDef(40, 40, "main");
+                new OptionsChooser("Options de la carte", skin, (w, h, ts, tLs, c) -> {
+                    setNewWorldDef(w, h, tLs, c, ts);
+                }).show(stage);
             }
         });
         newBtn.getClickListener().clicked(null, 0, 0);
-        topbar.addActor(newBtn);
 
         TextButton loadBtn = new TextButton("Charger", skin);
         loadBtn.pad(4);
@@ -87,13 +85,11 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
                         .setResultListener((success, result) -> {
                             if (result.isDirectory()) return false;
                             if (success) setWorldDef(WorldDef.read(result));
-                            stage.setKeyboardFocus(worldWidget);
                             return true;
                         })
                         .show(stage);
             }
         });
-        topbar.addActor(loadBtn);
 
         TextButton saveBtn = new TextButton("Sauvegarder", skin);
         saveBtn.pad(4);
@@ -106,23 +102,35 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
                         .setResultListener((success, result) -> {
                             if (result.isDirectory()) return false;
                             if (success) saveWorldFile(result);
-                            stage.setKeyboardFocus(worldWidget);
                             return true;
                         })
                         .show(stage);
             }
         });
-        topbar.addActor(saveBtn);
 
-        table.row();
-        table.add(topbarContainer).colspan(3).expandX().fillX();
+        TextButton editBtn = new TextButton("Options", skin);
+        editBtn.pad(4);
+        editBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                new OptionsChooser("Options de la carte", skin, worldDef, (w, h, ts, tLs, c) -> {
+                    worldDef.imgSrc = ts;
+                    worldDef.resize(tileset, w, h, tLs);
+                    worldDef.backgroundColor = c;
+                    setWorldDef(worldDef);
+                }).show(stage);
+            }
+        });
+
+        topbar.addActor(newBtn);
+        topbar.addActor(loadBtn);
+        topbar.addActor(saveBtn);
+        topbar.addActor(editBtn);
 
         Table tileTable = new Table(skin);
 
-        tileLayerChooser = new TileLayerChooser(skin, worldDef);
+        tileLayerChooser = new TileLayerChooser(skin);
         Container<TileLayerChooser> tileLayerChooserContainer = new Container<>(tileLayerChooser).left().background(skin.getDrawable("default-round"));
-        tileTable.row();
-        tileTable.add(tileLayerChooserContainer).fillX();
 
         tileChooser = new TileChooser(tileset);
 
@@ -134,27 +142,47 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
         tileChooserScroller.setForceScroll(false, true);
         tileChooserScroller.setFadeScrollBars(false);
         tileChooserScroller.setFlickScroll(false);
+
+        tileTable.row();
+        tileTable.add(tileLayerChooserContainer).fillX();
+
         tileTable.row();
         tileTable.add(tileChooserScroller).expandY().fill();
 
-        table.row().expandY().fill();
-        table.add(tileTable);
-
         worldWidget = new WorldWidget(tileset, tileLayerChooser, tileChooser, this);
+
+        table.row();
+        table.add(topbarContainer).colspan(3).expandX().fillX();
+
+        table.row().expandY().fill();
+        table.add(tileTable).colspan(2);
         table.add(worldWidget).expandX();
 
         stage.addActor(table);
         stage.setKeyboardFocus(worldWidget);
     }
 
-    public void setNewWorldDef(int widthMeters, int heightMeters, @NotNull String imgSrc) {
+    public void setNewWorldDef(int widthMeters, int heightMeters, int tileLayersSize, Color color, @NotNull String imgSrc) {
         WorldDef def = new WorldDef();
         def.width = widthMeters;
         def.height = heightMeters;
+        def.backgroundColor = color;
         def.imgSrc = imgSrc;
         def.staticPolygons = new ArrayList<>();
-        def.tileLayers = IntStream.range(0, 5).mapToObj(i -> new TileLayerDef(def, i)).collect(Collectors.toList());
-        setWorldDef(def);
+
+        FileHandle atlasHandle = Gdx.files.internal("img/game/" + def.imgSrc + ".atlas");
+        atlas = new TextureAtlas(atlasHandle);
+
+        FileHandle tilesetHandle = Gdx.files.internal("img/game/" + def.imgSrc + ".tileset.json");
+        TilesetDef tilesetDef = new Json().fromJson(TilesetDef.class, tilesetHandle);
+        tileset = new Tileset(atlas, tilesetDef);
+
+        def.resize(tileset, widthMeters, heightMeters, tileLayersSize);
+
+        worldDef = def;
+        if (tileLayerChooser != null) tileLayerChooser.updateToTileLayers(worldDef);
+        if (tileChooser != null) tileChooser.invalidateHierarchy();
+        if (worldWidget != null) worldWidget.resetToWorldDef(worldDef);
     }
     public void setWorldDef(WorldDef file) {
         worldDef = file;
@@ -166,7 +194,7 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
         TilesetDef tilesetDef = new Json().fromJson(TilesetDef.class, tilesetHandle);
         tileset = new Tileset(atlas, tilesetDef);
 
-        if (tileLayerChooser != null) tileLayerChooser.updateToTileLayers();
+        if (tileLayerChooser != null) tileLayerChooser.updateToTileLayers(worldDef);
         if (tileChooser != null) tileChooser.invalidateHierarchy();
         if (worldWidget != null) worldWidget.resetToWorldDef(worldDef);
     }
@@ -232,8 +260,8 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
                 }
                 break;
         }
-        rangeKeysOver(Input.Keys.NUM_1, Input.Keys.NUM_9, keycode, tileLayerChooser::setTileLayerIndex);
-        rangeKeysOver(Input.Keys.NUMPAD_1, Input.Keys.NUMPAD_9, keycode, tileLayerChooser::setTileLayerIndex);;
+        rangeKeysOver(Input.Keys.F1, Input.Keys.F12, keycode, tileLayerChooser::setTileLayerIndex);
+        rangeKeysOver(Input.Keys.NUM_1, Input.Keys.NUM_9, keycode, worldWidget::setTileToolIndex);
         return super.keyDown(keycode);
     }
     protected void rangeKeysOver(int start, int end, int keycode, Func<Integer> func) {

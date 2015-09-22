@@ -40,6 +40,12 @@ public class V2 {
         claim(b);
         claim(c);
     }
+    public static void claim(@NotNull Vector2 a, @NotNull Vector2 b, @NotNull Vector2 c, @NotNull Vector2 d) {
+        claim(a);
+        claim(b);
+        claim(c);
+        claim(d);
+    }
 
     @NotNull public static Vector2 floor(@NotNull Vector2 vec) {
         return vec.set((float)Math.floor(vec.x), (float)Math.floor(vec.y));
@@ -47,8 +53,15 @@ public class V2 {
     @NotNull public static Vector2 ceil(@NotNull Vector2 vec) {
         return vec.set((float)Math.ceil(vec.x), (float)Math.ceil(vec.y));
     }
+    @NotNull public static Vector2 round(@NotNull Vector2 vec) {
+        return vec.set((float)Math.round(vec.x), (float)Math.round(vec.y));
+    }
     @NotNull public static Vector2 clamp(@NotNull Vector2 vec, float minX, float maxX, float minY, float maxY) {
-        return vec.set(Math.max(Math.min(vec.x, maxX), minX), Math.max(Math.min(vec.y, maxY), minY));
+        if (minX >= maxX) vec.x = (minX + maxX) / 2;
+        else vec.x = Math.max(Math.min(vec.x, maxX), minX);
+        if (minY >= maxY) vec.y = (minY + maxY) / 2;
+        else vec.y = Math.max(Math.min(vec.y, maxY), minY);
+        return vec;
     }
     @NotNull public static Vector2 min(@NotNull Vector2 target, @NotNull Vector2 other) {
         return target.set(Math.min(target.x, other.x), Math.min(target.y, other.y));

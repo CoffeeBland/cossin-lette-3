@@ -1,5 +1,6 @@
 package com.coffeebland.cossinlette3.game.file;
 
+import com.coffeebland.cossinlette3.game.entity.Tileset;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,8 +28,11 @@ public class TileLayerDef extends ActorDef {
     public long[][][] tiles;
 
     public TileLayerDef() {}
-    public TileLayerDef(@NotNull WorldDef def, float priority) {
-        tiles = new long[def.height][def.width][0];
+    public TileLayerDef(@NotNull WorldDef def, @NotNull Tileset tileset, float priority) {
+        tiles = new long
+                [(int)tileset.metersToTile(def.height)]
+                [(int)tileset.metersToTile(def.width)]
+                [0];
         this.priority = priority;
     }
 

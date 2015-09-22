@@ -47,9 +47,11 @@ public abstract class TileTool implements Tool {
      */
     @NotNull public Vector2 getTilePos(@NotNull Vector2 posMeters, @NotNull WorldDef worldDef) {
         @NotNull Tileset ts = tileSource.getTileset();
-        Vector2 pos = posMeters;
-        pos = ts.getTileFromMeters(pos);
-        pos = V2.clamp(pos, 0, worldDef.width - tileSource.getSelectedWidth(), 0, worldDef.height - tileSource.getSelectedHeight());
+        Vector2 pos = ts.metersToTile(posMeters);
+        pos = V2.clamp(pos,
+                0, ts.metersToTile(worldDef.width) - tileSource.getSelectedWidth(),
+                0, ts.metersToTile(worldDef.height) - tileSource.getSelectedHeight()
+        );
         pos = V2.floor(pos);
         return pos;
     }
@@ -61,20 +63,20 @@ public abstract class TileTool implements Tool {
 
         Vector2 pos = getTilePos(V2.get(posMeters), worldDef);
         Vector2 cameraPixels = Dst.getAsPixels(V2.get(widget.getCameraPos()));
-        pos = ts.getPixelsFromTile(pos)
+        pos = ts.tileToPix(pos)
                 .add(widget.getX(), widget.getY())
                 .sub(cameraPixels);
         Vector2 bl = V2.get(), tr = V2.get();
         if (initialPosMeters == null) {
             bl.set(pos);
-            ts.getPixelsFromTile(tr.set(tileSource.getSelectedWidth(), tileSource.getSelectedHeight())).add(bl);
+            ts.tileToPix(tr.set(tileSource.getSelectedWidth(), tileSource.getSelectedHeight())).add(bl);
         } else {
-            Vector2 initPos = ts.getPixelsFromTile(getTilePos(V2.get(initialPosMeters), worldDef))
+            Vector2 initPos = ts.tileToPix(getTilePos(V2.get(initialPosMeters), worldDef))
                     .add(widget.getX(), widget.getY())
                     .sub(cameraPixels);
             V2.min(bl.set(pos), initPos);
             Vector2 tmp = V2.max(V2.get(pos), initPos);
-            ts.getPixelsFromTile(tr.set(tileSource.getSelectedWidth(), tileSource.getSelectedHeight())).add(tmp);
+            ts.tileToPix(tr.set(tileSource.getSelectedWidth(), tileSource.getSelectedHeight())).add(tmp);
             V2.claim(tmp);
             V2.claim(initPos);
         }

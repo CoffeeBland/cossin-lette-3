@@ -1,6 +1,5 @@
 package com.coffeebland.cossinlette3.state;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,7 +9,6 @@ import com.coffeebland.cossinlette3.game.entity.Person;
 import com.coffeebland.cossinlette3.game.file.PersonDef;
 import com.coffeebland.cossinlette3.game.file.SaveFile;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
-import com.coffeebland.cossinlette3.game.visual.Charset;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,20 +43,14 @@ public class GameState extends State<SaveFile> {
         setBackgroundColor(world.getBackgroundColor());
 
         PersonDef def = new PersonDef();
-        def.radius = 0.40f;
-        def.x = 0;
-        def.y = 5;
+        def.radius = 0.4f;
         def.speed = 4f;
         def.density = 1f;
-        player = new Person(def);
+        def.charset = "cossin";
+        player = new Person(def, world.getCharsetAtlas());
         assert world != null;
         player.addToWorld(world);
         world.camera.moveTo(player);
-
-        player.setImageStrips(new Charset(
-                world.getAtlas(),
-                Gdx.files.internal("img/game/cossin.charset.json")
-        ));
 
         playerInput = new PlayerInput(player);
     }

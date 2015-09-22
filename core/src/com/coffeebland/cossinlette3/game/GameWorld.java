@@ -13,6 +13,7 @@ import com.coffeebland.cossinlette3.game.entity.PolygonActor;
 import com.coffeebland.cossinlette3.game.entity.TileLayer;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.*;
+import com.coffeebland.cossinlette3.utils.CharsetAtlas;
 import com.coffeebland.cossinlette3.utils.Const;
 import com.coffeebland.cossinlette3.utils.V2;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class GameWorld {
+
+    public static boolean RENDER_DEBUG = false;
+
     @NotNull public final World box2D;
     @NotNull public final List<Actor> actors;
     @NotNull protected Comparator<Actor> comparator;
@@ -28,7 +32,8 @@ public class GameWorld {
     @NotNull public final Box2DDebugRenderer debugRenderer;
 
     @NotNull protected WorldDef def;
-    @Nullable protected TextureAtlas atlas;
+    @Nullable protected TextureAtlas tilesetAtlas;
+    @Nullable protected CharsetAtlas charsetAtlas;
     @Nullable protected Tileset tileset;
 
     public GameWorld(@NotNull WorldDef def, @Nullable SaveFile saveFile) {
@@ -69,18 +74,25 @@ public class GameWorld {
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
-    @NotNull public TextureAtlas getAtlas() {
-        if (atlas == null) {
+    @NotNull public TextureAtlas getTilesetAtlas() {
+        if (tilesetAtlas == null) {
             FileHandle fileHandle = Gdx.files.internal("img/game/" + def.imgSrc + ".atlas");
-            atlas = new TextureAtlas(fileHandle);
+            tilesetAtlas = new TextureAtlas(fileHandle);
         }
-        return atlas;
+        return tilesetAtlas;
+    }
+    @NotNull public CharsetAtlas getCharsetAtlas() {
+        if (charsetAtlas == null) {
+            FileHandle fileHandle = Gdx.files.internal("img/game/charset.atlas");
+            charsetAtlas = new CharsetAtlas(fileHandle);
+        }
+        return charsetAtlas;
     }
     @NotNull public Tileset getTileset() {
         if (tileset == null) {
             FileHandle fileHandle = Gdx.files.internal("img/game/" + def.imgSrc + ".tileset.json");
             TilesetDef tilesetDef = new Json().fromJson(TilesetDef.class, fileHandle);
-            tileset = new Tileset(getAtlas(), tilesetDef);
+            tileset = new Tileset(getTilesetAtlas(), tilesetDef);
         }
         return tileset;
     }
@@ -108,7 +120,7 @@ public class GameWorld {
         batch.end();
         batch.getTransformMatrix().translate(-hW, -hH, 0);
 
-        debugRenderer.render(box2D, camera.underlyingCamera().combined);
+        if (RENDER_DEBUG) debugRenderer.render(box2D, camera.underlyingCamera().combined);
     }
 
     public void update(float delta) {

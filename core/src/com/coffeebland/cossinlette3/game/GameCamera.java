@@ -58,8 +58,8 @@ public class GameCamera {
         camera.position.set(
                 V2.clamp(
                         this.pos.set(pos),
-                        hW, (float)gameWorld.getWidth() - hW,
-                        hH, (float)gameWorld.getHeight() - hH
+                        hW, (float) gameWorld.getWidth() - hW,
+                        hH, (float) gameWorld.getHeight() - hH
                 ),
                 camera.position.z
         );

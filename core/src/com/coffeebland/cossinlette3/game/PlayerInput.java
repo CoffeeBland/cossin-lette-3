@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.game.entity.Person;
+import com.coffeebland.cossinlette3.game.file.CharsetDef;
 import com.coffeebland.cossinlette3.utils.V2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,10 +74,10 @@ public class PlayerInput implements InputProcessor {
             if (isPressed(Input.Keys.RIGHT)) vec.add(1, 0);
             if (isPressed(Input.Keys.DOWN)) vec.add(0, -1);
             if (vec.len2() > 0) {
-                person.animFlag(Person.FLAG_WALKING);
+                person.animFlag(CharsetDef.FLAG_WALKING);
                 person.move(vec);
             } else {
-                person.animUnflag(Person.FLAG_WALKING);
+                person.animUnflag(CharsetDef.FLAG_WALKING);
                 person.stop();
             }
 

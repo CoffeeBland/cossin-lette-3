@@ -1,10 +1,10 @@
 [
   {
-    "src": "charset-neutre",
+    "src": "cossin-neutre",
     "width": 64,
     "height": 96,
     "decalX": 32,
-    "decalY": 20,
+    "decalY": 16,
     "fps": 4,
     "orientations": [
       1, 1, -7, -5,
@@ -18,12 +18,12 @@
     ]
   },
   {
-    "src": "charset-marche",
+    "src": "cossin-marche",
     "width": 64,
     "height": 96,
     "decalX": 32,
-    "decalY": 20,
-    "fps": 10,
+    "decalY": 16  ,
+    "fps": 12,
     "orientations": [
       1, 1, -7, -5,
       0, 0, -5, -3,

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.SoftReference;
@@ -79,9 +80,15 @@ public class Textures {
     }
     public static void drawFilledRect(@NotNull Batch batch, @NotNull Color color, float x, float y, float w, float h) {
         drawFilledRect(batch, color,
-                (int)Math.floor(x), (int)Math.floor(y),
-                (int)Math.floor(w), (int)Math.floor(h)
+                (int) Math.floor(x), (int) Math.floor(y),
+                (int) Math.floor(w), (int) Math.floor(h)
         );
+    }
+    public static void drawFilledRect(@NotNull Batch batch, @NotNull Color color, @NotNull Vector2 pos, float w, float h) {
+        drawFilledRect(batch, color, pos.x, pos.y, w, h);
+    }
+    public static void drawFilledRect(@NotNull Batch batch, @NotNull Color color, @NotNull Vector2 pos, @NotNull Vector2 size) {
+        drawFilledRect(batch, color, pos.x, pos.y, size.x, size.y);
     }
     public static void drawRect(@NotNull Batch batch, @NotNull Color color, int x, int y, int w, int h, int thickness) {
         Color previousColor = batch.getColor();
@@ -115,12 +122,18 @@ public class Textures {
     }
     public static void drawRect(@NotNull Batch batch, @NotNull Color color, float x, float y, float w, float h, int thickness) {
         drawRect(batch, color,
-                (int)Math.floor(x),
-                (int)Math.floor(y),
-                (int)Math.floor(w),
-                (int)Math.floor(h),
+                (int) Math.floor(x),
+                (int) Math.floor(y),
+                (int) Math.floor(w),
+                (int) Math.floor(h),
                 thickness
         );
+    }
+    public static void drawRect(@NotNull Batch batch, @NotNull Color color, @NotNull Vector2 pos, float w, float h, int thickness) {
+        drawRect(batch, color, pos.x, pos.y, w, h, thickness);
+    }
+    public static void drawRect(@NotNull Batch batch, @NotNull Color color, @NotNull Vector2 pos, @NotNull Vector2 size, int thickness) {
+        drawRect(batch, color, pos.x, pos.y, size.x, size.y, thickness);
     }
 
     static {

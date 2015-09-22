@@ -96,4 +96,5 @@ public class AddTool extends TileTool {
             mapOver((int tX, int tY, int tTX, int tTY) -> worldDef.tileLayers.get(tileLayerIndex).removeTile(tX, tY, fromTop) );
         }
     }
+
 }

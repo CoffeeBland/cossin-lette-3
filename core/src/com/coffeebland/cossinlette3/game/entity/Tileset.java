@@ -37,28 +37,28 @@ public class Tileset {
     public float getTileSizeMeters() { return tileSize; }
     public int getTileSizePixels() { return tileSizePixels; }
 
-    public float getTileFromMeters(float meters) {
+    public float metersToTile(float meters) {
         return meters / tileSize;
     }
-    @NotNull public Vector2 getTileFromMeters(@NotNull Vector2 meters) {
+    @NotNull public Vector2 metersToTile(@NotNull Vector2 meters) {
         return meters.scl(1f / tileSize);
     }
-    public float getMetersFromTile(float tile) {
+    public float tileToMeters(float tile) {
         return tile * tileSize;
     }
-    @NotNull public Vector2 getMetersFromTile(@NotNull Vector2 tiles) {
+    @NotNull public Vector2 tileToMeters(@NotNull Vector2 tiles) {
         return tiles.scl(tileSize);
     }
-    public float getTileFromPixels(float pixels) {
+    public float pixToTile(float pixels) {
         return pixels / tileSizePixels;
     }
-    @NotNull public Vector2 getTileFromPixels(@NotNull Vector2 pixels) {
+    @NotNull public Vector2 pixToTile(@NotNull Vector2 pixels) {
         return pixels.scl(1f / tileSizePixels);
     }
-    public float getPixelsFromTile(float tile) {
+    public float tileToPix(float tile) {
         return tile * tileSizePixels;
     }
-    @NotNull public Vector2 getPixelsFromTile(Vector2 tiles) {
+    @NotNull public Vector2 tileToPix(Vector2 tiles) {
         return tiles.scl(tileSizePixels);
     }
 

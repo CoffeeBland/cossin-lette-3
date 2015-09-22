@@ -11,6 +11,9 @@ import java.util.List;
 
 public class CharsetDef {
 
+    public static final int
+            FLAG_WALKING = 0;
+
     public String src;
     public int width;
     public int height;

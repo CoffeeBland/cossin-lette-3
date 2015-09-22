@@ -1,3 +1,8 @@
+import com.badlogic.gdx.tools.texturepacker.TexturePacker
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonReader
+import com.badlogic.gdx.utils.StreamUtils
+
 buildscript {
     repositories {
         mavenCentral()
@@ -75,15 +80,51 @@ project(":core") {
 }
 
 task packTextures << {
-    logger.info "Packing game textures"
-    com.badlogic.gdx.tools.texturepacker.TexturePacker.process(
-            'core/assets_raw/game',
-            'core/assets/img/game',
-            'main'
-    )
+    System.out.println("Packing game textures");
+    File target = new File('core/assets/img/game');
+    for (File file : target.listFiles()) {
+        file.delete();
+    }
 
-    logger.info "Packing editor textures"
-    com.badlogic.gdx.tools.texturepacker.TexturePacker.process(
+    File raw = new File('core/assets_raw/game');
+    File[] children = raw.listFiles(new FileFilter() {
+        @Override
+        boolean accept(File file) {
+            return file.isDirectory()
+        }
+    });
+
+    TexturePacker.Settings settings = new TexturePacker.Settings();
+    File settingsFile = new File(raw, "pack.json");
+    new Json().readFields(settings, new JsonReader().parse(new FileReader(settingsFile)));
+
+    for (File child : children) {
+        File[] extras = child.listFiles(new FileFilter() {
+            @Override
+            boolean accept(File file) {
+                String[] parts = file.getName().split("\\.");
+                return parts.length >= 2 && ("charset".equals(parts[1]) || "tileset".equals(parts[1]));
+            }
+        });
+        TexturePacker.process(
+                settings,
+                child.getPath(),
+                target.getPath(),
+                child.getName()
+        );
+        for (File extra : extras) {
+            System.out.println("Transferring extra: " + extra.getName());
+            File extraTarget = new File(target, extra.getName());
+            InputStream is = new FileInputStream(extra);
+            OutputStream os = new FileOutputStream(extraTarget);
+            StreamUtils.copyStream(is, os);
+            StreamUtils.closeQuietly(is);
+            StreamUtils.closeQuietly(os);
+        }
+    }
+
+    System.out.println("Packing editor textures");
+    TexturePacker.process(
             'core/assets_raw/editor',
             'core/assets/img/editor',
             'main'

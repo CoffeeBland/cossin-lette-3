@@ -61,13 +61,13 @@ public class FileChooser extends Dialog {
         fileList.getSelection().setProgrammaticChangeEvents(false);
 
         fileNameInput = new TextField("", skin);
-        fileNameLabel = new Label("File name:", skin);
+        fileNameLabel = new Label("Nom du fichier:", skin);
         fileNameInput.setTextFieldListener((textField, c) -> result = textField.getText());
 
         ok = new TextButton("Ok", skin);
         button(ok, true);
 
-        cancel = new TextButton("Cancel", skin);
+        cancel = new TextButton("Annuler", skin);
         button(cancel, false);
         key(Keys.ENTER, true);
         key(Keys.ESCAPE, false);
@@ -142,13 +142,13 @@ public class FileChooser extends Dialog {
     @Override
     public Dialog show(Stage stage, Action action) {
         final Table content = getContentTable();
+        content.pad(8);
         content.add(fileListLabel).top().left().expandX().fillX().row();
         content.add(new ScrollPane(fileList, skin)).size(300, 150).fill().expand().row();
 
         if (fileNameEnabled) {
             content.add(fileNameLabel).fillX().expandX().row();
             content.add(fileNameInput).fillX().expandX().row();
-            stage.setKeyboardFocus(fileNameInput);
         }
 
         if(directoryBrowsingEnabled){
@@ -175,7 +175,7 @@ public class FileChooser extends Dialog {
                 if (resultListener == null) return;
                 resultListener.result((boolean) object, getResult());
             }
-        }.setFileNameEnabled(true).setOkButtonText("Save");
+        }.setFileNameEnabled(true).setOkButtonText("Sauvegarder");
 
     }
     public static FileChooser createLoadDialog(String title, final Skin skin, final FileHandle path) {
@@ -185,7 +185,7 @@ public class FileChooser extends Dialog {
                 if (resultListener == null) return;
                 resultListener.result((boolean) object, getResult());
             }
-        }.setFileNameEnabled(false).setOkButtonText("Load");
+        }.setFileNameEnabled(false).setOkButtonText("Charger");
 
     }
     public static FileChooser createPickDialog(String title, final Skin skin, final FileHandle path) {

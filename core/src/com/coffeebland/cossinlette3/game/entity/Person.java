@@ -8,10 +8,12 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.coffeebland.cossinlette3.game.GameCamera;
 import com.coffeebland.cossinlette3.game.GameWorld;
+import com.coffeebland.cossinlette3.game.file.CharsetDef;
 import com.coffeebland.cossinlette3.game.file.PersonDef;
 import com.coffeebland.cossinlette3.game.visual.ImageStrips;
 import com.coffeebland.cossinlette3.utils.CharsetAtlas;
 import com.coffeebland.cossinlette3.utils.Const;
+import com.coffeebland.cossinlette3.utils.V2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +25,7 @@ public class Person extends Actor implements GameCamera.PositionSource {
     @NotNull protected final BitSet flags = new BitSet();
     @Nullable protected ImageStrips imageStrips;
     protected float speed, speedSquared, orientation, radius;
+    @Nullable protected Vector2 walking;
 
     @NotNull BodyDef bodyDef;
     @NotNull FixtureDef fixtureDef;
@@ -31,6 +34,7 @@ public class Person extends Actor implements GameCamera.PositionSource {
         super(def);
         this.speed = def.speed;
         this.speedSquared = speed * speed;
+        this.orientation = def.orientation;
 
         bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -44,7 +48,8 @@ public class Person extends Actor implements GameCamera.PositionSource {
         fixtureDef.density = def.density;
         fixtureDef.shape = shape;
 
-        if (def.charset != null && atlas != null) {
+        if (def.hasCharset() && atlas != null) {
+            assert def.charset != null;
             setImageStrips(atlas.getCharset(def.charset));
         }
     }
@@ -78,13 +83,13 @@ public class Person extends Actor implements GameCamera.PositionSource {
     public void animFlag(int flag) {
         if (!flags.get(flag)) {
             flags.set(flag);
-            if (imageStrips != null) imageStrips.resolve(flags);
+            resolveImageStrips();
         }
     }
     public void animUnflag(int flag) {
         if (flags.get(flag)) {
             flags.clear(flag);
-            if (imageStrips != null) imageStrips.resolve(flags);
+            resolveImageStrips();
         }
     }
     public void resolveImageStrips() {
@@ -99,14 +104,20 @@ public class Person extends Actor implements GameCamera.PositionSource {
      * note that this *will not* actually apply a force if the body has not been created
      */
     public void move(@NotNull Vector2 orientationVector) {
-        if (body != null) body.setLinearVelocity(orientationVector.nor().scl(speed));
         orientation = orientationVector.angleRad();
+        walking = (walking == null ? V2.get() : walking).set(orientationVector).nor().scl(speed);
+        animFlag(CharsetDef.FLAG_WALKING);
     }
     public void stop() {
-        if (body != null) body.setLinearVelocity(Vector2.Zero);
+        if (walking == null) return;
+        V2.claim(walking);
+        walking = null;
+        animUnflag(CharsetDef.FLAG_WALKING);
     }
 
     @Override public void render(@NotNull Batch batch, @NotNull GameCamera camera) {
+        while (orientation > Math.PI) orientation -= Math.PI * 2;
+        while (orientation <= -Math.PI) orientation += Math.PI * 2;
         Vector2 pos = getPosition();
         if (pos != null) {
             if (imageStrips != null) {
@@ -122,6 +133,13 @@ public class Person extends Actor implements GameCamera.PositionSource {
         if (imageStrips != null) imageStrips.update(delta);
         Vector2 pos = getPosition();
         if (pos != null) priority = -pos.y + radius / 2;
+        if (body != null) {
+            if (walking == null) {
+                body.setLinearVelocity(Vector2.Zero);
+            } else {
+                body.setLinearVelocity(walking);
+            }
+        }
     }
 
 }

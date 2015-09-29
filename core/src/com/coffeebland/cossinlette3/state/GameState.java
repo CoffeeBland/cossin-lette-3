@@ -1,14 +1,17 @@
 package com.coffeebland.cossinlette3.state;
 
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.coffeebland.cossinlette3.game.GameWorld;
-import com.coffeebland.cossinlette3.game.PlayerInput;
+import com.coffeebland.cossinlette3.game.MovementInput;
 import com.coffeebland.cossinlette3.game.entity.Person;
 import com.coffeebland.cossinlette3.game.file.PersonDef;
 import com.coffeebland.cossinlette3.game.file.SaveFile;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
+import com.coffeebland.cossinlette3.input.KeyInputListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +19,9 @@ public class GameState extends State<SaveFile> {
 
     @Nullable protected GameWorld world;
     @Nullable protected SaveFile saveFile;
-    @Nullable protected PlayerInput playerInput;
+    @NotNull protected InputMultiplexer playerInput = new InputMultiplexer();
+    @Nullable protected MovementInput movementInput;
+    @Nullable protected Stage ui;
 
     protected Person player;
 
@@ -32,10 +37,8 @@ public class GameState extends State<SaveFile> {
         return playerInput;
     }
 
-    @Override public void onTransitionInStart(boolean firstTransition, @Nullable SaveFile saveFile) {
-        if (saveFile == null) {
-            saveFile = SaveFile.getNewSaveFile();
-        }
+    @Override public void onTransitionInStart(boolean firstTransition, @Nullable SaveFile file) {
+        saveFile = file != null ? file : SaveFile.getNewSaveFile();
 
         WorldDef worldDef = WorldDef.read(saveFile.worldFile);
 
@@ -43,16 +46,21 @@ public class GameState extends State<SaveFile> {
         setBackgroundColor(world.getBackgroundColor());
 
         PersonDef def = new PersonDef();
+        def.x = 1;
+        def.y = 1;
         def.radius = 0.4f;
         def.speed = 4f;
         def.density = 1f;
+        def.name = "Cossin";
         def.charset = "cossin";
         player = new Person(def, world.getCharsetAtlas());
         assert world != null;
         player.addToWorld(world);
         world.camera.moveTo(player);
-
-        playerInput = new PlayerInput(player);
+        
+        playerInput.addProcessor(ui);
+        movementInput = new MovementInput(player);
+        playerInput.addProcessor(movementInput);
     }
     @Override public void onTransitionOutFinish() {
         if (world != null) world.dispose();
@@ -71,9 +79,13 @@ public class GameState extends State<SaveFile> {
 
     @Override
     public void update(float delta) {
-        assert playerInput != null && world != null;
+        for (InputProcessor processor: playerInput.getProcessors()) {
+            if (!(processor instanceof KeyInputListener)) continue;
+            ((KeyInputListener) processor).updateInputs(delta);
+            break;
+        }
 
-        playerInput.update(delta);
+        assert world != null;
         world.update(delta);
     }
 }

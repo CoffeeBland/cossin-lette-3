@@ -38,7 +38,7 @@ public class CharsetAtlas extends TextureAtlas {
         super(data);
     }
 
-    public Charset getCharset(String name) {
+    @NotNull public Charset getCharset(@NotNull String name) {
         CharsetDef[] defs;
         if (charsetsDefs.containsKey(name)) {
             defs = charsetsDefs.get(name);

@@ -20,6 +20,7 @@ import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.TilesetDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.state.State;
+import com.coffeebland.cossinlette3.utils.CharsetAtlas;
 import com.coffeebland.cossinlette3.utils.func.Func;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,10 +30,10 @@ import java.util.List;
 
 public class EditorState extends State<FileHandle> implements OperationExecutor {
 
-
     protected InputMultiplexer multiplexer;
 
     protected TextureAtlas atlas;
+    protected CharsetAtlas charAtlas;
     protected WorldDef worldDef;
     protected Tileset tileset;
     protected FileHandle fileHandle;
@@ -40,6 +41,8 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
     protected Stage stage;
     protected Viewport viewport;
     protected Skin skin;
+
+    protected ToolChooser toolChooser;
     protected TileLayerChooser tileLayerChooser;
     protected ScrollPane tileChooserScroller;
     protected TileChooser tileChooser;
@@ -52,6 +55,8 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
         stage = new Stage(viewport = new ScreenViewport());
         multiplexer = new InputMultiplexer(stage, this);
 
+        FileHandle charsetHandle = Gdx.files.internal("img/game/charset.atlas");
+        charAtlas = new CharsetAtlas(charsetHandle);
         skin = new Skin(Gdx.files.internal("img/editor/main.json"));
         setNewWorldDef(40, 30, 9, Color.BLACK.cpy(), "forest");
 
@@ -67,9 +72,10 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
         newBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                new OptionsChooser("Options de la carte", skin, (w, h, ts, tLs, c) -> {
-                    setNewWorldDef(w, h, tLs, c, ts);
-                }).show(stage);
+                new OptionsChooser(
+                        "Options de la carte", skin,
+                        (w, h, ts, tLs, c) -> setNewWorldDef(w, h, tLs, c, ts)
+                ).show(stage);
             }
         });
         newBtn.getClickListener().clicked(null, 0, 0);
@@ -122,10 +128,18 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
             }
         });
 
+        toolChooser = new ToolChooser(skin) {
+            @Override
+            public float getPrefHeight() {
+                return newBtn.getPrefHeight();
+            }
+        };
+
         topbar.addActor(newBtn);
         topbar.addActor(loadBtn);
         topbar.addActor(saveBtn);
         topbar.addActor(editBtn);
+        topbar.addActor(toolChooser);
 
         Table tileTable = new Table(skin);
 
@@ -149,13 +163,14 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
         tileTable.row();
         tileTable.add(tileChooserScroller).expandY().fill();
 
-        worldWidget = new WorldWidget(tileset, tileLayerChooser, tileChooser, this);
+        worldWidget = new WorldWidget(stage, skin, charAtlas, tileset, tileLayerChooser, tileChooser, this);
+        toolChooser.setSource(worldWidget);
 
         table.row();
-        table.add(topbarContainer).colspan(3).expandX().fillX();
+        table.add(topbarContainer).colspan(4).expandX().fillX();
 
         table.row().expandY().fill();
-        table.add(tileTable).colspan(2);
+        table.add(tileTable).colspan(3);
         table.add(worldWidget).expandX();
 
         stage.addActor(table);
@@ -261,7 +276,7 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
                 break;
         }
         rangeKeysOver(Input.Keys.F1, Input.Keys.F12, keycode, tileLayerChooser::setTileLayerIndex);
-        rangeKeysOver(Input.Keys.NUM_1, Input.Keys.NUM_9, keycode, worldWidget::setTileToolIndex);
+        rangeKeysOver(Input.Keys.NUM_1, Input.Keys.NUM_9, keycode, worldWidget::setToolIndex);
         return super.keyDown(keycode);
     }
     protected void rangeKeysOver(int start, int end, int keycode, Func<Integer> func) {

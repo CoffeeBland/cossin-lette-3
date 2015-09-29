@@ -3,7 +3,6 @@ package com.coffeebland.cossinlette3.editor.ui;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -25,22 +24,6 @@ public class OptionsChooser extends Dialog {
             NUMBER_FILTER = (textField, c) -> Character.isDigit(c),
             COLOR_FILTER = ((textField, c) -> "012345689abcdef".indexOf(Character.toLowerCase(c)) != -1);
 
-    public static class PropTextField extends TextField {
-
-        public PropTextField(String text, Skin skin) { super(text, skin); }
-        public PropTextField(String text, Skin skin, String styleName) { super(text, skin, styleName); }
-        public PropTextField(String text, TextFieldStyle style) { super(text, style); }
-
-        @Override
-        public float getPrefWidth() {
-            StringBuilder tmp = new StringBuilder();
-            for (int i = 0, n = getMaxLength(); i < n; i++) tmp.append("#");
-            GlyphLayout glyphLayout = new GlyphLayout(getStyle().font, tmp);
-            return glyphLayout.width + getStyle().background.getLeftWidth() + getStyle().background.getRightWidth();
-        }
-    }
-
-    Skin skin;
     Label lblWidth, lblHeight,
             lblTileset, lblLayers,
             lblColor, lblColorPrefix;
@@ -56,7 +39,6 @@ public class OptionsChooser extends Dialog {
     }
     public OptionsChooser(@NotNull String title, @NotNull Skin skin, @Nullable WorldDef defaults, @NotNull Listener listener) {
         super(title, skin);
-        this.skin  = skin;
         this.listener = listener;
 
         getContentTable().top().left();
@@ -78,7 +60,7 @@ public class OptionsChooser extends Dialog {
         sltTileset = new SelectBox<>(skin);
         sltTileset.setItems(
                 Stream.of(new File("img/game").list((f, n) -> n.endsWith(".tileset.json")))
-                        .map(n -> n.split("\\.")[0])
+                        .map(n -> n.replace(".tileset.json", ""))
                         .toArray(String[]::new)
         );
 

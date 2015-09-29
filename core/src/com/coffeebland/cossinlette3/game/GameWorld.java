@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Json;
-import com.coffeebland.cossinlette3.game.entity.Actor;
-import com.coffeebland.cossinlette3.game.entity.PolygonActor;
-import com.coffeebland.cossinlette3.game.entity.TileLayer;
-import com.coffeebland.cossinlette3.game.entity.Tileset;
+import com.coffeebland.cossinlette3.game.entity.*;
 import com.coffeebland.cossinlette3.game.file.*;
 import com.coffeebland.cossinlette3.utils.CharsetAtlas;
 import com.coffeebland.cossinlette3.utils.Const;
@@ -27,6 +24,7 @@ public class GameWorld {
 
     @NotNull public final World box2D;
     @NotNull public final List<Actor> actors;
+    @NotNull protected final Map<String, List<Actor>> namedActors;
     @NotNull protected Comparator<Actor> comparator;
     @NotNull public final GameCamera camera;
     @NotNull public final Box2DDebugRenderer debugRenderer;
@@ -41,6 +39,7 @@ public class GameWorld {
 
         box2D = new World(V2.get(), false);
         actors = new ArrayList<>();
+        namedActors = new HashMap<>();
         comparator = (lhs, rhs) -> Float.compare(lhs.getPriority(), rhs.getPriority());
         camera = new GameCamera(this);
         debugRenderer = new Box2DDebugRenderer();
@@ -69,6 +68,11 @@ public class GameWorld {
         for (TileLayerDef tileLayerDef : def.tileLayers) {
             TileLayer layer = new TileLayer(tileLayerDef, getTileset());
             layer.addToWorld(this);
+        }
+
+        for (PersonDef personDef : def.people) {
+            Person person = new Person(personDef, getCharsetAtlas());
+            person.addToWorld(this);
         }
 
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -144,5 +148,7 @@ public class GameWorld {
 
     public void dispose() {
         actors.forEach(Actor::dispose);
+        if (tilesetAtlas != null) tilesetAtlas.dispose();
+        if (charsetAtlas != null) charsetAtlas.dispose();
     }
 }

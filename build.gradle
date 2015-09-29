@@ -37,7 +37,6 @@ allprojects {
 project(":desktop") {
     apply plugin: "java"
 
-
     dependencies {
         compile project(":core")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
@@ -51,7 +50,6 @@ project(":desktop") {
 
 project(":editor") {
     apply plugin: "java"
-
 
     dependencies {
         compile project(":core")
@@ -86,7 +84,7 @@ task packTextures << {
         file.delete();
     }
 
-    File raw = new File('core/assets_raw/game');
+    File raw = new File('core/assets_raw/img/game');
     File[] children = raw.listFiles(new FileFilter() {
         @Override
         boolean accept(File file) {
@@ -125,8 +123,8 @@ task packTextures << {
 
     System.out.println("Packing editor textures");
     TexturePacker.process(
-            'core/assets_raw/editor',
-            'core/assets/img/editor',
+            'editor/assets_raw/img',
+            'editor/assets/img',
             'main'
     )
 }

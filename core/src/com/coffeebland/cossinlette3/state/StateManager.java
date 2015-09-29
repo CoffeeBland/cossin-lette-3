@@ -11,12 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StateManager {
-    public <A, S extends State<A>> StateManager(Class<S> initialState) {
-        new TransitionArgs<>(initialState)
-                .setArgs(null)
-                .setLength(State.TRANSITION_LONG, State.TRANSITION_LONG)
-                .setColor(Color.BLACK.cpy())
-                .beginSwitch(this);
+    public <A, S extends State<A>> StateManager(TransitionArgs<A, S> args) {
+        args.beginSwitch(this);
     }
 
     protected final Map<String, State<?>> states = new HashMap<>();

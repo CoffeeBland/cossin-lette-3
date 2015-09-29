@@ -5,10 +5,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
-import com.coffeebland.cossinlette3.editor.OperationExecutor;
-import com.coffeebland.cossinlette3.editor.ui.Operation;
-import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
 import com.coffeebland.cossinlette3.editor.ui.TileLayerSource;
+import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.utils.Dst;
@@ -20,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Created by Guillaume on 2015-08-30.
  */
-public abstract class TileTool implements Tool {
+public abstract class TileTool extends AbsTool<TileToolOperation> {
 
     public static boolean fromTop() {
         return !(Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT));
@@ -28,18 +26,11 @@ public abstract class TileTool implements Tool {
 
     @NotNull protected TileSource tileSource;
     @NotNull protected TileLayerSource tileLayerSource;
-    @NotNull protected Vector2 posMeters = V2.get();
-    @Nullable protected Vector2 initialPosMeters;
-    @Nullable protected TileToolOperation pendingOperation;
 
     public TileTool(@NotNull TileSource tileSource, @NotNull TileLayerSource tileLayerSource) {
         this.tileSource = tileSource;
         this.tileLayerSource = tileLayerSource;
     }
-
-    @Override @NotNull public Vector2 getPosMeters() { return posMeters; }
-    @Override @Nullable public Vector2 getInitialPosMeters() { return initialPosMeters; }
-    @Override @Nullable public Operation getPendingOperation() { return pendingOperation; }
 
     /**
      * Mutates the vector to correspond to the tile position of the meters given;
@@ -129,22 +120,6 @@ public abstract class TileTool implements Tool {
                     endX, endY,
                     fromTop()
             );
-        }
-    }
-    @Override public void complete(@NotNull OperationExecutor executor) {
-        if (pendingOperation != null && initialPosMeters != null) {
-            executor.execute(pendingOperation, false);
-            pendingOperation = null;
-            V2.claim(initialPosMeters);
-            initialPosMeters = null;
-        }
-    }
-    @Override public void cancel() {
-        if (pendingOperation != null && initialPosMeters != null){
-            pendingOperation.cancel();
-            pendingOperation = null;
-            V2.claim(initialPosMeters);
-            initialPosMeters = null;
         }
     }
 }

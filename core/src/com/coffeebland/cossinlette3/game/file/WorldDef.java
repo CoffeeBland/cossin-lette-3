@@ -17,6 +17,7 @@ public class WorldDef {
 
     public String imgSrc;
 
+    public List<PersonDef> people = new ArrayList<>();
     public List<PolygonDef> staticPolygons = new ArrayList<>();
     public List<TileLayerDef> tileLayers = new ArrayList<>();
     public Color backgroundColor = Color.BLACK.cpy();

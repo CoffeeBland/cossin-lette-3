@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
-import com.coffeebland.cossinlette3.editor.OperationExecutor;
-import com.coffeebland.cossinlette3.editor.ui.Operation;
 import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
 import com.coffeebland.cossinlette3.game.file.PolygonDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
@@ -20,21 +18,13 @@ import java.util.Stack;
 /**
  * Created by Guillaume on 2015-09-14.
  */
-public class RemovePolygonTool implements Tool {
+public class RemovePolygonTool extends AbsTool<RemovePolygonTool.RemovePolygonOperation> {
 
     @NotNull Color color = new Color(1, 0, 1, 0.5f);
-    @NotNull Vector2 posMeters = V2.get();
-    @Nullable Vector2 initialPosMeters;
-    @Nullable RemovePolygonOperation pendingOperation;
 
     public RemovePolygonTool() {}
 
-    @Override @NotNull public Vector2 getPosMeters() { return posMeters; }
-    @Override @Nullable public Vector2 getInitialPosMeters() { return initialPosMeters; }
-    @Override @Nullable public Operation getPendingOperation() { return pendingOperation; }
-
-    @Override
-    public void draw(@NotNull WorldWidget widget, @NotNull Batch batch) {
+    protected void drawRect(@NotNull WorldWidget widget, @NotNull Batch batch) {
         Vector2 minPix;
         Vector2 maxPix;
         if (initialPosMeters == null) {
@@ -54,6 +44,10 @@ public class RemovePolygonTool implements Tool {
         Textures.drawFilledRect(batch, color, minPix, maxPix.sub(minPix));
         V2.claim(minPix, maxPix, cameraPixels);
     }
+    @Override
+    public void draw(@NotNull WorldWidget widget, @NotNull Batch batch) {
+        drawRect(widget, batch);
+    }
 
     @Override
     public void begin(@NotNull WorldDef worldDef) {
@@ -67,26 +61,6 @@ public class RemovePolygonTool implements Tool {
     public void update(@NotNull WorldDef worldDef) {
         if (pendingOperation != null && initialPosMeters != null) {
             pendingOperation.update(V2.get(initialPosMeters), V2.get(posMeters));
-        }
-    }
-
-    @Override
-    public void complete(@NotNull OperationExecutor executor) {
-        if (pendingOperation != null && initialPosMeters != null) {
-            executor.execute(pendingOperation, false);
-            pendingOperation = null;
-            V2.claim(initialPosMeters);
-            initialPosMeters = null;
-        }
-    }
-
-    @Override
-    public void cancel() {
-        if (pendingOperation != null && initialPosMeters != null) {
-            pendingOperation.cancel();
-            pendingOperation = null;
-            V2.claim(initialPosMeters);
-            initialPosMeters = null;
         }
     }
 

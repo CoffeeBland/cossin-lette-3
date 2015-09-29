@@ -1,7 +1,6 @@
 package com.coffeebland.cossinlette3.game.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.coffeebland.cossinlette3.game.GameCamera;
 import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.file.ActorDef;
@@ -12,12 +11,17 @@ public class Actor {
 
     @Nullable protected GameWorld world;
     protected float priority;
+    @Nullable protected String name;
 
-    public Actor(float priority) {
+    public Actor(float priority, @Nullable String name) {
         this.priority = priority;
+        this.name = name;
     }
-    public Actor(ActorDef def) {
-        this(def.priority);
+    public Actor(float priority) {
+        this(priority, null);
+    }
+    public Actor(@NotNull ActorDef def) {
+        this(def.priority, def.name);
     }
 
     public float getPriority() { return priority; }

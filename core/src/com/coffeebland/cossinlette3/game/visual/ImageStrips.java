@@ -2,6 +2,7 @@ package com.coffeebland.cossinlette3.game.visual;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,8 +25,7 @@ public class ImageStrips {
     public ImageStrips() { }
 
     public void resolve(@NotNull BitSet flags, EnumSet<NewStripFlags> newStripFlags) {
-        resolveStrip:
-        {
+        resolveStrip: {
             for (ImageStripResolver resolver : resolvers) {
                 if (resolver.conditionsMet(flags)) {
                     currentStrip = resolver.imageStrip;
@@ -53,10 +53,16 @@ public class ImageStrips {
             currentStrip.render(batch, x, y, frameX, orientation, scale);
         }
     }
+    public void render(@NotNull Batch batch, Vector2 pos, float orientation, float scale) {
+        render(batch, pos.x, pos.y, orientation, scale);
+    }
     public void render(@NotNull Batch batch, float x, float y, float orientation, float scale, @NotNull Color color) {
         if (currentStrip != null) {
             currentStrip.render(batch, x, y, frameX, orientation, scale, color);
         }
+    }
+    public void render(@NotNull Batch batch, Vector2 pos, float orientation, float scale, @NotNull Color color) {
+        render(batch, pos.x, pos.y, orientation, scale, color);
     }
 
     public void update(float delta) {

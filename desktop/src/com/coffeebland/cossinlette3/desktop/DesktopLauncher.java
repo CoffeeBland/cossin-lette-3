@@ -9,8 +9,11 @@ import com.coffeebland.cossinlette3.state.SplashState;
 import com.coffeebland.cossinlette3.state.State;
 import com.coffeebland.cossinlette3.state.StateManager.TransitionArgs;
 
+import java.io.File;
+
 public class DesktopLauncher {
     public static void main(String[] arg) {
+        System.out.println(new File(".").getAbsolutePath());
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.title = "Cossin Lette 3: R\u00E9demption";
         config.fullscreen = true;

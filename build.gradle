@@ -3,6 +3,8 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.StreamUtils
 
+import java.util.function.Consumer
+
 buildscript {
     repositories {
         mavenCentral()
@@ -77,6 +79,60 @@ project(":core") {
     }
 }
 
+void packExtern(File working, Consumer<File> after = null) {
+    System.out.println("Packing extern for " + working.getPath())
+    def externRaw = new File(working, "extern_raw")
+    def externPacked = new File(working, "extern_packed")
+
+    System.out.println("Clearing packed")
+    for (File file : externPacked.listFiles()) {
+        System.out.println("Removing " + file.getName())
+        file.delete();
+    }
+
+    System.out.println("Packing raw textures")
+    def rawImgs = new File(externRaw, "img")
+    def packedImgs = new File(externPacked, "img")
+    packFiles(rawImgs, packedImgs);
+    for (File file : rawImgs.listFiles()) {
+        System.out.println("Packing " + file.getName())
+        TexturePacker.process(
+                file.getPath(),
+                packedImgs.getPath(),
+                file.getName()
+        )
+    }
+
+    if (after != null) after.accept(externPacked)
+}
+void packFiles(File src, File target) {
+    File pack = new File(src, "pack.json")
+    if (pack.exists()) {
+        File parent = src.getParentFile()
+        TexturePacker.process(
+                
+        )
+    } else for (File child : src.listFiles()) packFiles(child, target)
+}
+void copyFiles(File src, File target) {
+    if (src.isDirectory()) {
+        for (File srcChild : src.listFiles()) {
+            copy(srcChild, target);
+        }
+    } else {
+        File targetFile = new File(target, src.getName())
+        if (!targetFile.getParentFile().exists() && !targetFile.getParentFile().mkdirs()) {
+            throw new RuntimeException("Couln'd create parent directory")
+        }
+        if (!targetFile.exists() && !targetFile.createNewFile()) {
+            throw new RuntimeException("Couln'd create file")
+        }
+        InputStream is = new FileInputStream(src)
+        OutputStream os = new FileOutputStream(targetFile)
+        StreamUtils.copyStream(is, os)
+    }
+}
+
 task packTextures << {
     System.out.println("Packing game textures");
     File target = new File('core/assets/img/game');
@@ -120,13 +176,6 @@ task packTextures << {
             StreamUtils.closeQuietly(os);
         }
     }
-
-    System.out.println("Packing editor textures");
-    TexturePacker.process(
-            'editor/assets_raw/img',
-            'editor/assets/img',
-            'main'
-    )
 }
 
 tasks.eclipse.doLast {

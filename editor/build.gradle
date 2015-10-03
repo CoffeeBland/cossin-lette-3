@@ -1,3 +1,5 @@
+import java.util.function.BiConsumer
+
 apply plugin: "java"
 
 sourceCompatibility = 1.8
@@ -5,12 +7,13 @@ sourceSets.main.java.srcDirs = ["src/"]
 
 project.ext.mainClassName = "com.coffeebland.cossinlette3.editor.EditorLauncher"
 project.ext.assetsDir = new File("../core/assets");
+project.ext.workingDir = new File("build/libs");
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
-    workingDir = project.assetsDir
+    workingDir = project.workingDir
     ignoreExitValue = true
 }
 
@@ -43,4 +46,23 @@ task afterEclipseImport(description: "Post processing after project generation",
         printer.setPreserveWhitespace(true)
         printer.print(classpath)
     }
+}
+
+task extern << {
+    /*packExtern(new File("core"), new BiConsumer<File, File>() {
+        @Override
+        void accept(File packed, File extra) {
+            File target = new File("editor/build/libs")
+            extra.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
+            packed.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
+        }
+    })*/
+    packExtern(new File("editor"), new BiConsumer<File, File>() {
+        @Override
+        void accept(File packed, File extra) {
+            File target = new File("editor/build/libs")
+            extra.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
+            packed.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
+        }
+    })
 }

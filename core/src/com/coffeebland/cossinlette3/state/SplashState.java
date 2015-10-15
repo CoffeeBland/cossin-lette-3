@@ -4,18 +4,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.coffeebland.cossinlette3.utils.FontUtil;
+import com.coffeebland.cossinlette3.utils.Tag;
 import com.coffeebland.cossinlette3.utils.Textures;
 import org.jetbrains.annotations.NotNull;
 
 import static com.coffeebland.cossinlette3.utils.Const.PADDING;
 
 public class SplashState extends AutoSwitchState {
-    @Override protected float getDuration() { return 2000; }
-    @Override protected Class<? extends State> getNextStateClass() { return MenuState.class; }
+
+    @Override protected long getDuration() { return 2000; }
+    @Override protected Class<? extends StateImpl> getNextStateClass() { return MenuState.class; }
     @Override protected Color getTransitionColor() { return new Color(0xFFFFFFFF); }
     @Override protected float getTransitionDuration() { return TRANSITION_LONG; }
 
@@ -25,7 +27,7 @@ public class SplashState extends AutoSwitchState {
             case Input.Keys.SPACE:
             case Input.Keys.ENTER:
             case Input.Keys.ESCAPE:
-                remainingTime = 0;
+                switchEvent.remaining = 0;
                 return true;
         }
         return false;
@@ -39,7 +41,6 @@ public class SplashState extends AutoSwitchState {
     public SplashState() {
         setBackgroundColor(Color.LIGHT_GRAY.cpy());
         bg = Textures.WHITE_PIXEL;
-        logo = Textures.get("ui/coffeebland.png");
 
         font = FontUtil.pixel();
         font.setColor(Color.BLACK.cpy());
@@ -47,7 +48,14 @@ public class SplashState extends AutoSwitchState {
     }
 
     @Override
-    public void render(@NotNull SpriteBatch batch) {
+    public void onPrepare(Void nil, StateManager.Notifier notifier) {
+        super.onPrepare(nil, notifier);
+        load("img/ui/coffeebland.png", Texture.class, (img) -> logo = img);
+        eventManager.post(Tag.ASSETS, notifier::prepared);
+    }
+
+    @Override
+    public void render(@NotNull Batch batch) {
         batch.begin();
 
         float imgX = (Gdx.graphics.getWidth() / 2) - (logo.getWidth() / 2);

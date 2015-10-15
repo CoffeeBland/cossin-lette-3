@@ -1,6 +1,4 @@
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
-import com.badlogic.gdx.utils.Json
-import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.StreamUtils
 
 import java.util.function.Consumer
@@ -87,94 +85,59 @@ void packExtern(File working, Consumer<File> after = null) {
     System.out.println("Clearing packed")
     for (File file : externPacked.listFiles()) {
         System.out.println("Removing " + file.getName())
-        file.delete();
+        if (file.isDirectory()) GFileUtils.deleteDirectory(file)
+        else file.delete()
     }
 
     System.out.println("Packing raw textures")
     def rawImgs = new File(externRaw, "img")
     def packedImgs = new File(externPacked, "img")
     packFiles(rawImgs, packedImgs);
-    for (File file : rawImgs.listFiles()) {
-        System.out.println("Packing " + file.getName())
-        TexturePacker.process(
-                file.getPath(),
-                packedImgs.getPath(),
-                file.getName()
-        )
-    }
 
     if (after != null) after.accept(externPacked)
 }
 void packFiles(File src, File target) {
-    File pack = new File(src, "pack.json")
-    if (pack.exists()) {
-        File parent = src.getParentFile()
-        TexturePacker.process(
-                
-        )
-    } else for (File child : src.listFiles()) packFiles(child, target)
+    src.listFiles().each ({ File child ->
+        File pack = new File(child, "pack.json")
+        if (pack.exists()) {
+            TexturePacker.process(
+                    child.getPath(),
+                    target.getPath(),
+                    child.getName()
+            )
+            child.listFiles(new FileFilter() {
+                @Override
+                boolean accept(File file) {
+                    return !file.getName().equals("pack.json") && file.getName().endsWith(".json")
+                }
+            }).each({ File extra ->
+                File extraTarget = new File(target, extra.getName());
+                InputStream is = new FileInputStream(extra);
+                OutputStream os = new FileOutputStream(extraTarget);
+                StreamUtils.copyStream(is, os);
+                StreamUtils.closeQuietly(is);
+                StreamUtils.closeQuietly(os);
+            })
+        } else {
+            packFiles(child, new File(target, child.getName()))
+        }
+    })
 }
 void copyFiles(File src, File target) {
     if (src.isDirectory()) {
         for (File srcChild : src.listFiles()) {
-            copy(srcChild, target);
+            copyFiles(srcChild, new File(target, srcChild.getName()));
         }
     } else {
-        File targetFile = new File(target, src.getName())
-        if (!targetFile.getParentFile().exists() && !targetFile.getParentFile().mkdirs()) {
+        if (!target.getParentFile().exists() && !target.getParentFile().mkdirs()) {
             throw new RuntimeException("Couln'd create parent directory")
         }
-        if (!targetFile.exists() && !targetFile.createNewFile()) {
+        if (!target.exists() && !target.createNewFile()) {
             throw new RuntimeException("Couln'd create file")
         }
         InputStream is = new FileInputStream(src)
-        OutputStream os = new FileOutputStream(targetFile)
+        OutputStream os = new FileOutputStream(target)
         StreamUtils.copyStream(is, os)
-    }
-}
-
-task packTextures << {
-    System.out.println("Packing game textures");
-    File target = new File('core/assets/img/game');
-    for (File file : target.listFiles()) {
-        file.delete();
-    }
-
-    File raw = new File('core/assets_raw/img/game');
-    File[] children = raw.listFiles(new FileFilter() {
-        @Override
-        boolean accept(File file) {
-            return file.isDirectory()
-        }
-    });
-
-    TexturePacker.Settings settings = new TexturePacker.Settings();
-    File settingsFile = new File(raw, "pack.json");
-    new Json().readFields(settings, new JsonReader().parse(new FileReader(settingsFile)));
-
-    for (File child : children) {
-        File[] extras = child.listFiles(new FileFilter() {
-            @Override
-            boolean accept(File file) {
-                String[] parts = file.getName().split("\\.");
-                return parts.length >= 2 && ("charset".equals(parts[1]) || "tileset".equals(parts[1]));
-            }
-        });
-        TexturePacker.process(
-                settings,
-                child.getPath(),
-                target.getPath(),
-                child.getName()
-        );
-        for (File extra : extras) {
-            System.out.println("Transferring extra: " + extra.getName());
-            File extraTarget = new File(target, extra.getName());
-            InputStream is = new FileInputStream(extra);
-            OutputStream os = new FileOutputStream(extraTarget);
-            StreamUtils.copyStream(is, os);
-            StreamUtils.closeQuietly(is);
-            StreamUtils.closeQuietly(os);
-        }
     }
 }
 

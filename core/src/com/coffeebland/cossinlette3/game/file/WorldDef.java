@@ -15,12 +15,12 @@ public class WorldDef {
 
     public int width, height;
 
-    public String imgSrc;
+    @NotNull public String imgSrc;
 
-    public List<PersonDef> people = new ArrayList<>();
-    public List<PolygonDef> staticPolygons = new ArrayList<>();
-    public List<TileLayerDef> tileLayers = new ArrayList<>();
-    public Color backgroundColor = Color.BLACK.cpy();
+    @NotNull public List<PersonDef> people = new ArrayList<>();
+    @NotNull public List<PolygonDef> staticPolygons = new ArrayList<>();
+    @NotNull public List<TileLayerDef> tileLayers = new ArrayList<>();
+    @NotNull public Color backgroundColor = Color.BLACK.cpy();
 
     public WorldDef() {}
 

@@ -7,8 +7,11 @@ import com.coffeebland.cossinlette3.game.file.ActorDef;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
+
 public class Actor {
 
+    protected boolean shouldBeRemoved;
     @Nullable protected GameWorld world;
     protected float priority;
     @Nullable protected String name;
@@ -30,21 +33,23 @@ public class Actor {
     }
 
     public void addToWorld(@NotNull GameWorld world) {
-        if (this.world != null) throw new RuntimeException("Actors was already attached to a world");
+        assert this.world == null;
+        shouldBeRemoved = false;
         this.world = world;
-        this.world.actors.add(this);
+        world.getActors().add(this);
+        if (name != null) world.getNamed(name).add(this);
     }
-    public void removeFromWorld() {
+    public void removeFromWorld(Iterator<Actor> iterator) {
         this.world = null;
+        iterator.remove();
+        if (name != null) world.getNamed(name).remove(this);
     }
 
-    public boolean shouldBeRemovedFromActors() {
-        return world == null;
-    }
+    public void flagForRemoval() { shouldBeRemoved = true; }
+    public boolean shouldBeRemovedFromActors() { return shouldBeRemoved; }
 
     public void render(@NotNull Batch batch, @NotNull GameCamera camera) { }
-    public void update(float delta) { }
-    public void dispose() {
-        removeFromWorld();
+    public void update(float delta) {
+
     }
 }

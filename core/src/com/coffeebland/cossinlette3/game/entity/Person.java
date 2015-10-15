@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.BitSet;
+import java.util.Iterator;
 
 public class Person extends Actor implements GameCamera.PositionSource {
 
@@ -30,7 +31,7 @@ public class Person extends Actor implements GameCamera.PositionSource {
     @NotNull BodyDef bodyDef;
     @NotNull FixtureDef fixtureDef;
 
-    public Person(@NotNull PersonDef def, @Nullable CharsetAtlas atlas) {
+    public Person(@NotNull PersonDef def, @NotNull CharsetAtlas atlas) {
         super(def);
         this.speed = def.speed;
         this.speedSquared = speed * speed;
@@ -48,7 +49,7 @@ public class Person extends Actor implements GameCamera.PositionSource {
         fixtureDef.density = def.density;
         fixtureDef.shape = shape;
 
-        if (def.hasCharset() && atlas != null) {
+        if (def.hasCharset()) {
             assert def.charset != null;
             setImageStrips(atlas.getCharset(def.charset));
         }
@@ -69,15 +70,15 @@ public class Person extends Actor implements GameCamera.PositionSource {
     @Override public void addToWorld(@NotNull GameWorld world) {
         super.addToWorld(world);
 
-        body = world.box2D.createBody(bodyDef);
+        body = world.getBox2D().createBody(bodyDef);
         body.createFixture(fixtureDef);
     }
-    @Override public void removeFromWorld() {
+    @Override public void removeFromWorld(Iterator<Actor> iterator) {
         assert world != null && body != null;
 
-        world.box2D.destroyBody(body);
+        world.getBox2D().destroyBody(body);
 
-        super.removeFromWorld();
+        super.removeFromWorld(iterator);
     }
 
     public void animFlag(int flag) {

@@ -46,19 +46,17 @@ public class TileLayer extends Actor {
 
     @Override public void addToWorld(@NotNull GameWorld world) {
         super.addToWorld(world);
-        for (Row row : rows) {
-            row.addToWorld(world);
-        }
+        for (Row row : rows) row.addToWorld(world);
     }
 
-    @Override public void removeFromWorld() {
-        super.removeFromWorld();
-        for (Row row : rows) {
-            row.removeFromWorld();
-        }
+    @Override
+    public void flagForRemoval() {
+        super.flagForRemoval();
+        for (Row row : rows) row.flagForRemoval();
     }
 
     @Override public void update(float delta) {
+        super.update(delta);
         cumulatedSeconds = (cumulatedSeconds + delta / 1000) % 1000;
     }
 
@@ -72,8 +70,7 @@ public class TileLayer extends Actor {
         }
 
         @SuppressWarnings("PointlessBitwiseExpression")
-        @Override
-        public void render(@NotNull Batch batch, @NotNull GameCamera camera) {
+        @Override public void render(@NotNull Batch batch, @NotNull GameCamera camera) {
             super.render(batch, camera);
             int halfWidth = Gdx.graphics.getWidth() / 2;
             int halfHeight = Gdx.graphics.getHeight() / 2;
@@ -86,17 +83,13 @@ public class TileLayer extends Actor {
             render: {
                 int tilePix = tileset.getTileSizePixels();
                 float rowPix = tileset.tileToPix(row) - posPix.y;
-                if (rowPix + tilePix < minY || rowPix > maxY) {
-                    break render;
-                }
+                if (rowPix + tilePix < minY || rowPix > maxY) break render;
                 long[][] rowTiles = tiles[row];
 
                 for (int col = 0; col < rowTiles.length; col++) {
 
                     float colPix = tileset.tileToPix(col) - posPix.x;
-                    if (colPix + tilePix < minX || colPix > maxX) {
-                        continue;
-                    }
+                    if (colPix + tilePix < minX || colPix > maxX) continue;
 
                     long[] tiles = rowTiles[col];
 

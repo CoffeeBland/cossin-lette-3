@@ -1,3 +1,5 @@
+import java.util.function.Consumer
+
 apply plugin: "java"
 
 sourceCompatibility = 1.8
@@ -5,12 +7,13 @@ sourceSets.main.java.srcDirs = ["src/"]
 
 project.ext.mainClassName = "com.coffeebland.cossinlette3.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../core/assets");
+project.ext.workingDir = new File("build/libs")
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
-    workingDir = project.assetsDir
+    workingDir = project.workingDir
     ignoreExitValue = true
 }
 
@@ -41,4 +44,19 @@ task afterEclipseImport(description: "Post processing after project generation",
         printer.setPreserveWhitespace(true)
         printer.print(classpath)
     }
+}
+
+task extern << {
+    File target = new File("desktop/build/libs")
+    target.listFiles().each { File file ->
+        if (file.isDirectory()) GFileUtils.deleteDirectory(file)
+    }
+    packExtern(new File("core"), new Consumer<File>() {
+        @Override
+        void accept(File packed) {
+            File extern = new File("core/extern")
+            extern.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
+            packed.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
+        }
+    })
 }

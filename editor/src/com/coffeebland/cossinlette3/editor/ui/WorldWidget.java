@@ -24,7 +24,7 @@ import com.coffeebland.cossinlette3.game.file.PersonDef;
 import com.coffeebland.cossinlette3.game.file.PolygonDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.game.visual.Charset;
-import com.coffeebland.cossinlette3.input.KeyInputListener;
+import com.coffeebland.cossinlette3.editor.input.KeyInput;
 import com.coffeebland.cossinlette3.utils.CharsetAtlas;
 import com.coffeebland.cossinlette3.utils.Dst;
 import com.coffeebland.cossinlette3.utils.Textures;
@@ -50,7 +50,7 @@ public class WorldWidget
     @NotNull protected Map<ActorDef, Charset> charsets = new HashMap<>();
     @Nullable protected List<TileLayer> tileLayers;
     @NotNull protected Vector2 cameraPos = V2.get();
-    @NotNull protected KeyInputListener keyInputListener;
+    @NotNull protected KeyInput keyInputListener;
     @Nullable protected ToolChooser.ToolSourceListener toolListener;
 
     protected List<Tool> tools;
@@ -84,7 +84,7 @@ public class WorldWidget
                 new ActorTool(stage, skin)
         );
         currentToolIndex = 0;
-        keyInputListener = new KeyInputListener(
+        keyInputListener = new KeyInput(
                 Keys.LEFT, Keys.UP, Keys.RIGHT, Keys.DOWN,
                 Keys.ESCAPE,
                 Keys.APOSTROPHE) {
@@ -316,7 +316,7 @@ public class WorldWidget
 
     @Override public void act(float delta) {
         super.act(delta);
-        keyInputListener.updateInputs(delta);
+        keyInputListener.update(delta);
         if (worldDef != null) {
             tools.get(currentToolIndex).update(worldDef);
         }

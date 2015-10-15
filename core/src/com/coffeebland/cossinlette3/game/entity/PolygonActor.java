@@ -1,10 +1,15 @@
 package com.coffeebland.cossinlette3.game.entity;
 
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.ChainShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.file.PolygonDef;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Iterator;
 
 public class PolygonActor extends Actor {
 
@@ -31,18 +36,16 @@ public class PolygonActor extends Actor {
     @Override public void addToWorld(@NotNull GameWorld world) {
         super.addToWorld(world);
 
-        body = world.box2D.createBody(bodyDef);
+        body = world.getBox2D().createBody(bodyDef);
         body.createFixture(fixtureDef);
     }
 
-    @Override public void removeFromWorld() {
+    @Override public void removeFromWorld(Iterator<Actor> iterator) {
         assert world != null && body != null;
 
-        world.box2D.destroyBody(body);
+        world.getBox2D().destroyBody(body);
         body = null;
 
-        super.removeFromWorld();
+        super.removeFromWorld(iterator);
     }
-
-    @Override public void dispose() {}
 }

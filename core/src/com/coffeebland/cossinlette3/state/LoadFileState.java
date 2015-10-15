@@ -3,12 +3,12 @@ package com.coffeebland.cossinlette3.state;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.coffeebland.cossinlette3.game.file.SaveFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LoadFileState extends State<Void> {
+public class LoadFileState extends StateImpl<Void> {
 
     protected FileHandle[] saveFiles = {};
 
@@ -18,12 +18,15 @@ public class LoadFileState extends State<Void> {
     }
 
     @Override
-    public void onTransitionInStart(boolean firstTransition, @Nullable Void aVoid) {
+    public void onPrepare(@Nullable Void nil, StateManager.Notifier notifier) {
+        super.onPrepare(nil, notifier);
         saveFiles = Gdx.files.local(SaveFile.SAVE_FOLDER).list();
+        notifier.prepared();
     }
 
     @Override
     public void onTransitionInFinish() {
+        super.onTransitionInFinish();
         SaveFile file = SaveFile.read(saveFiles[0]);
         new StateManager.TransitionArgs<>(GameState.class)
                 .setLength(TRANSITION_SHORT, TRANSITION_LONG)
@@ -33,12 +36,7 @@ public class LoadFileState extends State<Void> {
     }
 
     @Override
-    public void render(@NotNull SpriteBatch batch) {
-
-    }
-
-    @Override
-    public void update(float delta) {
+    public void render(@NotNull Batch batch) {
 
     }
 }

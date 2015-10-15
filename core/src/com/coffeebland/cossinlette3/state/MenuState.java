@@ -3,12 +3,12 @@ package com.coffeebland.cossinlette3.state;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.coffeebland.cossinlette3.utils.Textures;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.coffeebland.cossinlette3.utils.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class MenuState extends State<Void> {
+public class MenuState extends StateImpl<Void> {
 
     protected float time = 0, target = 1;
 
@@ -32,7 +32,10 @@ public class MenuState extends State<Void> {
             quit,
             selectArrow;
 
-    @Override public void onTransitionInStart(boolean firstTransition, @Nullable Void aVoid) {
+    @Override
+    public void onPrepare(Void nil, StateManager.Notifier notifier) {
+        super.onPrepare(nil, notifier);
+
         layerBG = new CenterCroppedSprite("main_screen/couche_bg.png", 10);
         layerA = new CenterCroppedSprite("main_screen/couche_a.png", 98);
         layerB = new CenterCroppedSprite("main_screen/couche_b.png", 60);
@@ -47,11 +50,11 @@ public class MenuState extends State<Void> {
         start = new RatioedSprite("main_screen/menu_demarrer.png", (44f * 266f) / (2400f * 1350f));
         quit = new RatioedSprite("main_screen/menu_quitter.png", (44f * 204f) / (2400f * 1350f));
         selectArrow = new RatioedSprite("main_screen/menu_fleche.png", (43f * 50f) / (2400f * 1350f));
+
+        eventManager.post(Tag.ASSETS, notifier::prepared);
     }
 
-    @Override public boolean shouldBeReused() { return false; }
-
-    @Override public void render(@NotNull SpriteBatch batch) {
+    @Override public void render(@NotNull Batch batch) {
         batch.begin();
 
         layerBG.render(batch, time);
@@ -98,6 +101,8 @@ public class MenuState extends State<Void> {
     }
 
     @Override public void update(float delta) {
+        super.update(delta);
+
         target = 1 - selection / 3f;
         time = time * 0.99f + target * 0.01f;
     }
@@ -136,7 +141,7 @@ public class MenuState extends State<Void> {
         return false;
     }
 
-    public static class RatioedSprite extends MenuSprite {
+    public class RatioedSprite extends MenuSprite {
         float targetAreaRatio;
 
         public RatioedSprite(String src, float targetAreaRatio) {
@@ -145,6 +150,7 @@ public class MenuState extends State<Void> {
         }
 
         public float getRatio() {
+            if (texture == null) return 0;
             int area = Gdx.graphics.getWidth() * Gdx.graphics.getHeight();
             int textureArea = texture.getWidth() * texture.getHeight();
             return (float)Math.sqrt(targetAreaRatio / (textureArea / (float)area));
@@ -153,16 +159,17 @@ public class MenuState extends State<Void> {
             return getWidth(getRatio());
         }
         public int getWidth(float ratio) {
-            return (int)(texture.getWidth() * ratio);
+            return texture == null ? 0 : (int)(texture.getWidth() * ratio);
         }
         public int getHeight() {
             return getHeight(getRatio());
         }
         public int getHeight(float ratio) {
-            return (int)(texture.getHeight() * ratio);
+            return texture == null ? 0 : (int)(texture.getHeight() * ratio);
         }
 
-        @Override public void render(@NotNull SpriteBatch batch, float interpolated) {
+        @Override public void render(@NotNull Batch batch, float interpolated) {
+            if (texture == null) return;
 
             // we have (s * tW) * (s * tH) / (sW * sH) = ratio
             // <=> s² * ((tW * tH) / (sw * sH)) = ratio
@@ -172,15 +179,16 @@ public class MenuState extends State<Void> {
             batch.draw(texture, x, y, (int)(texture.getWidth() * finalRatio), (int)(texture.getHeight() * finalRatio));
         }
     }
-
-    public static class CenterCroppedSprite extends MenuSprite {
+    public class CenterCroppedSprite extends MenuSprite {
         float decal;
         public CenterCroppedSprite(String src, float decal) {
             super(src);
             this.decal = decal;
         }
 
-        @Override public void render(@NotNull SpriteBatch batch, float interpolated) {
+        @Override public void render(@NotNull Batch batch, float interpolated) {
+            if (texture == null) return;
+
             y = decal * (1 - interpolated);
 
             int availWidth = (int)(Gdx.graphics.getWidth() + decal);
@@ -199,15 +207,20 @@ public class MenuState extends State<Void> {
             );
         }
     }
-    public static class MenuSprite {
-        @NotNull public Texture texture;
+    public class MenuSprite {
+        @Nullable public Texture texture;
         public float x, y;
 
-        public MenuSprite(String src) {
-            texture = Textures.get(src);
+        public MenuSprite(@NotNull String src) {
+            loadTextxure(src);
+        }
+        void loadTextxure(@NotNull String src) {
+            load("img/" + src, Texture.class, img -> texture = img);
         }
 
-        public void render(@NotNull SpriteBatch batch, float interpolated) {
+        public void render(@NotNull Batch batch, float interpolated) {
+            if (texture == null) return;
+
             batch.draw(texture, x, y);
         }
     }

@@ -1,4 +1,4 @@
-import java.util.function.BiConsumer
+import java.util.function.Consumer
 
 apply plugin: "java"
 
@@ -17,7 +17,7 @@ task run(dependsOn: classes, type: JavaExec) {
     ignoreExitValue = true
 }
 
-task dist(type: Jar) {
+task dist(dependsOn: classes, type: Jar) {
     from files(sourceSets.main.output.classesDir)
     from files(sourceSets.main.output.resourcesDir)
     from { configurations.compile.collect { zipTree(it) } }
@@ -27,8 +27,6 @@ task dist(type: Jar) {
         attributes 'Main-Class': project.mainClassName
     }
 }
-
-dist.dependsOn classes
 
 eclipse {
     project {
@@ -49,19 +47,23 @@ task afterEclipseImport(description: "Post processing after project generation",
 }
 
 task extern << {
-    /*packExtern(new File("core"), new BiConsumer<File, File>() {
+    File target = new File("editor/build/libs")
+    target.listFiles().each { File file ->
+        if (file.isDirectory()) GFileUtils.deleteDirectory(file)
+    }
+    packExtern(new File("core"), new Consumer<File>() {
         @Override
-        void accept(File packed, File extra) {
-            File target = new File("editor/build/libs")
-            extra.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
+        void accept(File packed) {
+            File extern = new File("core/extern")
+            extern.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
             packed.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
         }
-    })*/
-    packExtern(new File("editor"), new BiConsumer<File, File>() {
+    })
+    packExtern(new File("editor"), new Consumer<File>() {
         @Override
-        void accept(File packed, File extra) {
-            File target = new File("editor/build/libs")
-            extra.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
+        void accept(File packed) {
+            File extern = new File("editor/extern")
+            extern.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
             packed.listFiles().each { File file -> copyFiles(file, new File(target, file.getName())) }
         }
     })

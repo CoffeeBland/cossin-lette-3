@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.coffeebland.cossinlette3.state.StateManager;
 import com.coffeebland.cossinlette3.state.StateManager.TransitionArgs;
 import com.coffeebland.cossinlette3.utils.Const;
@@ -20,28 +19,17 @@ public class CossinLette3 extends ApplicationAdapter {
 		this.initialArgs = initialArgs;
 	}
 
-	SpriteBatch batch;
 	StateManager mgr;
-	
-	@SuppressWarnings("AccessStaticViaInstance")
+
 	@Override
 	public void create () {
 		Gdx.graphics.setVSync(true);
-		batch = new SpriteBatch();
-		batch.setBlendFunction(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
-		batch.enableBlending();
 		mgr = new StateManager(initialArgs);
 	}
 
-	@SuppressWarnings("AccessStaticViaInstance")
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
-
-		batch = new SpriteBatch();
-		batch.setBlendFunction(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
-		batch.enableBlending();
-
 		mgr.resize(width, height);
 	}
 
@@ -51,7 +39,7 @@ public class CossinLette3 extends ApplicationAdapter {
 		Gdx.gl.glClearColor(bgCol.r, bgCol.g, bgCol.b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		mgr.render(batch);
+		mgr.render();
 
 		// Check for update steps
 		long nanoTime = System.nanoTime();
@@ -60,12 +48,8 @@ public class CossinLette3 extends ApplicationAdapter {
 
 			accumulator += delta;
 
-			if (accumulator > 0) {
-				mgr.update(Const.TIME_STEP);
-			}
-			while (accumulator > 0) {
-				accumulator -= Const.TIME_STEP;
-			}
+			if (accumulator > 0) mgr.update(Const.TIME_STEP);
+			while (accumulator > 0) accumulator -= Const.TIME_STEP;
 		}
 		lastNanoTime = nanoTime;
 	}

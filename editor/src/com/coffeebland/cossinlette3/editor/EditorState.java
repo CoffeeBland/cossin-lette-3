@@ -6,7 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,7 +19,7 @@ import com.coffeebland.cossinlette3.editor.ui.*;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.TilesetDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
-import com.coffeebland.cossinlette3.state.State;
+import com.coffeebland.cossinlette3.state.StateImpl;
 import com.coffeebland.cossinlette3.utils.CharsetAtlas;
 import com.coffeebland.cossinlette3.utils.func.Func;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditorState extends State<FileHandle> implements OperationExecutor {
+public class EditorState extends StateImpl<FileHandle> implements OperationExecutor {
 
     protected InputMultiplexer multiplexer;
 
@@ -237,13 +237,11 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
     }
 
     @Nullable @Override public InputProcessor getInputProcessor() { return multiplexer; }
-    @Override public boolean shouldBeReused() { return false; }
 
-    @Override public void onTransitionInStart(boolean firstTransition, @Nullable FileHandle fileHandle) {
+    @Override public void onTransitionInStart(@Nullable FileHandle fileHandle) {
         this.fileHandle = fileHandle;
         setWorldDef(worldDef = fileHandle != null ? WorldDef.read(fileHandle) : worldDef);
     }
-
     @Override public void onTransitionOutFinish() {
         stage.dispose();
     }
@@ -252,10 +250,11 @@ public class EditorState extends State<FileHandle> implements OperationExecutor 
         viewport.update(width, height, true);
     }
 
-    @Override public void render(@NotNull SpriteBatch batch) {
+    @Override public void render(@NotNull Batch batch) {
         stage.draw();
     }
     @Override public void update(float delta) {
+        super.update(delta);
         stage.act(delta);
     }
 

@@ -1,3 +1,4 @@
+
 package com.coffeebland.cossinlette3.utils;
 
 import com.badlogic.gdx.math.Vector2;

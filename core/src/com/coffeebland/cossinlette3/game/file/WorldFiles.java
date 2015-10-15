@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
 public enum WorldFiles {
-    TEST("test"),
+    NEW("test"),
     TEST2("test2");
 
     WorldFiles(String fileName) {
@@ -13,7 +13,6 @@ public enum WorldFiles {
 
     public final String fileName;
 
-    public FileHandle getHandle() {
-        return Gdx.files.internal(String.format("worlds/%s.json", fileName));
-    }
+    public FileHandle getHandle() { return Gdx.files.internal(getPath()); }
+    public String getPath() { return String.format("worlds/%s.world.json", fileName); }
 }

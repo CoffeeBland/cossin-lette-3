@@ -1,0 +1,7 @@
+{
+  "radius": 0.4,
+  "speed": 4,
+  "density": 1,
+  "charset": "cossin",
+  "name": "Cossin"
+}

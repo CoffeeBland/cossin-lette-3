@@ -1,15 +1,16 @@
-package com.coffeebland.cossinlette3.input;
+package com.coffeebland.cossinlette3.editor.input;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public abstract class KeyInputListener extends ActiveableInputListener {
+public abstract class KeyInput extends InputListener {
     @NotNull protected final Map<Integer, Long> keycodes = new HashMap<>();
     @NotNull protected final Set<Integer> relevantKeys;
 
-    public KeyInputListener(@NotNull Integer... relevantKeys) {
+    public KeyInput(@NotNull Integer... relevantKeys) {
         this.relevantKeys = new HashSet<>(Arrays.asList(relevantKeys));
     }
 
@@ -29,8 +30,11 @@ public abstract class KeyInputListener extends ActiveableInputListener {
         }
         return super.keyUp(event, keycode);
     }
+    public boolean isKeyDown(int keycode) {
+        return keycodes.containsKey(keycode);
+    }
 
-    public void updateInputs(float delta) {
+    public void update(float delta) {
         for (Map.Entry<Integer, Long> pressedKey: keycodes.entrySet()) {
             onInputUpdate(pressedKey.getKey(), pressedKey.getValue(), delta);
         }

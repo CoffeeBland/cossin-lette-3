@@ -1,8 +1,7 @@
-package com.coffeebland.cossinlette3.state;
+package com.coffeebland.cossinlette3.utils.event;
 
-import com.coffeebland.cossinlette3.utils.Tag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -13,18 +12,18 @@ import java.util.List;
  */
 public class EventManager {
 
-    protected static class Entry {
+    public static class Entry {
         public float remaining;
-        @NotNull public Runnable runnable;
-        @Nullable public Tag tag;
+        @NtN public Runnable runnable;
+        @N public Tag tag;
 
-        public Entry(@Nullable Tag tag, float remaining, @NotNull Runnable runnable) {
+        public Entry(@N Tag tag, float remaining, @NtN Runnable runnable) {
             this.remaining = remaining;
             this.runnable = runnable;
             this.tag = tag;
         }
 
-        public boolean shouldRun(@NotNull BitSet tags, float delta) {
+        public boolean shouldRun(@NtN BitSet tags, float delta) {
             return (tag == null || tags.get(tag.ordinal()))
                     && (remaining -= delta) <= 0;
         }
@@ -33,36 +32,36 @@ public class EventManager {
     protected BitSet tags = new BitSet(Tag.values().length);
     protected List<Entry> queue = new ArrayList<>();
 
-    @NotNull public Entry post(@NotNull Runnable runnable) {
+    @NtN public Entry post(@NtN Runnable runnable) {
         return post(null, 0, runnable);
     }
-    @NotNull public Entry post(float time, @NotNull Runnable runnable) {
+    @NtN public Entry post(float time, @NtN Runnable runnable) {
         return post(null, time, runnable);
     }
-    @NotNull public Entry post(@NotNull Tag tag, @NotNull Runnable runnable) {
+    @NtN public Entry post(@NtN Tag tag, @NtN Runnable runnable) {
         return post(tag, 0, runnable);
     }
-    @NotNull public Entry post(@Nullable Tag tag, float time, @NotNull Runnable runnable) {
+    @NtN public Entry post(@N Tag tag, float time, @NtN Runnable runnable) {
         Entry entry = new Entry(tag, time, runnable);
         queue.add(entry);
         return entry;
     }
 
-    public void setTagTo(@NotNull Tag tag, boolean value) {
+    public void setTagTo(@NtN Tag tag, boolean value) {
         tags.set(tag.ordinal(), value);
         if (value) update(0);
     }
-    public void runTag(@NotNull Tag tag) {
+    public void runTag(@NtN Tag tag) {
         tags.set(tag.ordinal());
         update(0);
     }
-    public void cancelTag(@NotNull Tag tag) {
+    public void cancelTag(@NtN Tag tag) {
         tags.clear(tag.ordinal());
     }
-    public void cancelForTag(@NotNull Tag tag) {
+    public void cancelForTag(@NtN Tag tag) {
         queue.removeIf(e -> e.tag == tag);
     }
-    public void cancelTagAndEntries(@NotNull Tag tag) {
+    public void cancelTagAndEntries(@NtN Tag tag) {
         cancelTag(tag);
         cancelForTag(tag);
     }

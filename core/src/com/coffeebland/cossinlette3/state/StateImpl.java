@@ -6,9 +6,10 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Color;
 import com.coffeebland.cossinlette3.game.file.*;
 import com.coffeebland.cossinlette3.utils.CharsetAtlas;
-import com.coffeebland.cossinlette3.utils.Tag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
+import com.coffeebland.cossinlette3.utils.event.EventManager;
+import com.coffeebland.cossinlette3.utils.event.Tag;
 
 public abstract class StateImpl<StateArgs> implements State<StateArgs> {
     public static final float TRANSITION_SHORT = 250;
@@ -22,20 +23,20 @@ public abstract class StateImpl<StateArgs> implements State<StateArgs> {
     protected AssetManager assetManager;
     protected EventManager eventManager;
 
-    @Override public void setStateManager(@Nullable StateManager stateManager) {
+    @Override public void setStateManager(@N StateManager stateManager) {
         this.stateManager = stateManager;
     }
-    @Override @NotNull public Color getBackgroundColor() {
+    @Override @NtN public Color getBackgroundColor() {
         if (backgroundColor == null) {
             backgroundColor = Color.BLACK.cpy();
         }
         return backgroundColor;
     }
-    public void setBackgroundColor(@NotNull Color color) {
+    public void setBackgroundColor(@NtN Color color) {
         this.backgroundColor = color;
     }
 
-    @Override public void onPrepare(@Nullable StateArgs args, StateManager.Notifier notifier) {
+    @Override public void onPrepare(@N StateArgs args, StateManager.Notifier notifier) {
         FileHandleResolver fhr = new InternalFileHandleResolver();
         assetManager = new AssetManager(fhr);
         assetManager.setLoader(TilesetDef.class, new TilesetDefLoader(fhr));
@@ -79,14 +80,14 @@ public abstract class StateImpl<StateArgs> implements State<StateArgs> {
     }
 
     public <T> void load(
-            @NotNull String path,
-            @NotNull Class<T> type,
-            @NotNull LoadListener<T> listener) {
+            @NtN String path,
+            @NtN Class<T> type,
+            @NtN LoadListener<T> listener) {
         assetManager.load(path, type);
         eventManager.post(Tag.ASSETS, () -> listener.onLoaded(assetManager.get(path, type)));
     }
 
     public interface LoadListener<T> {
-        void onLoaded(@NotNull T value);
+        void onLoaded(@NtN T value);
     }
 }

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  * Created by Guillaume on 2015-08-30.
  */
 public interface TileSource {
-    @NotNull Tileset getTileset();
+    @NtN Tileset getTileset();
     int getSelectedTileX();
     int getSelectedTileY();
     int getSelectedWidth();

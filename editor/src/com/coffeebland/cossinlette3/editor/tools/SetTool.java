@@ -18,12 +18,12 @@ import java.util.Random;
  */
 public class SetTool extends TileTool {
 
-    public SetTool(@NotNull TileSource tileSource, @NotNull TileLayerSource tileLayerSource) {
+    public SetTool(@NtN TileSource tileSource, @NtN TileLayerSource tileLayerSource) {
         super(tileSource, tileLayerSource);
     }
 
     @Override
-    public void drawExtra(@NotNull WorldWidget widget, @NotNull Batch batch, @NotNull Vector2 bl, @NotNull Vector2 tr) {
+    public void drawExtra(@NtN WorldWidget widget, @NtN Batch batch, @NtN Vector2 bl, @NtN Vector2 tr) {
         Textures.drawFilledRect(
                 batch, Color.WHITE,
                 tr.x + 2, bl.y - 3,
@@ -37,9 +37,9 @@ public class SetTool extends TileTool {
         );
     }
 
-    @NotNull
+    @NtN
     @Override
-    public TileToolOperation createOperation(@NotNull WorldDef worldDef, int startX, int startY, int endX, int endY) {
+    public TileToolOperation createOperation(@NtN WorldDef worldDef, int startX, int startY, int endX, int endY) {
         return new SetOperation(tileSource, worldDef,
                 tileLayerSource.getTileLayerIndex(),
                 startX, startY,
@@ -53,7 +53,7 @@ public class SetTool extends TileTool {
 
         protected List<SetUnit> setUnits = new ArrayList<>();
 
-        public SetOperation(@NotNull TileSource source, @NotNull WorldDef worldDef, int tileLayerIndex, int startX, int startY, int endX, int endY) {
+        public SetOperation(@NtN TileSource source, @NtN WorldDef worldDef, int tileLayerIndex, int startX, int startY, int endX, int endY) {
             super(source, worldDef, tileLayerIndex, startX, startY, endX, endY, true);
         }
 

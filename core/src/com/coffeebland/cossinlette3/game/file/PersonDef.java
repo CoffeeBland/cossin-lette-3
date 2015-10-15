@@ -1,10 +1,10 @@
 package com.coffeebland.cossinlette3.game.file;
 
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
 
 public class PersonDef extends ActorDef {
     public float radius, x, y, speed, density, orientation;
-    @Nullable public String charset;
+    @N public String charset;
 
     public PersonDef() {}
 

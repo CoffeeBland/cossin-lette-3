@@ -9,13 +9,13 @@ import org.jetbrains.annotations.NotNull;
  * Created by Guillaume on 2015-09-03.
  */
 public class AddPolygonTool extends PolygonTool {
-    public AddPolygonTool(@NotNull TileSource tileSource) {
+    public AddPolygonTool(@NtN TileSource tileSource) {
         super(tileSource);
     }
 
-    @Override @NotNull public PolygonToolOperation createOperation(
-            @NotNull WorldDef worldDef,
-            @NotNull Vector2 initialTilePos, @NotNull Vector2 tilePos
+    @Override @NtN public PolygonToolOperation createOperation(
+            @NtN WorldDef worldDef,
+            @NtN Vector2 initialTilePos, @NtN Vector2 tilePos
     ) {
         return new AddPolygonOperation(worldDef, initialTilePos, tilePos);
     }
@@ -25,9 +25,9 @@ public class AddPolygonTool extends PolygonTool {
         PolygonDef def;
 
         public AddPolygonOperation(
-                @NotNull WorldDef worldDef,
-                @NotNull Vector2 initialPos,
-                @NotNull Vector2 targetPos
+                @NtN WorldDef worldDef,
+                @NtN Vector2 initialPos,
+                @NtN Vector2 targetPos
         ) {
             super(worldDef, initialPos, targetPos);
         }

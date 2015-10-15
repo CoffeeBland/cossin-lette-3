@@ -5,8 +5,8 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.coffeebland.cossinlette3.game.file.SaveFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 public class LoadFileState extends StateImpl<Void> {
 
@@ -18,7 +18,7 @@ public class LoadFileState extends StateImpl<Void> {
     }
 
     @Override
-    public void onPrepare(@Nullable Void nil, StateManager.Notifier notifier) {
+    public void onPrepare(@N Void nil, StateManager.Notifier notifier) {
         super.onPrepare(nil, notifier);
         saveFiles = Gdx.files.local(SaveFile.SAVE_FOLDER).list();
         notifier.prepared();
@@ -36,7 +36,7 @@ public class LoadFileState extends StateImpl<Void> {
     }
 
     @Override
-    public void render(@NotNull Batch batch) {
+    public void render(@NtN Batch batch) {
 
     }
 }

@@ -17,13 +17,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class PolygonTool extends AbsTool<PolygonToolOperation> {
 
-    @NotNull TileSource tileSource;
+    @NtN TileSource tileSource;
 
-    public PolygonTool(@NotNull TileSource tileSource) {
+    public PolygonTool(@NtN TileSource tileSource) {
         this.tileSource = tileSource;
     }
 
-    @NotNull public Vector2 getPartialTilePos(@NotNull Vector2 posMeters, @NotNull WorldDef worldDef) {
+    @NtN public Vector2 getPartialTilePos(@NtN Vector2 posMeters, @NtN WorldDef worldDef) {
         Vector2 pos = posMeters;
         pos = V2.clamp(pos,
                 0, worldDef.width,
@@ -34,9 +34,9 @@ public abstract class PolygonTool extends AbsTool<PolygonToolOperation> {
     }
 
     protected void drawGrid(
-            @NotNull WorldWidget widget,
-            @NotNull Batch batch,
-            @NotNull Vector2 cameraPixels
+            @NtN WorldWidget widget,
+            @NtN Batch batch,
+            @NtN Vector2 cameraPixels
     ) {
         Tileset ts = tileSource.getTileset();
 
@@ -65,10 +65,10 @@ public abstract class PolygonTool extends AbsTool<PolygonToolOperation> {
         }
     }
     protected void drawTool(
-            @NotNull WorldWidget widget,
-            @NotNull WorldDef worldDef,
-            @NotNull Batch batch,
-            @NotNull Vector2 cameraPixels
+            @NtN WorldWidget widget,
+            @NtN WorldDef worldDef,
+            @NtN Batch batch,
+            @NtN Vector2 cameraPixels
     ) {
         Vector2 pos = getPartialTilePos(V2.get(posMeters), worldDef);
         pos = Dst.getAsPixels(pos)
@@ -88,8 +88,8 @@ public abstract class PolygonTool extends AbsTool<PolygonToolOperation> {
 
         V2.claim(pos);
     }
-    @Override public void draw(@NotNull WorldWidget widget, @NotNull Batch batch) {
-        @Nullable WorldDef worldDef = widget.getWorldDef();
+    @Override public void draw(@NtN WorldWidget widget, @NtN Batch batch) {
+        @N WorldDef worldDef = widget.getWorldDef();
         if (worldDef == null) return;
 
         Vector2 cameraPixels = Dst.getAsPixels(V2.get(widget.getCameraPos()));
@@ -100,19 +100,19 @@ public abstract class PolygonTool extends AbsTool<PolygonToolOperation> {
         V2.claim(cameraPixels);
     }
 
-    @Override public void begin(@NotNull WorldDef worldDef) {
+    @Override public void begin(@NtN WorldDef worldDef) {
         assert pendingOperation == null && initialPosMeters == null;
         initialPosMeters = V2.get(posMeters);
         Vector2 initialTilePos = getPartialTilePos(V2.get(initialPosMeters), worldDef);
         Vector2 tilePos = getPartialTilePos(V2.get(posMeters), worldDef);
         pendingOperation = createOperation(worldDef, initialTilePos, tilePos);
     }
-    @NotNull public abstract PolygonToolOperation createOperation(
-            @NotNull WorldDef worldDef,
-            @NotNull Vector2 initialTilePos,
-            @NotNull Vector2 tilePos
+    @NtN public abstract PolygonToolOperation createOperation(
+            @NtN WorldDef worldDef,
+            @NtN Vector2 initialTilePos,
+            @NtN Vector2 tilePos
     );
-    @Override public void update(@NotNull WorldDef worldDef) {
+    @Override public void update(@NtN WorldDef worldDef) {
         if (pendingOperation != null && initialPosMeters != null) {
             Vector2 initialTilePos = getPartialTilePos(V2.get(initialPosMeters), worldDef);
             Vector2 tilePos = getPartialTilePos(V2.get(posMeters), worldDef);

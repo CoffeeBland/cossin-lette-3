@@ -2,24 +2,24 @@ package com.coffeebland.cossinlette3.game.visual;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.coffeebland.cossinlette3.game.file.CharsetDef;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.BitSet;
 
 public class FlagResolver extends ImageStripResolver {
 
-    @Nullable int[][] flags;
+    @N int[][] flags;
 
-    public FlagResolver(int priority, ImageStrip imageStrip, @Nullable int[][] flags) {
+    public FlagResolver(int priority, ImageStrip imageStrip, @N int[][] flags) {
         super(priority, imageStrip);
         this.flags = flags;
     }
-    public FlagResolver(@NotNull TextureAtlas atlas, int priority, CharsetDef def) {
+    public FlagResolver(@NtN TextureAtlas atlas, int priority, CharsetDef def) {
         this(priority, def.getImageStrip(atlas), def.conditions);
     }
 
-    @Override public boolean conditionsMet(@NotNull BitSet flags) {
+    @Override public boolean conditionsMet(@NtN BitSet flags) {
         if (this.flags == null) return true;
 
         checkFlagSets: for (int[] flagSet : this.flags) {

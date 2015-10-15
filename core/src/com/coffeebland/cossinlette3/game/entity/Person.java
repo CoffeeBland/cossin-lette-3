@@ -11,27 +11,23 @@ import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.file.CharsetDef;
 import com.coffeebland.cossinlette3.game.file.PersonDef;
 import com.coffeebland.cossinlette3.game.visual.ImageStrips;
-import com.coffeebland.cossinlette3.utils.CharsetAtlas;
-import com.coffeebland.cossinlette3.utils.Const;
-import com.coffeebland.cossinlette3.utils.V2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.*;
 
 import java.util.BitSet;
 import java.util.Iterator;
 
 public class Person extends Actor implements GameCamera.PositionSource {
 
-    @Nullable protected Body body;
-    @NotNull protected final BitSet flags = new BitSet();
-    @Nullable protected ImageStrips imageStrips;
+    @N protected Body body;
+    @NtN protected final BitSet flags = new BitSet();
+    @N protected ImageStrips imageStrips;
     protected float speed, speedSquared, orientation, radius;
-    @Nullable protected Vector2 walking;
+    @N protected Vector2 walking;
 
-    @NotNull BodyDef bodyDef;
-    @NotNull FixtureDef fixtureDef;
+    @NtN BodyDef bodyDef;
+    @NtN FixtureDef fixtureDef;
 
-    public Person(@NotNull PersonDef def, @NotNull CharsetAtlas atlas) {
+    public Person(@NtN PersonDef def, @NtN CharsetAtlas atlas) {
         super(def);
         this.speed = def.speed;
         this.speedSquared = speed * speed;
@@ -55,19 +51,19 @@ public class Person extends Actor implements GameCamera.PositionSource {
         }
     }
 
-    @Nullable @Override public Vector2 getPosition() {
+    @N @Override public Vector2 getPosition() {
         return body != null ? body.getPosition() : null;
     }
 
-    @Nullable public ImageStrips getImageStrips() {
+    @N public ImageStrips getImageStrips() {
         return imageStrips;
     }
-    public void setImageStrips(@Nullable ImageStrips imageStrips) {
+    public void setImageStrips(@N ImageStrips imageStrips) {
         this.imageStrips = imageStrips;
         if (imageStrips != null) imageStrips.resolve(flags);
     }
 
-    @Override public void addToWorld(@NotNull GameWorld world) {
+    @Override public void addToWorld(@NtN GameWorld world) {
         super.addToWorld(world);
 
         body = world.getBox2D().createBody(bodyDef);
@@ -104,7 +100,7 @@ public class Person extends Actor implements GameCamera.PositionSource {
      *
      * note that this *will not* actually apply a force if the body has not been created
      */
-    public void move(@NotNull Vector2 orientationVector) {
+    public void move(@NtN Vector2 orientationVector) {
         orientation = orientationVector.angleRad();
         walking = (walking == null ? V2.get() : walking).set(orientationVector).nor().scl(speed);
         animFlag(CharsetDef.FLAG_WALKING);
@@ -116,7 +112,7 @@ public class Person extends Actor implements GameCamera.PositionSource {
         animUnflag(CharsetDef.FLAG_WALKING);
     }
 
-    @Override public void render(@NotNull Batch batch, @NotNull GameCamera camera) {
+    @Override public void render(@NtN Batch batch, @NtN GameCamera camera) {
         while (orientation > Math.PI) orientation -= Math.PI * 2;
         while (orientation <= -Math.PI) orientation += Math.PI * 2;
         Vector2 pos = getPosition();

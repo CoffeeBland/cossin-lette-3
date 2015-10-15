@@ -17,19 +17,19 @@ import java.util.List;
  */
 public class ToolChooser extends HorizontalGroup {
 
-    @NotNull protected Skin skin;
-    @Nullable protected ToolSource toolSource;
-    @NotNull protected ButtonGroup<ImageButton> btns = new ButtonGroup<>();
-    @NotNull protected TextureRegion[] regions;
+    @NtN protected Skin skin;
+    @N protected ToolSource toolSource;
+    @NtN protected ButtonGroup<ImageButton> btns = new ButtonGroup<>();
+    @NtN protected TextureRegion[] regions;
 
-    public ToolChooser(@NotNull Skin skin) {
+    public ToolChooser(@NtN Skin skin) {
         this.skin = skin;
         TextureAtlas.AtlasRegion toolsRegion = skin.getAtlas().findRegion("tools");
         int size = toolsRegion.getRegionHeight();
         regions = toolsRegion.split(size, size)[0];
     }
 
-    public void setSource(@NotNull ToolSource toolSource) {
+    public void setSource(@NtN ToolSource toolSource) {
         clearChildren();
         btns.clear();
 
@@ -54,7 +54,7 @@ public class ToolChooser extends HorizontalGroup {
     }
 
     public interface ToolSource {
-        @NotNull List<Tool> getTools();
+        @NtN List<Tool> getTools();
         int getToolIndex();
         void setToolIndex(int index);
         void listen(ToolSourceListener listener);

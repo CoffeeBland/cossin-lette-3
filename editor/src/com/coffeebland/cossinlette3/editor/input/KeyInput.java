@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public abstract class KeyInput extends InputListener {
-    @NotNull protected final Map<Integer, Long> keycodes = new HashMap<>();
-    @NotNull protected final Set<Integer> relevantKeys;
+    @NtN protected final Map<Integer, Long> keycodes = new HashMap<>();
+    @NtN protected final Set<Integer> relevantKeys;
 
-    public KeyInput(@NotNull Integer... relevantKeys) {
+    public KeyInput(@NtN Integer... relevantKeys) {
         this.relevantKeys = new HashSet<>(Arrays.asList(relevantKeys));
     }
 

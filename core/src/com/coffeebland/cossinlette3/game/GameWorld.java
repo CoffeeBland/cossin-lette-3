@@ -13,13 +13,9 @@ import com.coffeebland.cossinlette3.game.file.PersonDef;
 import com.coffeebland.cossinlette3.game.file.SaveFile;
 import com.coffeebland.cossinlette3.game.file.TilesetDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
-import com.coffeebland.cossinlette3.state.EventManager;
-import com.coffeebland.cossinlette3.utils.CharsetAtlas;
-import com.coffeebland.cossinlette3.utils.Const;
-import com.coffeebland.cossinlette3.utils.Tag;
-import com.coffeebland.cossinlette3.utils.V2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.*;
+import com.coffeebland.cossinlette3.utils.event.EventManager;
+import com.coffeebland.cossinlette3.utils.event.Tag;
 
 import java.util.*;
 
@@ -27,30 +23,30 @@ public class GameWorld {
 
     public static boolean RENDER_DEBUG = false;
 
-    @NotNull protected EventManager eventManager;
-    @NotNull protected AssetManager assetManager;
+    @NtN protected EventManager eventManager;
+    @NtN protected AssetManager assetManager;
 
-    @Nullable protected CharsetAtlas charsetAtlas;
-    @Nullable protected Tileset tileset;
+    @N protected CharsetAtlas charsetAtlas;
+    @N protected Tileset tileset;
 
     protected int width, height;
-    @NotNull protected Color backgroundColor;
+    @NtN protected Color backgroundColor;
 
-    @NotNull protected final World box2D;
-    @NotNull protected final GameCamera camera;
-    @NotNull protected final Box2DDebugRenderer debugRenderer;
+    @NtN protected final World box2D;
+    @NtN protected final GameCamera camera;
+    @NtN protected final Box2DDebugRenderer debugRenderer;
 
-    @Nullable protected Person player;
-    @NotNull protected final List<Actor> actors;
-    @NotNull protected final Map<String, List<Actor>> namedActors;
-    @NotNull protected Comparator<Actor> comparator;
+    @N protected Person player;
+    @NtN protected final List<Actor> actors;
+    @NtN protected final Map<String, List<Actor>> namedActors;
+    @NtN protected Comparator<Actor> comparator;
 
     public GameWorld(
-            @NotNull EventManager eventManager,
-            @NotNull AssetManager assetManager,
-            @NotNull WorldDef def,
-            @NotNull SaveFile saveFile,
-            @NotNull PlayerCreationListener listener
+            @NtN EventManager eventManager,
+            @NtN AssetManager assetManager,
+            @NtN WorldDef def,
+            @NtN SaveFile saveFile,
+            @NtN PlayerCreationListener listener
     ) {
         this.eventManager = eventManager;
         this.assetManager = assetManager;
@@ -74,7 +70,7 @@ public class GameWorld {
         });
     }
 
-    protected void loadAssets(@NotNull WorldDef def) {
+    protected void loadAssets(@NtN WorldDef def) {
         String tilesetAtlasPath = "img/game/" + def.imgSrc + ".atlas";
         String tilesetDefPath = "img/game/" + def.imgSrc + ".tileset.json";
         String charsetAtlasPath = "img/game/charset.atlas";
@@ -90,7 +86,7 @@ public class GameWorld {
             tileset = new Tileset(tilesetAtlas, tilesetDef);
         });
     }
-    protected void createObjects(@NotNull WorldDef def, @NotNull SaveFile saveFile) {
+    protected void createObjects(@NtN WorldDef def, @NtN SaveFile saveFile) {
         assert tileset != null;
         assert charsetAtlas != null;
 
@@ -130,13 +126,13 @@ public class GameWorld {
 
     public int getWidth() { return width; }
     public int getHeight() { return height; }
-    @NotNull public Color getBackgroundColor() { return backgroundColor; }
+    @NtN public Color getBackgroundColor() { return backgroundColor; }
 
-    @NotNull public World getBox2D() { return box2D; }
-    @NotNull public GameCamera getCamera() { return camera; }
-    @Nullable public Person getPlayer() { return player; }
-    @NotNull public List<Actor> getActors() { return actors; }
-    @NotNull public List<Actor> getNamed(@NotNull String name) {
+    @NtN public World getBox2D() { return box2D; }
+    @NtN public GameCamera getCamera() { return camera; }
+    @N public Person getPlayer() { return player; }
+    @NtN public List<Actor> getActors() { return actors; }
+    @NtN public List<Actor> getNamed(@NtN String name) {
         if (namedActors.containsKey(name)) return namedActors.get(name);
         namedActors.put(name, new ArrayList<>());
         return getNamed(name);
@@ -145,7 +141,7 @@ public class GameWorld {
     public void resize(int width, int height) {
         camera.updateToSize(width, height);
     }
-    public void render(@NotNull Batch batch) {
+    public void render(@NtN Batch batch) {
 
         int hW = Gdx.graphics.getWidth() / 2;
         int hH = Gdx.graphics.getHeight() / 2;
@@ -181,6 +177,6 @@ public class GameWorld {
     }
 
     public interface PlayerCreationListener {
-        void onPlayerCreated(@NotNull Person player);
+        void onPlayerCreated(@NtN Person player);
     }
 }

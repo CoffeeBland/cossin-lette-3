@@ -9,16 +9,16 @@ import com.coffeebland.cossinlette3.game.RenderInputMultiplexer;
 import com.coffeebland.cossinlette3.game.entity.Person;
 import com.coffeebland.cossinlette3.game.file.SaveFile;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
-import com.coffeebland.cossinlette3.utils.Tag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
+import com.coffeebland.cossinlette3.utils.event.Tag;
 
 public class GameState extends StateImpl<SaveFile> {
 
-    @Nullable protected GameWorld world;
-    @Nullable protected SaveFile saveFile;
-    @NotNull protected RenderInputMultiplexer input = new RenderInputMultiplexer();
-    @Nullable protected MovementInput movementInput;
+    @N protected GameWorld world;
+    @N protected SaveFile saveFile;
+    @NtN protected RenderInputMultiplexer input = new RenderInputMultiplexer();
+    @N protected MovementInput movementInput;
 
     protected Person player;
 
@@ -27,11 +27,11 @@ public class GameState extends StateImpl<SaveFile> {
     }
 
     @Override public InputProcessor getInputProcessor() { return input; }
-    @NotNull @Override public Color getBackgroundColor() {
+    @NtN @Override public Color getBackgroundColor() {
         return world != null ? world.getBackgroundColor(): super.getBackgroundColor();
     }
 
-    @Override public void onPrepare(@Nullable SaveFile file, StateManager.Notifier notifier) {
+    @Override public void onPrepare(@N SaveFile file, StateManager.Notifier notifier) {
         super.onPrepare(file, notifier);
 
         saveFile = file != null ? file : SaveFile.getNewSaveFile();
@@ -56,7 +56,7 @@ public class GameState extends StateImpl<SaveFile> {
         if (world != null) world.resize(width, height);
     }
 
-    @Override public void render(@NotNull Batch batch) {
+    @Override public void render(@NtN Batch batch) {
         assert world != null;
         world.render(batch);
     }

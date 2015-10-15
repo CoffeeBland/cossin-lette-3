@@ -32,12 +32,12 @@ public class OptionsChooser extends Dialog {
             txtColor;
     SelectBox<String> sltTileset;
     Button btnOk , btnCancel;
-    @NotNull Listener listener;
+    @NtN Listener listener;
 
-    public OptionsChooser(@NotNull String title, @NotNull Skin skin, @NotNull Listener listener) {
+    public OptionsChooser(@NtN String title, @NtN Skin skin, @NtN Listener listener) {
         this(title, skin, null, listener);
     }
-    public OptionsChooser(@NotNull String title, @NotNull Skin skin, @Nullable WorldDef defaults, @NotNull Listener listener) {
+    public OptionsChooser(@NtN String title, @NtN Skin skin, @N WorldDef defaults, @NtN Listener listener) {
         super(title, skin);
         this.listener = listener;
 

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class DirectionalInput extends ActiveableInput implements UpdateableInput {
 
     @Override public boolean update(float delta) {
-        @NotNull Vector2 vec = V2.get();
+        @NtN Vector2 vec = V2.get();
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) vec.add(-1, 0);
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) vec.add(0, 1);
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) vec.add(1, 0);
@@ -21,5 +21,5 @@ public abstract class DirectionalInput extends ActiveableInput implements Update
         V2.claim(vec);
         return handled;
     }
-    public abstract boolean handleOrientation(@NotNull Vector2 direction);
+    public abstract boolean handleOrientation(@NtN Vector2 direction);
 }

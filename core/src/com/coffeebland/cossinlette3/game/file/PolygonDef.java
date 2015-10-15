@@ -2,7 +2,7 @@ package com.coffeebland.cossinlette3.game.file;
 
 import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.utils.Dst;
-import org.jetbrains.annotations.NotNull;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 public class PolygonDef extends ActorDef {
     public float x, y;
@@ -10,7 +10,7 @@ public class PolygonDef extends ActorDef {
 
     public PolygonDef() {}
 
-    public float[] getPixelPoints(@NotNull float[] tmpPoints, @NotNull Vector2 offset) {
+    public float[] getPixelPoints(@NtN float[] tmpPoints, @NtN Vector2 offset) {
         float[] pixelPoints = tmpPoints.length < points.length ? new float[points.length] : tmpPoints;
         for (int i = 0; i < points.length; i+=2) {
             pixelPoints[i] = Dst.getAsPixels(points[i] - offset.x);

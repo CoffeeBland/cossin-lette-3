@@ -1,4 +1,4 @@
-package com.coffeebland.cossinlette3.utils;
+package com.coffeebland.cossinlette3.utils.event;
 
 /**
  * Created by Guillaume on 2015-10-08.

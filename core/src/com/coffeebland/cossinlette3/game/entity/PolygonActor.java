@@ -6,19 +6,19 @@ import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.file.PolygonDef;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.Iterator;
 
 public class PolygonActor extends Actor {
 
-    @Nullable protected Body body;
+    @N protected Body body;
 
-    @NotNull BodyDef bodyDef;
-    @NotNull FixtureDef fixtureDef;
+    @NtN BodyDef bodyDef;
+    @NtN FixtureDef fixtureDef;
 
-    public PolygonActor(@NotNull PolygonDef def) {
+    public PolygonActor(@NtN PolygonDef def) {
         super(def);
 
         bodyDef = new BodyDef();
@@ -33,7 +33,7 @@ public class PolygonActor extends Actor {
         fixtureDef.shape = shape;
     }
 
-    @Override public void addToWorld(@NotNull GameWorld world) {
+    @Override public void addToWorld(@NtN GameWorld world) {
         super.addToWorld(world);
 
         body = world.getBox2D().createBody(bodyDef);

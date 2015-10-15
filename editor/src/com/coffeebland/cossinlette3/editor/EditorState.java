@@ -21,12 +21,12 @@ import com.coffeebland.cossinlette3.game.file.TilesetDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.state.StateImpl;
 import com.coffeebland.cossinlette3.utils.CharsetAtlas;
-import com.coffeebland.cossinlette3.utils.func.Func;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class EditorState extends StateImpl<FileHandle> implements OperationExecutor {
 
@@ -177,7 +177,7 @@ public class EditorState extends StateImpl<FileHandle> implements OperationExecu
         stage.setKeyboardFocus(worldWidget);
     }
 
-    public void setNewWorldDef(int widthMeters, int heightMeters, int tileLayersSize, Color color, @NotNull String imgSrc) {
+    public void setNewWorldDef(int widthMeters, int heightMeters, int tileLayersSize, Color color, @NtN String imgSrc) {
         WorldDef def = new WorldDef();
         def.width = widthMeters;
         def.height = heightMeters;
@@ -217,7 +217,7 @@ public class EditorState extends StateImpl<FileHandle> implements OperationExecu
         worldDef.write(fileHandle);
     }
 
-    @Override public void execute(@NotNull Operation operation, boolean runOp) {
+    @Override public void execute(@NtN Operation operation, boolean runOp) {
         operations.subList(operationIndex, operations.size()).clear();
         if (runOp) operation.execute();
         operations.add(operation);
@@ -236,9 +236,9 @@ public class EditorState extends StateImpl<FileHandle> implements OperationExecu
         }
     }
 
-    @Nullable @Override public InputProcessor getInputProcessor() { return multiplexer; }
+    @Override @N public InputProcessor getInputProcessor() { return multiplexer; }
 
-    @Override public void onTransitionInStart(@Nullable FileHandle fileHandle) {
+    @Override public void onTransitionInStart(@N FileHandle fileHandle) {
         this.fileHandle = fileHandle;
         setWorldDef(worldDef = fileHandle != null ? WorldDef.read(fileHandle) : worldDef);
     }
@@ -250,7 +250,7 @@ public class EditorState extends StateImpl<FileHandle> implements OperationExecu
         viewport.update(width, height, true);
     }
 
-    @Override public void render(@NotNull Batch batch) {
+    @Override public void render(@NtN Batch batch) {
         stage.draw();
     }
     @Override public void update(float delta) {
@@ -278,8 +278,8 @@ public class EditorState extends StateImpl<FileHandle> implements OperationExecu
         rangeKeysOver(Input.Keys.NUM_1, Input.Keys.NUM_9, keycode, worldWidget::setToolIndex);
         return super.keyDown(keycode);
     }
-    protected void rangeKeysOver(int start, int end, int keycode, Func<Integer> func) {
-        if (keycode >= start && keycode <= end) func.apply(keycode - start);
+    protected void rangeKeysOver(int start, int end, int keycode, Consumer<Integer> func) {
+        if (keycode >= start && keycode <= end) func.accept(keycode - start);
     }
 
 }

@@ -28,7 +28,7 @@ public class ActorOptionsChooser extends Dialog {
             NAME_FILTER = (field, c) ->
                     "0123456789abcdefghijklmnopqrstuvwxyz".indexOf(Character.toLowerCase(c)) != -1;
 
-    @NotNull Listener listener;
+    @NtN Listener listener;
 
     TextButton btnOk, btnCancel;
 
@@ -38,10 +38,10 @@ public class ActorOptionsChooser extends Dialog {
     PropTextField txtName, txtRadius, txtSpeed, txtDensity, txtOrientation;
     SelectBox<String> sltCharset;
 
-    public ActorOptionsChooser(@NotNull String title, @NotNull Skin skin, @NotNull Listener listener) {
+    public ActorOptionsChooser(@NtN String title, @NtN Skin skin, @NtN Listener listener) {
         this(title, skin, null, listener);
     }
-    public ActorOptionsChooser(@NotNull String title, @NotNull Skin skin, @Nullable PersonDef def, @NotNull Listener listener) {
+    public ActorOptionsChooser(@NtN String title, @NtN Skin skin, @N PersonDef def, @NtN Listener listener) {
         super(title, skin);
         this.listener = listener;
 
@@ -157,15 +157,15 @@ public class ActorOptionsChooser extends Dialog {
     }
 
     public interface Listener {
-        void result(@NotNull Result result);
+        void result(@NtN Result result);
     }
 
     public static class Result {
-        @Nullable public String name;
+        @N public String name;
         public float radius, speed, density, orientation;
-        @Nullable public String charset;
+        @N public String charset;
 
-        public Result(@Nullable String name, float radius, float speed, float density, float orientation, @Nullable String charset) {
+        public Result(@N String name, float radius, float speed, float density, float orientation, @N String charset) {
             this.name = name;
             this.radius = radius;
             this.speed = speed;
@@ -174,7 +174,7 @@ public class ActorOptionsChooser extends Dialog {
             this.charset = charset;
         }
 
-        public void setFor(@NotNull PersonDef def) {
+        public void setFor(@NtN PersonDef def) {
             def.name = name;
             def.radius = radius;
             def.speed = speed;

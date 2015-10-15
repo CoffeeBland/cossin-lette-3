@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 import com.coffeebland.cossinlette3.utils.Textures;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ public class StateManager {
 
     @SuppressWarnings("AccessStaticViaInstance")
     public <A, S extends State<A>> StateManager(
-            @NotNull TransitionArgs<A, S> args
+            @NtN TransitionArgs<A, S> args
     ) {
         batch = new SpriteBatch();
         batch.setBlendFunction(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
@@ -24,9 +24,9 @@ public class StateManager {
     }
 
     protected final Map<String, State<?>> states = new HashMap<>();
-    @Nullable protected State currentState;
-    @Nullable protected TransitionState<?, ?> transitionState;
-    @NotNull protected Batch batch;
+    @N protected State currentState;
+    @N protected TransitionState<?, ?> transitionState;
+    @NtN protected Batch batch;
 
     public Color getBackgroundColor() {
         if (currentState != null) return currentState.getBackgroundColor();
@@ -57,11 +57,11 @@ public class StateManager {
 
     public static class TransitionArgs<A, S extends State<A>> {
         public float outLength, inLength;
-        @NotNull public Class<S> stateType;
-        @Nullable public A args;
-        @NotNull public Color color;
+        @NtN public Class<S> stateType;
+        @N public A args;
+        @NtN public Color color;
 
-        public TransitionArgs(@NotNull Class<S> stateType) {
+        public TransitionArgs(@NtN Class<S> stateType) {
             this.stateType = stateType;
             color = Color.BLACK;
         }
@@ -78,11 +78,11 @@ public class StateManager {
             inLength = in;
             return this;
         }
-        public TransitionArgs<A, S> setArgs(@Nullable A args) {
+        public TransitionArgs<A, S> setArgs(@N A args) {
             this.args = args;
             return this;
         }
-        public TransitionArgs<A, S> setColor(@NotNull Color color) {
+        public TransitionArgs<A, S> setColor(@NtN Color color) {
             this.color = color;
             return this;
         }
@@ -94,7 +94,7 @@ public class StateManager {
     public class TransitionState<A, S extends State<A>> extends TransitionArgs<A, S> {
         public float remainingOutLength, remainingInLength;
         public boolean hasSwitched = false, prepared;
-        @NotNull public S nextState;
+        @NtN public S nextState;
         public boolean isNewState;
 
         public TransitionState(TransitionArgs<A, S> args) {

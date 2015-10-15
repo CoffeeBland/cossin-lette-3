@@ -4,13 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
-import org.jetbrains.annotations.NotNull;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 public class SaveFile {
 
     public static final String NEW_SAVE_FILE = "new";
     public static final String SAVE_FOLDER = "saves";
-    public static FileHandle getSaveFileHandle(@NotNull String name) {
+    public static FileHandle getSaveFileHandle(@NtN String name) {
         return Gdx.files.local
                 (String.format("%s/%s.save.json", SAVE_FOLDER, name));
     }

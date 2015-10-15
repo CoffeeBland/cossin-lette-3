@@ -19,14 +19,14 @@ import static com.coffeebland.cossinlette3.game.file.TileLayerDef.NO_TILE;
  */
 public class RemoveTool extends TileTool {
 
-    public RemoveTool(@NotNull TileSource tS, @NotNull TileLayerSource tLS) {
+    public RemoveTool(@NtN TileSource tS, @NtN TileLayerSource tLS) {
         super(tS, tLS);
     }
 
-    @NotNull
+    @NtN
     @Override
     public TileToolOperation createOperation(
-            @NotNull WorldDef worldDef,
+            @NtN WorldDef worldDef,
             int startX, int startY, int endX, int endY
     ) {
         return new RemoveOperation(
@@ -39,7 +39,7 @@ public class RemoveTool extends TileTool {
     }
 
     @Override
-    public void drawExtra(@NotNull WorldWidget widget, @NotNull Batch batch, @NotNull Vector2 bl, @NotNull Vector2 tr) {
+    public void drawExtra(@NtN WorldWidget widget, @NtN Batch batch, @NtN Vector2 bl, @NtN Vector2 tr) {
         Textures.drawFilledRect(
                 batch, Color.WHITE,
                 tr.x + 2, bl.y - 4,
@@ -65,8 +65,8 @@ public class RemoveTool extends TileTool {
 
         protected List<RemoveUnit> removedUnits = new ArrayList<>();
 
-        public RemoveOperation(@NotNull TileSource source,
-                               @NotNull WorldDef worldDef,
+        public RemoveOperation(@NtN TileSource source,
+                               @NtN WorldDef worldDef,
                                int tileLayerIndex,
                                int startX, int startY,
                                int endX, int endY,

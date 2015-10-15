@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  * Created by Guillaume on 2015-08-30.
  */
 public interface OperationExecutor {
-    void execute(@NotNull Operation operation, boolean runOp);
+    void execute(@NtN Operation operation, boolean runOp);
     void undo();
     void redo();
 }

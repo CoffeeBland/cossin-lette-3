@@ -11,21 +11,21 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class PolygonToolOperation implements Operation {
 
-    @NotNull WorldDef worldDef;
-    @NotNull Vector2 initialPos;
-    @NotNull Vector2 targetPos;
+    @NtN WorldDef worldDef;
+    @NtN Vector2 initialPos;
+    @NtN Vector2 targetPos;
 
     public PolygonToolOperation(
-            @NotNull WorldDef worldDef,
-            @NotNull Vector2 initialPos,
-            @NotNull Vector2 targetPos
+            @NtN WorldDef worldDef,
+            @NtN Vector2 initialPos,
+            @NtN Vector2 targetPos
     ) {
         this.worldDef = worldDef;
         this.initialPos = initialPos;
         this.targetPos = targetPos;
     }
 
-    public void update(@NotNull Vector2 initialPos, @NotNull Vector2 targetPos) {
+    public void update(@NtN Vector2 initialPos, @NtN Vector2 targetPos) {
         cancel();
         V2.claim(this.initialPos, this.targetPos);
         this.initialPos = initialPos;

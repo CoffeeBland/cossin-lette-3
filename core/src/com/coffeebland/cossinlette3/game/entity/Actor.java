@@ -4,26 +4,26 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.coffeebland.cossinlette3.game.GameCamera;
 import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.file.ActorDef;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.Iterator;
 
 public class Actor {
 
     protected boolean shouldBeRemoved;
-    @Nullable protected GameWorld world;
+    @N protected GameWorld world;
     protected float priority;
-    @Nullable protected String name;
+    @N protected String name;
 
-    public Actor(float priority, @Nullable String name) {
+    public Actor(float priority, @N String name) {
         this.priority = priority;
         this.name = name;
     }
     public Actor(float priority) {
         this(priority, null);
     }
-    public Actor(@NotNull ActorDef def) {
+    public Actor(@NtN ActorDef def) {
         this(def.priority, def.name);
     }
 
@@ -32,7 +32,7 @@ public class Actor {
         this.priority = priority;
     }
 
-    public void addToWorld(@NotNull GameWorld world) {
+    public void addToWorld(@NtN GameWorld world) {
         assert this.world == null;
         shouldBeRemoved = false;
         this.world = world;
@@ -48,7 +48,7 @@ public class Actor {
     public void flagForRemoval() { shouldBeRemoved = true; }
     public boolean shouldBeRemovedFromActors() { return shouldBeRemoved; }
 
-    public void render(@NotNull Batch batch, @NotNull GameCamera camera) { }
+    public void render(@NtN Batch batch, @NtN GameCamera camera) { }
     public void update(float delta) {
 
     }

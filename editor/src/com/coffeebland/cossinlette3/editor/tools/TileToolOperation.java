@@ -9,15 +9,15 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class TileToolOperation implements Operation {
 
-    @NotNull protected WorldDef worldDef;
+    @NtN protected WorldDef worldDef;
     protected int selectedTileX, selectedTileY, selectedWidth, selectedHeight;
-    @NotNull protected TileBlockSource tileBlockSource;
+    @NtN protected TileBlockSource tileBlockSource;
     protected int tileLayerIndex, startX, startY, endX, endY;
     protected boolean fromTop;
 
     public TileToolOperation(
-            @NotNull TileSource source,
-            @NotNull WorldDef worldDef,
+            @NtN TileSource source,
+            @NtN WorldDef worldDef,
             int tileLayerIndex,
             int startX, int startY,
             int endX, int endY,
@@ -55,7 +55,7 @@ public abstract class TileToolOperation implements Operation {
     }
 
     @SuppressWarnings("UnnecessaryLocalVariable")
-    protected void mapOver(@NotNull Mapper mapper) {
+    protected void mapOver(@NtN Mapper mapper) {
         /**
          * s => selected
          * t => tile

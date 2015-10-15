@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.coffeebland.cossinlette3.utils.Tag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
+import com.coffeebland.cossinlette3.utils.event.Tag;
 
 public class MenuState extends StateImpl<Void> {
 
@@ -54,7 +54,7 @@ public class MenuState extends StateImpl<Void> {
         eventManager.post(Tag.ASSETS, notifier::prepared);
     }
 
-    @Override public void render(@NotNull Batch batch) {
+    @Override public void render(@NtN Batch batch) {
         batch.begin();
 
         layerBG.render(batch, time);
@@ -168,7 +168,7 @@ public class MenuState extends StateImpl<Void> {
             return texture == null ? 0 : (int)(texture.getHeight() * ratio);
         }
 
-        @Override public void render(@NotNull Batch batch, float interpolated) {
+        @Override public void render(@NtN Batch batch, float interpolated) {
             if (texture == null) return;
 
             // we have (s * tW) * (s * tH) / (sW * sH) = ratio
@@ -186,7 +186,7 @@ public class MenuState extends StateImpl<Void> {
             this.decal = decal;
         }
 
-        @Override public void render(@NotNull Batch batch, float interpolated) {
+        @Override public void render(@NtN Batch batch, float interpolated) {
             if (texture == null) return;
 
             y = decal * (1 - interpolated);
@@ -208,17 +208,18 @@ public class MenuState extends StateImpl<Void> {
         }
     }
     public class MenuSprite {
-        @Nullable public Texture texture;
+        @N
+        public Texture texture;
         public float x, y;
 
-        public MenuSprite(@NotNull String src) {
+        public MenuSprite(@NtN String src) {
             loadTextxure(src);
         }
-        void loadTextxure(@NotNull String src) {
+        void loadTextxure(@NtN String src) {
             load("img/" + src, Texture.class, img -> texture = img);
         }
 
-        public void render(@NotNull Batch batch, float interpolated) {
+        public void render(@NtN Batch batch, float interpolated) {
             if (texture == null) return;
 
             batch.draw(texture, x, y);

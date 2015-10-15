@@ -1,10 +1,10 @@
 package com.coffeebland.cossinlette3.game.file;
 
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
 
 public class ActorDef {
     public float priority;
-    @Nullable public String name;
+    @N public String name;
 
     public ActorDef() {}
 }

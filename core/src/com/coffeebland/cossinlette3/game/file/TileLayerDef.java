@@ -1,8 +1,8 @@
 package com.coffeebland.cossinlette3.game.file;
 
 import com.coffeebland.cossinlette3.game.entity.Tileset;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.Arrays;
 
@@ -28,7 +28,7 @@ public class TileLayerDef extends ActorDef {
     public long[][][] tiles;
 
     public TileLayerDef() {}
-    public TileLayerDef(@NotNull WorldDef def, @NotNull Tileset tileset, float priority) {
+    public TileLayerDef(@NtN WorldDef def, @NtN Tileset tileset, float priority) {
         tiles = new long
                 [(int)tileset.metersToTile(def.height)]
                 [(int)tileset.metersToTile(def.width)]
@@ -36,8 +36,7 @@ public class TileLayerDef extends ActorDef {
         this.priority = priority;
     }
 
-    @Nullable
-    public long[] getTiles(int x, int y) { return tiles[y][x]; }
+    @N public long[] getTiles(int x, int y) { return tiles[y][x]; }
     @SuppressWarnings("PointlessBitwiseExpression")
     public long getTile(int type, int typeIndex, int tileX, int tileY) {
         return (
@@ -50,6 +49,7 @@ public class TileLayerDef extends ActorDef {
     public void addTile(int x, int y, int type, int typeIndex, int tileX, int tileY, boolean fromTop) {
         addTile(x, y, getTile(type, typeIndex, tileX, tileY), fromTop);
     }
+    @SuppressWarnings("ManualArrayCopy")
     public void addTile(int x, int y, long tile, boolean fromTop) {
         long[] tileDefs = tiles[y][x];
         long[] newTiles = Arrays.copyOf(tileDefs, tileDefs.length + 1);
@@ -81,14 +81,12 @@ public class TileLayerDef extends ActorDef {
             return tileDefs[0];
         }
     }
-    @Nullable
-    public long[] setTile(int x, int y, int type, int typeIndex, int tileX, int tileY) {
+    @N public long[] setTile(int x, int y, int type, int typeIndex, int tileX, int tileY) {
         long[] oldTiles = tiles[y][x];
         tiles[y][x] = new long[] { getTile(type, typeIndex, tileX, tileY) };
         return oldTiles;
     }
-    @Nullable
-    public long[] setTiles(int x, int y, @Nullable long[] newTiles) {
+    @N public long[] setTiles(int x, int y, @N long[] newTiles) {
         long[] oldTiles = tiles[y][x];
         tiles[y][x] = newTiles;
         return oldTiles;

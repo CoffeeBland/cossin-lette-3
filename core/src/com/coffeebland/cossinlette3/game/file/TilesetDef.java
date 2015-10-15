@@ -27,7 +27,7 @@ public class TilesetDef {
 
         public PartialDef() {}
 
-        @NotNull public TextureRegion[][] getRegions(@NotNull TextureAtlas atlas, int tileWidth, int tileHeight) {
+        @NtN public TextureRegion[][] getRegions(@NtN TextureAtlas atlas, int tileWidth, int tileHeight) {
             return Textures.get(atlas, src, tileWidth, tileHeight);
         }
     }

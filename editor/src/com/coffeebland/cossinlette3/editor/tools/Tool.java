@@ -14,12 +14,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Tool {
 
-    @NotNull Vector2 getPosMeters();
-    @Nullable Vector2 getInitialPosMeters();
-    @Nullable Operation getPendingOperation();
+    @NtN Vector2 getPosMeters();
+    @N Vector2 getInitialPosMeters();
+    @N Operation getPendingOperation();
 
-    void draw(@NotNull WorldWidget widget, @NotNull Batch batch);
-    default <T extends Tool> void transferState(@NotNull T tool, @NotNull WorldDef worldDef) {
+    void draw(@NtN WorldWidget widget, @NtN Batch batch);
+    default <T extends Tool> void transferState(@NtN T tool, @NtN WorldDef worldDef) {
         if (tool.getInitialPosMeters() != null && tool.getPendingOperation() != null) {
             getPosMeters().set(tool.getInitialPosMeters());
             tool.cancel();
@@ -31,8 +31,8 @@ public interface Tool {
         }
     }
 
-    void begin(@NotNull WorldDef worldDef);
-    void complete(@NotNull OperationExecutor executor);
+    void begin(@NtN WorldDef worldDef);
+    void complete(@NtN OperationExecutor executor);
     void cancel();
-    void update(@NotNull WorldDef worldDef);
+    void update(@NtN WorldDef worldDef);
 }

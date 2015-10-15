@@ -24,17 +24,17 @@ public class TileChooser extends Widget implements TileSource {
     public static final int WIDTH = 12 * (24 + 1) + 1;
     public static final Color TILE_BG = new Color(0, 0, 0, 0.2f);
 
-    @NotNull protected Tileset tileset;
+    @NtN protected Tileset tileset;
     protected int tilesX;
     protected float cumulatedSeconds = 0;
     protected long lastNano;
 
-    @NotNull protected final List<TileBlock<?>> tileBlocks = new ArrayList<>();
+    @NtN protected final List<TileBlock<?>> tileBlocks = new ArrayList<>();
     protected int selectedBlockIndex = 0,
             selectedTileX = 0, selectedTileY = 0,
             selectedWidth = 1, selectedHeight = 1;
 
-    public TileChooser(@NotNull Tileset tileset) {
+    public TileChooser(@NtN Tileset tileset) {
         this.tileset = tileset;
         tilesX = Math.max(WIDTH / (tileset.getTileSizePixels() + 1), 1);
 
@@ -144,7 +144,7 @@ public class TileChooser extends Widget implements TileSource {
         return (block.tileDrawY + block.getTilesY()) * (tileset.getTileSizePixels() + 1) + 1;
     }
 
-    @Override @NotNull public Tileset getTileset() { return tileset; }
+    @Override @NtN public Tileset getTileset() { return tileset; }
     @Override public TileBlockSource getTileBlockSource() { return tileBlocks.get(selectedBlockIndex); }
     @Override public int getSelectedTileX() {
         TileBlock tileBlock = tileBlocks.get(selectedBlockIndex);
@@ -186,18 +186,18 @@ public class TileChooser extends Widget implements TileSource {
     public abstract class TileBlock<T extends Tileset.Regions> implements TileBlockSource {
 
         protected int tileDrawX, tileDrawY;
-        protected @NotNull T regions;
+        protected @NtN T regions;
         protected int block;
         protected int type, typeIndex;
 
-        public TileBlock(@NotNull T regions, int block, int type, int typeIndex) {
+        public TileBlock(@NtN T regions, int block, int type, int typeIndex) {
             this.regions = regions;
             this.block = block;
             this.type = type;
             this.typeIndex = typeIndex;
         }
 
-        public void drawBackground(@NotNull Batch batch) {
+        public void drawBackground(@NtN Batch batch) {
             Textures.drawFilledRect(
                     batch, TILE_BG,
                     getDrawX(tileDrawX),
@@ -206,8 +206,8 @@ public class TileChooser extends Widget implements TileSource {
                     getTilesY() * (tileset.getTileSizePixels() + 1) - 1
             );
         }
-        public abstract void draw(@NotNull Batch batch);
-        public void drawSelection(@NotNull Batch batch) {
+        public abstract void draw(@NtN Batch batch);
+        public void drawSelection(@NtN Batch batch) {
             Textures.drawRect(
                     batch, Color.WHITE,
                     getDrawX(tileDrawX + selectedTileX),
@@ -253,13 +253,13 @@ public class TileChooser extends Widget implements TileSource {
     }
     public class StillBlock<T extends Tileset.Regions> extends TileBlock<T> {
 
-        public StillBlock(@NotNull T regions, int block, int type, int typeIndex) {
+        public StillBlock(@NtN T regions, int block, int type, int typeIndex) {
             super(regions, block, type, typeIndex);
         }
 
         @SuppressWarnings("UnnecessaryLocalVariable")
         @Override
-        public void draw(@NotNull Batch batch) {
+        public void draw(@NtN Batch batch) {
             int tilePixels = tileset.getTileSizePixels();
             int varsTilesX = getTilesX();
             int varsTilesY = getTilesY();
@@ -297,7 +297,7 @@ public class TileChooser extends Widget implements TileSource {
     }
     public class VariationBlock<T extends Tileset.VariationRegions> extends TileBlock<T> {
 
-        public VariationBlock(@NotNull T vars, int block, int type, int typeIndex) {
+        public VariationBlock(@NtN T vars, int block, int type, int typeIndex) {
             super(vars, block, type, typeIndex);
         }
 
@@ -307,7 +307,7 @@ public class TileChooser extends Widget implements TileSource {
         public int getFrameOffset(float cumulatedSeconds) {
             return (int)((cumulatedSeconds) % regions.getFrameCount()) * getTilesY();
         }
-        @Override public void draw(@NotNull Batch batch) {
+        @Override public void draw(@NtN Batch batch) {
             int tilePixels = tileset.getTileSizePixels();
             int offset = getFrameOffset(cumulatedSeconds);
 
@@ -329,7 +329,7 @@ public class TileChooser extends Widget implements TileSource {
     }
     public class AnimationBlock<T extends Tileset.AnimationRegions> extends VariationBlock<T> {
 
-        public AnimationBlock(@NotNull T vars, int block, int type, int typeIndex) {
+        public AnimationBlock(@NtN T vars, int block, int type, int typeIndex) {
             super(vars, block, type, typeIndex);
         }
 

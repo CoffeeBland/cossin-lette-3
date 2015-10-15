@@ -8,8 +8,8 @@ import com.coffeebland.cossinlette3.game.GameCamera;
 import com.coffeebland.cossinlette3.game.GameWorld;
 import com.coffeebland.cossinlette3.game.file.TileLayerDef;
 import com.coffeebland.cossinlette3.utils.Dst;
+import com.coffeebland.cossinlette3.utils.NtN;
 import com.coffeebland.cossinlette3.utils.V2;
-import org.jetbrains.annotations.NotNull;
 
 import static com.coffeebland.cossinlette3.game.file.TileLayerDef.*;
 
@@ -20,13 +20,13 @@ public class TileLayer extends Actor {
             TYPE_VAR = 1,
             TYPE_ANIM = 2;
 
-    @NotNull protected long[][][] tiles;
-    @NotNull protected Tileset tileset;
+    @NtN protected long[][][] tiles;
+    @NtN protected Tileset tileset;
     
     protected float cumulatedSeconds = 0;
-    @NotNull protected Row[] rows;
+    @NtN protected Row[] rows;
 
-    public TileLayer(@NotNull TileLayerDef def, @NotNull Tileset tileset) {
+    public TileLayer(@NtN TileLayerDef def, @NtN Tileset tileset) {
         super(def);
 
         this.tiles = def.tiles;
@@ -37,14 +37,14 @@ public class TileLayer extends Actor {
         }
     }
 
-    @NotNull public Tileset getTileset() {
+    @NtN public Tileset getTileset() {
         return tileset;
     }
-    @NotNull public Row[] getRows() {
+    @NtN public Row[] getRows() {
         return rows;
     }
 
-    @Override public void addToWorld(@NotNull GameWorld world) {
+    @Override public void addToWorld(@NtN GameWorld world) {
         super.addToWorld(world);
         for (Row row : rows) row.addToWorld(world);
     }
@@ -70,7 +70,7 @@ public class TileLayer extends Actor {
         }
 
         @SuppressWarnings("PointlessBitwiseExpression")
-        @Override public void render(@NotNull Batch batch, @NotNull GameCamera camera) {
+        @Override public void render(@NtN Batch batch, @NtN GameCamera camera) {
             super.render(batch, camera);
             int halfWidth = Gdx.graphics.getWidth() / 2;
             int halfHeight = Gdx.graphics.getHeight() / 2;
@@ -78,7 +78,7 @@ public class TileLayer extends Actor {
         }
 
         @SuppressWarnings("PointlessBitwiseExpression")
-        public void render(@NotNull Batch batch, @NotNull Vector2 pos, float minX, float maxX, float minY, float maxY) {
+        public void render(@NtN Batch batch, @NtN Vector2 pos, float minX, float maxX, float minY, float maxY) {
             Vector2 posPix = Dst.getAsPixels(V2.get(pos));
             render: {
                 int tilePix = tileset.getTileSizePixels();

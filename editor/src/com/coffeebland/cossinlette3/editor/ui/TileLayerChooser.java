@@ -16,21 +16,21 @@ import java.util.List;
 
 public class TileLayerChooser extends HorizontalGroup implements TileLayerSource {
 
-    @NotNull protected List<TileLayerDef> tileLayerDefs = new ArrayList<>();
-    @NotNull protected Skin skin;
+    @NtN protected List<TileLayerDef> tileLayerDefs = new ArrayList<>();
+    @NtN protected Skin skin;
 
-    @NotNull protected ButtonGroup<TextButton> btns = new ButtonGroup<>();
+    @NtN protected ButtonGroup<TextButton> btns = new ButtonGroup<>();
 
     protected int selectedTileLayer;
 
-    public TileLayerChooser(@NotNull Skin skin) {
+    public TileLayerChooser(@NtN Skin skin) {
         this.skin = skin;
     }
 
-    @NotNull public List<TileLayerDef> getTileLayers() {
+    @NtN public List<TileLayerDef> getTileLayers() {
         return tileLayerDefs;
     }
-    @Nullable public TileLayerDef getTileLayer() {
+    @N public TileLayerDef getTileLayer() {
         return tileLayerDefs.size() > 0 ? tileLayerDefs.get(selectedTileLayer) : null;
     }
 
@@ -44,7 +44,7 @@ public class TileLayerChooser extends HorizontalGroup implements TileLayerSource
         return true;
     }
 
-    public void updateToTileLayers(@NotNull WorldDef worldDef) {
+    public void updateToTileLayers(@NtN WorldDef worldDef) {
         this.tileLayerDefs = worldDef.tileLayers;
         clearChildren();
         btns.clear();

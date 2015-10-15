@@ -11,15 +11,15 @@ import org.jetbrains.annotations.Nullable;
  * Created by Guillaume on 2015-09-24.
  */
 public abstract class AbsTool<Op extends Operation> implements Tool {
-    @NotNull protected Vector2 posMeters = V2.get();
-    @Nullable protected Vector2 initialPosMeters;
-    @Nullable protected Op pendingOperation;
+    @NtN protected Vector2 posMeters = V2.get();
+    @N protected Vector2 initialPosMeters;
+    @N protected Op pendingOperation;
 
-    @Override @NotNull public Vector2 getPosMeters() { return posMeters; }
-    @Override @Nullable public Vector2 getInitialPosMeters() { return initialPosMeters; }
-    @Override @Nullable public Op getPendingOperation() { return pendingOperation; }
+    @Override @NtN public Vector2 getPosMeters() { return posMeters; }
+    @Override @N public Vector2 getInitialPosMeters() { return initialPosMeters; }
+    @Override @N public Op getPendingOperation() { return pendingOperation; }
 
-    @Override public void complete(@NotNull OperationExecutor executor) {
+    @Override public void complete(@NtN OperationExecutor executor) {
         if (pendingOperation != null && initialPosMeters != null) {
             executor.execute(pendingOperation, false);
             pendingOperation = null;

@@ -7,7 +7,7 @@ import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
 
 /**
  * Created by Guillaume on 2015-10-10.
@@ -30,8 +30,7 @@ public class WorldDefLoader extends AsynchronousAssetLoader<WorldDef, WorldDefLo
         return worldDef;
     }
 
-    @Nullable
-    @Override
+    @N @Override
     public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, WorldDefParameter parameter) {
         return null;
     }

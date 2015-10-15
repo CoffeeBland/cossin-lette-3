@@ -8,9 +8,9 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.coffeebland.cossinlette3.utils.FontUtil;
-import com.coffeebland.cossinlette3.utils.Tag;
+import com.coffeebland.cossinlette3.utils.NtN;
 import com.coffeebland.cossinlette3.utils.Textures;
-import org.jetbrains.annotations.NotNull;
+import com.coffeebland.cossinlette3.utils.event.Tag;
 
 import static com.coffeebland.cossinlette3.utils.Const.PADDING;
 
@@ -55,7 +55,7 @@ public class SplashState extends AutoSwitchState {
     }
 
     @Override
-    public void render(@NotNull Batch batch) {
+    public void render(@NtN Batch batch) {
         batch.begin();
 
         float imgX = (Gdx.graphics.getWidth() / 2) - (logo.getWidth() / 2);

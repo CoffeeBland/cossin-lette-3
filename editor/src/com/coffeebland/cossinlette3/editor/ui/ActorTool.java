@@ -24,25 +24,25 @@ import java.util.Set;
 public class ActorTool extends AbsTool<Operation> {
 
     protected float iterationsSinceClick;
-    @Nullable protected Vector2 lastPos;
-    @NotNull protected Set<PersonDef> clicked = new HashSet<>();
-    @NotNull protected Set<PersonDef> invalidated = new HashSet<>();
-    @NotNull protected Stage stage;
-    @NotNull protected Skin skin;
+    @N protected Vector2 lastPos;
+    @NtN protected Set<PersonDef> clicked = new HashSet<>();
+    @NtN protected Set<PersonDef> invalidated = new HashSet<>();
+    @NtN protected Stage stage;
+    @NtN protected Skin skin;
 
-    public ActorTool(@NotNull Stage stage, @NotNull Skin skin) {
+    public ActorTool(@NtN Stage stage, @NtN Skin skin) {
         this.stage = stage;
         this.skin = skin;
     }
 
     @Override
-    public void draw(@NotNull WorldWidget widget, @NotNull Batch batch) {
+    public void draw(@NtN WorldWidget widget, @NtN Batch batch) {
         invalidated.stream().forEach(widget.charsets::remove);
         invalidated.clear();
     }
 
     @Override
-    public void begin(@NotNull WorldDef worldDef) {
+    public void begin(@NtN WorldDef worldDef) {
         assert initialPosMeters == null;
         initialPosMeters = V2.get(posMeters);
 
@@ -79,7 +79,7 @@ public class ActorTool extends AbsTool<Operation> {
     }
 
     @Override
-    public void update(@NotNull WorldDef worldDef) {
+    public void update(@NtN WorldDef worldDef) {
         iterationsSinceClick++;
         if (initialPosMeters != null) {
             Vector2 diff = V2.get(posMeters).sub(initialPosMeters);
@@ -94,7 +94,7 @@ public class ActorTool extends AbsTool<Operation> {
     }
 
     @Override
-    public void complete(@NotNull OperationExecutor executor) {
+    public void complete(@NtN OperationExecutor executor) {
         if (initialPosMeters != null) {
             V2.claim(initialPosMeters);
             initialPosMeters = null;

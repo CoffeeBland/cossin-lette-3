@@ -20,11 +20,11 @@ import java.util.Stack;
  */
 public class RemovePolygonTool extends AbsTool<RemovePolygonTool.RemovePolygonOperation> {
 
-    @NotNull Color color = new Color(1, 0, 1, 0.5f);
+    @NtN Color color = new Color(1, 0, 1, 0.5f);
 
     public RemovePolygonTool() {}
 
-    protected void drawRect(@NotNull WorldWidget widget, @NotNull Batch batch) {
+    protected void drawRect(@NtN WorldWidget widget, @NtN Batch batch) {
         Vector2 minPix;
         Vector2 maxPix;
         if (initialPosMeters == null) {
@@ -45,12 +45,12 @@ public class RemovePolygonTool extends AbsTool<RemovePolygonTool.RemovePolygonOp
         V2.claim(minPix, maxPix, cameraPixels);
     }
     @Override
-    public void draw(@NotNull WorldWidget widget, @NotNull Batch batch) {
+    public void draw(@NtN WorldWidget widget, @NtN Batch batch) {
         drawRect(widget, batch);
     }
 
     @Override
-    public void begin(@NotNull WorldDef worldDef) {
+    public void begin(@NtN WorldDef worldDef) {
         assert pendingOperation == null && initialPosMeters == null;
         initialPosMeters = V2.get(posMeters);
         pendingOperation = new RemovePolygonOperation(worldDef, V2.get(initialPosMeters), V2.get(posMeters));
@@ -58,7 +58,7 @@ public class RemovePolygonTool extends AbsTool<RemovePolygonTool.RemovePolygonOp
     }
 
     @Override
-    public void update(@NotNull WorldDef worldDef) {
+    public void update(@NtN WorldDef worldDef) {
         if (pendingOperation != null && initialPosMeters != null) {
             pendingOperation.update(V2.get(initialPosMeters), V2.get(posMeters));
         }
@@ -72,9 +72,9 @@ public class RemovePolygonTool extends AbsTool<RemovePolygonTool.RemovePolygonOp
         }
 
         Stack<RemoveUnit> unitsStack = new Stack<>();
-        @Nullable Vector2 bl, tl, tr, br;
+        @N Vector2 bl, tl, tr, br;
 
-        public RemovePolygonOperation(@NotNull WorldDef worldDef, @NotNull Vector2 initialPos, @NotNull Vector2 targetPos) {
+        public RemovePolygonOperation(@NtN WorldDef worldDef, @NtN Vector2 initialPos, @NtN Vector2 targetPos) {
             super(worldDef, initialPos, targetPos);
         }
 
@@ -96,8 +96,8 @@ public class RemovePolygonTool extends AbsTool<RemovePolygonTool.RemovePolygonOp
         }
 
         protected boolean contains(
-                @NotNull Vector2 a1, @NotNull Vector2 a2,
-                @NotNull Vector2 b) {
+                @NtN Vector2 a1, @NtN Vector2 a2,
+                @NtN Vector2 b) {
             float minX = Math.min(a1.x, a2.x);
             float maxX = Math.max(a1.x, a2.x);
             float minY = Math.min(a1.y, a2.y);
@@ -109,8 +109,8 @@ public class RemovePolygonTool extends AbsTool<RemovePolygonTool.RemovePolygonOp
                     && b.y < maxY;
         }
         protected boolean intersectLines(
-                @NotNull Vector2 a1, @NotNull Vector2 a2,
-                @NotNull Vector2 b1, @NotNull Vector2 b2
+                @NtN Vector2 a1, @NtN Vector2 a2,
+                @NtN Vector2 b1, @NtN Vector2 b2
         ) {
             Vector2 tmp = V2.get();
             boolean result = false;

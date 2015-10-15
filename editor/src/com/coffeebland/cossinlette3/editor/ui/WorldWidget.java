@@ -42,34 +42,34 @@ public class WorldWidget
     protected boolean displayOpaque = false;
     protected Color rowColor = new Color(0.75f, 0.75f, 0.75f, 1);
 
-    @NotNull protected CharsetAtlas charsetAtlas;
-    @NotNull protected Tileset tileset;
-    @NotNull protected TileLayerSource tileLayerSource;
-    @NotNull protected OperationExecutor operationExecutor;
-    @Nullable protected WorldDef worldDef;
-    @NotNull protected Map<ActorDef, Charset> charsets = new HashMap<>();
-    @Nullable protected List<TileLayer> tileLayers;
-    @NotNull protected Vector2 cameraPos = V2.get();
-    @NotNull protected KeyInput keyInputListener;
-    @Nullable protected ToolChooser.ToolSourceListener toolListener;
+    @NtN protected CharsetAtlas charsetAtlas;
+    @NtN protected Tileset tileset;
+    @NtN protected TileLayerSource tileLayerSource;
+    @NtN protected OperationExecutor operationExecutor;
+    @N protected WorldDef worldDef;
+    @NtN protected Map<ActorDef, Charset> charsets = new HashMap<>();
+    @N protected List<TileLayer> tileLayers;
+    @NtN protected Vector2 cameraPos = V2.get();
+    @NtN protected KeyInput keyInputListener;
+    @N protected ToolChooser.ToolSourceListener toolListener;
 
     protected List<Tool> tools;
     protected int currentToolIndex;
     protected float cameraSpeed = 5f;
     protected float[] tmpPoints;
 
-    @NotNull protected final Rectangle widgetAreaBounds = new Rectangle();
-    @NotNull protected final Rectangle scissorBounds = new Rectangle();
-    @NotNull protected ShapeRenderer shapeRenderer = new ShapeRenderer();
-    @NotNull protected Color polygonsBG = new Color(1/2, 0, 1/2, 1), polygonsFG = new Color(1, 1/2, 1, 1);
+    @NtN protected final Rectangle widgetAreaBounds = new Rectangle();
+    @NtN protected final Rectangle scissorBounds = new Rectangle();
+    @NtN protected ShapeRenderer shapeRenderer = new ShapeRenderer();
+    @NtN protected Color polygonsBG = new Color(1/2, 0, 1/2, 1), polygonsFG = new Color(1, 1/2, 1, 1);
 
     public WorldWidget(
-            @NotNull Stage stage, @NotNull Skin skin,
-            @NotNull CharsetAtlas charsetAtlas,
-            @NotNull Tileset tileset,
-            @NotNull TileLayerSource tileLayerSource,
-            @NotNull TileSource tileSource,
-            @NotNull OperationExecutor operationExecutor) {
+            @NtN Stage stage, @NtN Skin skin,
+            @NtN CharsetAtlas charsetAtlas,
+            @NtN Tileset tileset,
+            @NtN TileLayerSource tileLayerSource,
+            @NtN TileSource tileSource,
+            @NtN OperationExecutor operationExecutor) {
         this.charsetAtlas = charsetAtlas;
         this.tileset = tileset;
         this.tileLayerSource = tileLayerSource;
@@ -123,12 +123,12 @@ public class WorldWidget
         addListener(this);
     }
 
-    @Nullable public WorldDef getWorldDef() { return worldDef; }
-    @NotNull public Vector2 getCameraPos() { return cameraPos; }
+    @N public WorldDef getWorldDef() { return worldDef; }
+    @NtN public Vector2 getCameraPos() { return cameraPos; }
     public void setDisplayOpaque(boolean opaque) { displayOpaque = opaque; }
     public boolean isDisplayOpaque() { return displayOpaque; }
 
-    @Override @NotNull public List<Tool> getTools() {
+    @Override @NtN public List<Tool> getTools() {
         return tools;
     }
     @Override public int getToolIndex() {
@@ -147,7 +147,7 @@ public class WorldWidget
         toolListener = listener;
     }
 
-    public void resetToWorldDef(@Nullable WorldDef def) {
+    public void resetToWorldDef(@N WorldDef def) {
         worldDef = def;
         charsets.clear();
         cameraPos.setZero();
@@ -160,7 +160,7 @@ public class WorldWidget
         }
     }
 
-    protected void drawBackground(@NotNull Batch batch) {
+    protected void drawBackground(@NtN Batch batch) {
         assert worldDef != null;
 
         Textures.drawFilledRect(batch,
@@ -169,7 +169,7 @@ public class WorldWidget
                 getWidth(), getHeight()
         );
     }
-    protected void drawBounds(@NotNull Batch batch) {
+    protected void drawBounds(@NtN Batch batch) {
         assert worldDef != null;
 
         Textures.drawRect(batch,
@@ -181,7 +181,7 @@ public class WorldWidget
                 1
         );
     }
-    protected void drawPolygons(@NotNull Batch batch, @NotNull Vector2 offsetPos) {
+    protected void drawPolygons(@NtN Batch batch, @NtN Vector2 offsetPos) {
         assert worldDef != null;
 
         if (isDisplayOpaque()) return;
@@ -193,7 +193,7 @@ public class WorldWidget
         shapeRenderer.end();
         batch.begin();
     }
-    protected void drawPolygon(@NotNull Vector2 offsetPos, @NotNull PolygonDef def, Color color, float width) {
+    protected void drawPolygon(@NtN Vector2 offsetPos, @NtN PolygonDef def, Color color, float width) {
         if (tmpPoints == null) tmpPoints = new float[def.points.length];
         tmpPoints = def.getPixelPoints(tmpPoints, offsetPos);
         shapeRenderer.setColor(color);
@@ -223,7 +223,7 @@ public class WorldWidget
             V2.claim(diagonal);
         }
     }
-    protected void drawPeople(@NotNull Batch batch, @NotNull Vector2 offsetPos) {
+    protected void drawPeople(@NtN Batch batch, @NtN Vector2 offsetPos) {
         assert worldDef != null;
 
         Collections.sort(worldDef.people, (lhs, rhs) -> Float.compare(rhs.y, lhs.y));
@@ -245,13 +245,13 @@ public class WorldWidget
         Color.WHITE.a = 1;
         batch.setColor(Color.WHITE);
     }
-    protected void drawPerson(@NotNull Vector2 offsetPos, @NotNull PersonDef def, Color color) {
+    protected void drawPerson(@NtN Vector2 offsetPos, @NtN PersonDef def, Color color) {
         Vector2 pixelPos = Dst.getAsPixels(V2.get(def.x, def.y).sub(offsetPos));
         shapeRenderer.setColor(color);
         shapeRenderer.circle(pixelPos.x, pixelPos.y, Dst.getAsPixels(def.radius));
         V2.claim(pixelPos);
     }
-    protected void drawPersonCharset(@NotNull Batch batch, @NotNull Vector2 offsetPos, @NotNull PersonDef def) {
+    protected void drawPersonCharset(@NtN Batch batch, @NtN Vector2 offsetPos, @NtN PersonDef def) {
         Vector2 pixelPos = Dst.getAsPixels(V2.get(def.x, def.y).sub(offsetPos));
 
         if (def.hasCharset()) {
@@ -266,7 +266,7 @@ public class WorldWidget
 
         V2.claim(pixelPos);
     }
-    protected void drawTiles(@NotNull Batch batch, @NotNull Vector2 offsetPos) {
+    protected void drawTiles(@NtN Batch batch, @NtN Vector2 offsetPos) {
         assert tileLayers != null;
 
         for (int i = 0; i < tileLayers.size(); i++) {

@@ -6,8 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.editor.ui.TileLayerSource;
 import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
+import com.coffeebland.cossinlette3.utils.NtN;
 import com.coffeebland.cossinlette3.utils.Textures;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
@@ -16,14 +16,14 @@ import java.util.Random;
  */
 public class AddTool extends TileTool {
 
-    public AddTool(@NotNull TileSource tS, @NotNull TileLayerSource tLS) {
+    public AddTool(@NtN TileSource tS, @NtN TileLayerSource tLS) {
         super(tS, tLS);
     }
 
-    @NotNull
     @Override
+    @NtN
     public TileToolOperation createOperation(
-            @NotNull WorldDef worldDef,
+            @NtN WorldDef worldDef,
             int startX, int startY, int endX, int endY
     ) {
         return new AddOperation(
@@ -36,7 +36,7 @@ public class AddTool extends TileTool {
     }
 
     @Override
-    public void drawExtra(@NotNull WorldWidget widget, @NotNull Batch batch, @NotNull Vector2 bl, @NotNull Vector2 tr) {
+    public void drawExtra(@NtN WorldWidget widget, @NtN Batch batch, @NtN Vector2 bl, @NtN Vector2 tr) {
         Textures.drawFilledRect(
                 batch, Color.WHITE,
                 tr.x + 2, bl.y - 4,
@@ -68,8 +68,8 @@ public class AddTool extends TileTool {
         protected Random rnd = new Random();
 
         public AddOperation(
-                @NotNull TileSource source,
-                @NotNull WorldDef worldDef,
+                @NtN TileSource source,
+                @NtN WorldDef worldDef,
                 int tileLayerIndex,
                 int startX, int startY,
                 int endX, int endY,

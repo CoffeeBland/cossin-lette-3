@@ -8,7 +8,7 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
 
 /**
  * Created by Guillaume on 2015-10-10.
@@ -31,8 +31,7 @@ public class TilesetDefLoader extends AsynchronousAssetLoader<TilesetDef, Tilese
         return tilesetDef;
     }
 
-    @Nullable
-    @Override
+    @N @Override
     public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, TilesetDefParameter parameter) {
         return null;
     }

@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.game.file.TilesetDef;
 import com.coffeebland.cossinlette3.utils.Dst;
-import org.jetbrains.annotations.NotNull;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.stream.Stream;
 
@@ -17,7 +17,7 @@ public class Tileset {
     protected VariationRegions[] variations;
     protected AnimationRegions[] animations;
 
-    public Tileset(@NotNull TextureAtlas atlas, @NotNull TilesetDef def) {
+    public Tileset(@NtN TextureAtlas atlas, @NtN TilesetDef def) {
         this.tileSize = def.tileSize;
         this.tileSizePixels = (int) Dst.getAsPixels(tileSize);
 
@@ -40,25 +40,25 @@ public class Tileset {
     public float metersToTile(float meters) {
         return meters / tileSize;
     }
-    @NotNull public Vector2 metersToTile(@NotNull Vector2 meters) {
+    @NtN public Vector2 metersToTile(@NtN Vector2 meters) {
         return meters.scl(1f / tileSize);
     }
     public float tileToMeters(float tile) {
         return tile * tileSize;
     }
-    @NotNull public Vector2 tileToMeters(@NotNull Vector2 tiles) {
+    @NtN public Vector2 tileToMeters(@NtN Vector2 tiles) {
         return tiles.scl(tileSize);
     }
     public float pixToTile(float pixels) {
         return pixels / tileSizePixels;
     }
-    @NotNull public Vector2 pixToTile(@NotNull Vector2 pixels) {
+    @NtN public Vector2 pixToTile(@NtN Vector2 pixels) {
         return pixels.scl(1f / tileSizePixels);
     }
     public float tileToPix(float tile) {
         return tile * tileSizePixels;
     }
-    @NotNull public Vector2 tileToPix(Vector2 tiles) {
+    @NtN public Vector2 tileToPix(Vector2 tiles) {
         return tiles.scl(tileSizePixels);
     }
 
@@ -76,7 +76,7 @@ public class Tileset {
         protected TextureRegion[][] regions;
         protected int tilesX, tilesY;
 
-        public Regions(@NotNull TilesetDef.PartialDef def, int tileSize, @NotNull TextureAtlas atlas) {
+        public Regions(@NtN TilesetDef.PartialDef def, int tileSize, @NtN TextureAtlas atlas) {
             this.regions = def.getRegions(atlas, tileSize, tileSize);
             this.tilesX = regions[0].length;
             this.tilesY = regions.length;
@@ -90,7 +90,7 @@ public class Tileset {
     public static class VariationRegions extends Regions {
         protected int frameCount;
 
-        public VariationRegions(@NotNull TilesetDef.VariationDef def, int tileSize, @NotNull TextureAtlas atlas) {
+        public VariationRegions(@NtN TilesetDef.VariationDef def, int tileSize, @NtN TextureAtlas atlas) {
             super(def, tileSize, atlas);
             this.tilesX = def.tilesX;
             this.tilesY = def.tilesY;
@@ -103,11 +103,10 @@ public class Tileset {
     public static class AnimationRegions extends VariationRegions {
         protected float fps;
 
-        public AnimationRegions(@NotNull TilesetDef.AnimationDef def, int tileSize, @NotNull TextureAtlas atlas) {
+        public AnimationRegions(@NtN TilesetDef.AnimationDef def, int tileSize, @NtN TextureAtlas atlas) {
             super(def, tileSize, atlas);
             this.fps = def.fps;
         }
-        public float getFps() { return fps; }
 
         public int getFrameOffset(float cumulatedSeconds) {
             return (int)((cumulatedSeconds * fps) % frameCount) * tilesY;

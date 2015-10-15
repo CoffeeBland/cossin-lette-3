@@ -3,8 +3,8 @@ package com.coffeebland.cossinlette3.game.file;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.coffeebland.cossinlette3.game.visual.ImageStrip;
 import com.coffeebland.cossinlette3.game.visual.OrientationFrame;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class CharsetDef {
     public float fps;
     public int[] orientations;
     protected List<OrientationFrame> frames;
-    @Nullable public int[][] conditions;
+    @N public int[][] conditions;
     protected ImageStrip imageStrip;
 
     public CharsetDef() {}
@@ -44,7 +44,7 @@ public class CharsetDef {
 
         return frames;
     }
-    @NotNull public ImageStrip getImageStrip(@NotNull TextureAtlas atlas) {
+    @NtN public ImageStrip getImageStrip(@NtN TextureAtlas atlas) {
         if (imageStrip != null) return imageStrip;
 
         return new ImageStrip(

@@ -10,9 +10,9 @@ import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.utils.Dst;
+import com.coffeebland.cossinlette3.utils.NtN;
 import com.coffeebland.cossinlette3.utils.Textures;
 import com.coffeebland.cossinlette3.utils.V2;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,10 +24,10 @@ public abstract class TileTool extends AbsTool<TileToolOperation> {
         return !(Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT));
     }
 
-    @NotNull protected TileSource tileSource;
-    @NotNull protected TileLayerSource tileLayerSource;
+    @NtN protected TileSource tileSource;
+    @NtN protected TileLayerSource tileLayerSource;
 
-    public TileTool(@NotNull TileSource tileSource, @NotNull TileLayerSource tileLayerSource) {
+    public TileTool(@NtN TileSource tileSource, @NtN TileLayerSource tileLayerSource) {
         this.tileSource = tileSource;
         this.tileLayerSource = tileLayerSource;
     }
@@ -36,8 +36,8 @@ public abstract class TileTool extends AbsTool<TileToolOperation> {
      * Mutates the vector to correspond to the tile position of the meters given;
      * the position is clamped inside the def, and is floored to the nearest integers
      */
-    @NotNull public Vector2 getTilePos(@NotNull Vector2 posMeters, @NotNull WorldDef worldDef) {
-        @NotNull Tileset ts = tileSource.getTileset();
+    @NtN public Vector2 getTilePos(@NtN Vector2 posMeters, @NtN WorldDef worldDef) {
+        @NtN Tileset ts = tileSource.getTileset();
         Vector2 pos = ts.metersToTile(posMeters);
         pos = V2.clamp(pos,
                 0, ts.metersToTile(worldDef.width) - tileSource.getSelectedWidth(),
@@ -47,10 +47,10 @@ public abstract class TileTool extends AbsTool<TileToolOperation> {
         return pos;
     }
 
-    public void draw(@NotNull WorldWidget widget, @NotNull Batch batch) {
-        @Nullable WorldDef worldDef = widget.getWorldDef();
+    public void draw(@NtN WorldWidget widget, @NtN Batch batch) {
+        @N WorldDef worldDef = widget.getWorldDef();
         if (worldDef == null) return;
-        @NotNull Tileset ts = tileSource.getTileset();
+        @NtN Tileset ts = tileSource.getTileset();
 
         Vector2 pos = getTilePos(V2.get(posMeters), worldDef);
         Vector2 cameraPixels = Dst.getAsPixels(V2.get(widget.getCameraPos()));
@@ -85,9 +85,9 @@ public abstract class TileTool extends AbsTool<TileToolOperation> {
         V2.claim(bl);
         V2.claim(tr);
     }
-    public void drawExtra(@NotNull WorldWidget widget, @NotNull Batch batch, @NotNull Vector2 bl, @NotNull Vector2 tr) {}
+    public void drawExtra(@NtN WorldWidget widget, @NtN Batch batch, @NtN Vector2 bl, @NtN Vector2 tr) {}
 
-    @Override public void begin(@NotNull WorldDef worldDef) {
+    @Override public void begin(@NtN WorldDef worldDef) {
         assert pendingOperation == null && initialPosMeters == null;
         initialPosMeters = V2.get(posMeters);
         Vector2 initialTilePos = getTilePos(V2.get(posMeters), worldDef);
@@ -101,11 +101,11 @@ public abstract class TileTool extends AbsTool<TileToolOperation> {
         pendingOperation = createOperation(worldDef, startX, startY, endX, endY);
         pendingOperation.execute();
     }
-    @NotNull public abstract TileToolOperation createOperation(
-            @NotNull WorldDef worldDef,
+    @NtN public abstract TileToolOperation createOperation(
+            @NtN WorldDef worldDef,
             int startX, int startY, int endX, int endY
     );
-    @Override public void update(@NotNull WorldDef worldDef) {
+    @Override public void update(@NtN WorldDef worldDef) {
         if (pendingOperation != null && initialPosMeters != null) {
             Vector2 tilePos = getTilePos(V2.get(posMeters), worldDef);
             Vector2 initialTilePos = getTilePos(V2.get(initialPosMeters), worldDef);

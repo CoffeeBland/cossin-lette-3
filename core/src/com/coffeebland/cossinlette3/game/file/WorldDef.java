@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.coffeebland.cossinlette3.game.entity.Tileset;
-import org.jetbrains.annotations.NotNull;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,16 +15,16 @@ public class WorldDef {
 
     public int width, height;
 
-    @NotNull public String imgSrc;
+    @NtN public String imgSrc = "forest";
 
-    @NotNull public List<PersonDef> people = new ArrayList<>();
-    @NotNull public List<PolygonDef> staticPolygons = new ArrayList<>();
-    @NotNull public List<TileLayerDef> tileLayers = new ArrayList<>();
-    @NotNull public Color backgroundColor = Color.BLACK.cpy();
+    @NtN public List<PersonDef> people = new ArrayList<>();
+    @NtN public List<PolygonDef> staticPolygons = new ArrayList<>();
+    @NtN public List<TileLayerDef> tileLayers = new ArrayList<>();
+    @NtN public Color backgroundColor = Color.BLACK.cpy();
 
     public WorldDef() {}
 
-    public void resize(@NotNull Tileset tileset, int newWidth, int newHeight, int tileLayerSize) {
+    public void resize(@NtN Tileset tileset, int newWidth, int newHeight, int tileLayerSize) {
         width = newWidth;
         height = newHeight;
         int tWidth = (int)tileset.metersToTile(newWidth);

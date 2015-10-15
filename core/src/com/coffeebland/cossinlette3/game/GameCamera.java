@@ -3,20 +3,16 @@ package com.coffeebland.cossinlette3.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.coffeebland.cossinlette3.utils.Const;
-import com.coffeebland.cossinlette3.utils.Dst;
-import com.coffeebland.cossinlette3.utils.V2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.*;
 
 public class GameCamera {
-    @NotNull protected OrthographicCamera camera;
-    @NotNull protected Vector2 pos;
-    @Nullable protected PositionSource target;
-    @NotNull protected GameWorld gameWorld;
+    @NtN protected OrthographicCamera camera;
+    @NtN protected Vector2 pos;
+    @N protected PositionSource target;
+    @NtN protected GameWorld gameWorld;
     protected float moveRatio = 0.05f;
 
-    public GameCamera(@NotNull GameWorld gameWorld) {
+    public GameCamera(@NtN GameWorld gameWorld) {
         camera = new OrthographicCamera();
         pos = V2.get();
         this.gameWorld = gameWorld;
@@ -26,7 +22,7 @@ public class GameCamera {
     public OrthographicCamera underlyingCamera() {
         return camera;
     }
-    @NotNull public Vector2 getPos() { return pos; }
+    @NtN public Vector2 getPos() { return pos; }
 
     public void updateToSize(int width, int height) {
         camera.setToOrtho(
@@ -37,22 +33,22 @@ public class GameCamera {
         setPosAndUpdateCamera(pos);
     }
 
-    public void moveTo(@NotNull PositionSource source) {
+    public void moveTo(@NtN PositionSource source) {
         target = source;
     }
-    public void moveTo(@NotNull Vector2 pos) {
+    public void moveTo(@NtN Vector2 pos) {
         target = () -> pos;
     }
-    public void setTo(@NotNull PositionSource source) {
+    public void setTo(@NtN PositionSource source) {
         target = source;
         if (source.getPosition() != null) {
             setPosAndUpdateCamera(source.getPosition());
         }
     }
-    public void setTo(@NotNull Vector2 pos) {
+    public void setTo(@NtN Vector2 pos) {
         setTo(() -> pos);
     }
-    protected void setPosAndUpdateCamera(@NotNull Vector2 pos) {
+    protected void setPosAndUpdateCamera(@NtN Vector2 pos) {
         float hW = Dst.getAsMeters(Gdx.graphics.getWidth() / 2);
         float hH  = Dst.getAsMeters(Gdx.graphics.getHeight() / 2);
         camera.position.set(
@@ -84,6 +80,6 @@ public class GameCamera {
     }
 
     public interface PositionSource {
-        @Nullable Vector2 getPosition();
+        @N Vector2 getPosition();
     }
 }

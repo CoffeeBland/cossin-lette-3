@@ -33,17 +33,16 @@ public class SplashState extends AutoSwitchState {
         return false;
     }
 
+    protected BitmapFont font;
     protected Texture bg;
     protected Texture logo;
-    protected BitmapFont font;
     protected GlyphLayout text;
 
     public SplashState() {
         setBackgroundColor(Color.LIGHT_GRAY.cpy());
-        bg = Textures.WHITE_PIXEL;
 
         font = FontUtil.pixel();
-        font.setColor(Color.BLACK.cpy());
+        bg = Textures.WHITE_PIXEL;
         text = new GlyphLayout(font, "Catiniata - Dagothig");
     }
 
@@ -65,7 +64,7 @@ public class SplashState extends AutoSwitchState {
         batch.draw(bg, PADDING, PADDING, Gdx.graphics.getWidth() - PADDING * 2, Gdx.graphics.getHeight() - PADDING * 2);
         batch.setColor(Color.WHITE.cpy());
         batch.draw(logo, imgX, imgY);
-        font.draw(batch, text, (Gdx.graphics.getWidth()/2)-(text.width/2), PADDING * 4);
+        font.draw(batch, text, (Gdx.graphics.getWidth() / 2) - (text.width / 2), PADDING * 4);
 
         batch.end();
     }

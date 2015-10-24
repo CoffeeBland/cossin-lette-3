@@ -149,9 +149,7 @@ public class GameWorld {
         batch.begin();
 
         Collections.sort(actors, comparator);
-        for (Actor actor : actors) {
-            actor.render(batch, camera);
-        }
+        for (Actor actor : actors) actor.render(batch, camera);
 
         batch.end();
         batch.getTransformMatrix().translate(-hW, -hH, 0);

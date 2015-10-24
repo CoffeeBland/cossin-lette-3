@@ -6,5 +6,6 @@ package com.coffeebland.cossinlette3.utils.event;
 public enum Tag {
     ASSETS,
     TRANSITION_IN,
-    TRANSITION_OUT
+    TRANSITION_OUT,
+    UI_ATLAS
 }

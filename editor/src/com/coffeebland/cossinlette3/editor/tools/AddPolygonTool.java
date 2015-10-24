@@ -3,7 +3,7 @@ package com.coffeebland.cossinlette3.editor.tools;
 import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.game.file.PolygonDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
-import org.jetbrains.annotations.NotNull;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 /**
  * Created by Guillaume on 2015-09-03.

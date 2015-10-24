@@ -3,8 +3,8 @@ package com.coffeebland.cossinlette3.game.file;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.coffeebland.cossinlette3.utils.Dst;
+import com.coffeebland.cossinlette3.utils.NtN;
 import com.coffeebland.cossinlette3.utils.Textures;
-import org.jetbrains.annotations.NotNull;
 
 public class TilesetDef {
     public float tileSize;

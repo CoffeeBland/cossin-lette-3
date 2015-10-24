@@ -6,8 +6,8 @@ import com.coffeebland.cossinlette3.editor.OperationExecutor;
 import com.coffeebland.cossinlette3.editor.ui.Operation;
 import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 /**
  * Created by Guillaume on 2015-09-03.

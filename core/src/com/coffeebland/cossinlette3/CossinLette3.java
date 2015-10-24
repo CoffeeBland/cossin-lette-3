@@ -41,7 +41,7 @@ public class CossinLette3 extends ApplicationAdapter {
 
 		mgr.render();
 
-		// Check for update steps
+		// Check for updateInput steps
 		long nanoTime = System.nanoTime();
 		if (lastNanoTime != -1) {
 			float delta = Time.nanoToMillis((nanoTime - lastNanoTime));

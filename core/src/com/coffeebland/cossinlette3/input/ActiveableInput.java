@@ -37,8 +37,8 @@ public abstract class ActiveableInput implements InputProcessor, UpdateableInput
     @Override public final boolean scrolled(int amount) {
         return isEnabled() && handleScrolled(amount);
     }
-    @Override public final boolean update(float delta) {
-        return isEnabled() && handleUpdate(delta);
+    @Override public final boolean updateInput(float delta) {
+        return isEnabled() && handleUpdateInput(delta);
     }
 
     public boolean handleKeyDown(int keycode) { return false; }
@@ -49,5 +49,5 @@ public abstract class ActiveableInput implements InputProcessor, UpdateableInput
     public boolean handleTouchDragged(int screenX, int screenY, int pointer) { return false; }
     public boolean handleMouseMoved(int screenX, int screenY) { return false; }
     public boolean handleScrolled(int amount) { return false; }
-    public boolean handleUpdate(float delta) { return false; }
+    public boolean handleUpdateInput(float delta) { return false; }
 }

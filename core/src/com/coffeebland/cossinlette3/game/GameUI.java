@@ -62,10 +62,8 @@ public class GameUI implements InputProcessor, UpdateableInput {
             getActors().add(new DialogText(
                     "Cossin",
                     FontUtil.roboto(),
-                    400,
-                    3,
+                    400, 3,
                     new NinePatchDrawable(uiAtlas.createPatch("dialog")),
-                    () -> {},
                     "Lorem ipsum dolor sit amet, [#ff8800]consectetur[] adipiscing elit. Integer sed metus ligula. " +
                     "In ut accumsan turpis.\n" +
                     "Phasellus hendrerit lobortis nulla eu euismod. Sed pharetra nisl " +
@@ -78,7 +76,11 @@ public class GameUI implements InputProcessor, UpdateableInput {
                     "sollicitudin vehicula. Curabitur nec pharetra odio, et condimentum nulla. Duis vel magna " +
                     "diam. Sed id enim arcu. Aliquam erat volutpat. Cras porta auctor urna at ornare. Ut " +
                     "sodales tortor sed nulla finibus, sed maximus felis tincidunt.",
-                    (count, next, previous) -> (next != null && next == '\n') || (previous != null && previous == '\n') ? 360 : 60
+                    (count, next, previous) ->
+                            (next != null && next == '\n') ||
+                            (previous != null && previous == '\n') ?
+                                    3600 : 60,
+                    () -> {}
             ));
         });
     }

@@ -1,7 +1,7 @@
 package com.coffeebland.cossinlette3.editor.tools;
 
 import com.coffeebland.cossinlette3.game.entity.Tileset;
-import org.jetbrains.annotations.NotNull;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 /**
  * Created by Guillaume on 2015-08-30.

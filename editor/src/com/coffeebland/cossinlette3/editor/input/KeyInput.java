@@ -2,7 +2,7 @@ package com.coffeebland.cossinlette3.editor.input;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import org.jetbrains.annotations.NotNull;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.*;
 

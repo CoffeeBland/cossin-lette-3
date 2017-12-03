@@ -76,7 +76,6 @@ public class DialogText extends DialogInteraction {
 
             timeUntilLetter -= delta * (throttling ? THROTTLE_FACTOR : 1);
             while (timeUntilLetter <= 0 && displayedLetters < computedText.length()) {
-                System.out.println(getNextChar());
                 timeUntilLetter += timeUntilLetterSource.eval(++displayedLetters, getNextChar(), getPreviousChar());
                 glyphIsDirty = true;
             }
@@ -125,11 +124,11 @@ public class DialogText extends DialogInteraction {
     protected void computeInitialGlyphLayout(@NtN Vector2 size) {
         glyphLayout.setText(font, rawText, Color.BLACK, size.x, Align.left, true);
         StringBuilder text = new StringBuilder();
-        float minY = 0, maxY = 0;
+        GlyphLayout.GlyphRun lastRun = null;
         for (GlyphLayout.GlyphRun run: glyphLayout.runs) {
-            minY = Math.min(run.y, minY);
-            maxY = Math.max(run.y, maxY);
+            if (lastRun != null && lastRun.y != run.y) text.append("\n");
             for (BitmapFont.Glyph glyph: run.glyphs) text.append(glyph.toString());
+            lastRun = run;
         }
 
         computedText = text.toString();
@@ -140,11 +139,17 @@ public class DialogText extends DialogInteraction {
     protected void addMissingGlyphs(@NtN Array<GlyphLayout.GlyphRun> futureRuns) {
         while (layoutLetterCount < displayedLetters) {
             if (currentRunGlyphs == null || currentRunGlyphs.size == 0) {
+                @N GlyphLayout.GlyphRun lastRun = currentRun;
                 currentRun = futureRuns.pop();
                 currentRunGlyphs = new Array<>(currentRun.glyphs);
                 currentRunGlyphs.reverse();
                 currentRun.glyphs.clear();
                 glyphLayout.runs.add(currentRun);
+
+                if (lastRun != null && lastRun.y != currentRun.y) {
+                    layoutLetterCount++;
+                    continue;
+                }
             }
             assert currentRun != null;
 

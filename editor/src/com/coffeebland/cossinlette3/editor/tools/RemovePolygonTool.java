@@ -7,11 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.coffeebland.cossinlette3.editor.ui.WorldWidget;
 import com.coffeebland.cossinlette3.game.file.PolygonDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
-import com.coffeebland.cossinlette3.utils.Dst;
-import com.coffeebland.cossinlette3.utils.Textures;
-import com.coffeebland.cossinlette3.utils.V2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.*;
 
 import java.util.Stack;
 
@@ -72,7 +68,8 @@ public class RemovePolygonTool extends AbsTool<RemovePolygonTool.RemovePolygonOp
         }
 
         Stack<RemoveUnit> unitsStack = new Stack<>();
-        @N Vector2 bl, tl, tr, br;
+        @N
+        Vector2 bl, tl, tr, br;
 
         public RemovePolygonOperation(@NtN WorldDef worldDef, @NtN Vector2 initialPos, @NtN Vector2 targetPos) {
             super(worldDef, initialPos, targetPos);

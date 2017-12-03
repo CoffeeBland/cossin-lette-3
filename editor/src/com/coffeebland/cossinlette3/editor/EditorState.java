@@ -20,6 +20,7 @@ import com.coffeebland.cossinlette3.game.entity.Tileset;
 import com.coffeebland.cossinlette3.game.file.TilesetDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
 import com.coffeebland.cossinlette3.state.StateImpl;
+import com.coffeebland.cossinlette3.state.StateManager;
 import com.coffeebland.cossinlette3.utils.CharsetAtlas;
 import com.coffeebland.cossinlette3.utils.N;
 import com.coffeebland.cossinlette3.utils.NtN;
@@ -238,9 +239,12 @@ public class EditorState extends StateImpl<FileHandle> implements OperationExecu
 
     @Override @N public InputProcessor getInputProcessor() { return multiplexer; }
 
-    @Override public void onTransitionInStart(@N FileHandle fileHandle) {
+    @Override public void onPrepare(@N FileHandle fileHandle, StateManager.Notifier notifier) {
+        super.onPrepare(fileHandle, notifier);
+
         this.fileHandle = fileHandle;
         setWorldDef(worldDef = fileHandle != null ? WorldDef.read(fileHandle) : worldDef);
+        notifier.prepared();
     }
     @Override public void onTransitionOutFinish() {
         stage.dispose();

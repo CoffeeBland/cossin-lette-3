@@ -24,7 +24,7 @@
     "height": 96,
     "decalX": 32,
     "decalY": 16  ,
-    "fps": 12,
+    "fps": 10,
     "orientations": [
       2, 1, -9, -7,
       1, 1, -7, -5,

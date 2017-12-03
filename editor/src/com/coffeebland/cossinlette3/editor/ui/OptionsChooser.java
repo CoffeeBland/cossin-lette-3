@@ -8,9 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 import com.coffeebland.cossinlette3.utils.Textures;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.stream.Stream;

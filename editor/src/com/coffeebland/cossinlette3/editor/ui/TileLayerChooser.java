@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.coffeebland.cossinlette3.game.file.TileLayerDef;
 import com.coffeebland.cossinlette3.game.file.WorldDef;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.util.ArrayList;
 import java.util.List;

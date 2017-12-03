@@ -77,9 +77,7 @@ public class GameUI implements InputProcessor, UpdateableInput {
                     "diam. Sed id enim arcu. Aliquam erat volutpat. Cras porta auctor urna at ornare. Ut " +
                     "sodales tortor sed nulla finibus, sed maximus felis tincidunt.",
                     (count, next, previous) ->
-                            (next != null && next == '\n') ||
-                            (previous != null && previous == '\n') ?
-                                    3600 : 60,
+                            (next != null && next == '\n')  ? 150 : 30,
                     () -> {}
             ));
         });

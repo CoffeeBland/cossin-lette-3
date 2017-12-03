@@ -49,8 +49,10 @@ public class GameState extends StateImpl<SaveFile> {
             input.addProcessor(ui);
 
             world = new GameWorld(eventManager, assetManager, wd, saveFile, p -> {
-                assert world != null;
                 player = p;
+                assert world != null;
+                assert player != null;
+
                 world.getCamera().moveTo(player);
                 movementInput = new MovementInput(player);
                 input.addProcessor(movementInput);

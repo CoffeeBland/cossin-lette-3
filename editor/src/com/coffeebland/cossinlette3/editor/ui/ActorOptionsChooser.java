@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.coffeebland.cossinlette3.game.file.PersonDef;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.coffeebland.cossinlette3.utils.N;
+import com.coffeebland.cossinlette3.utils.NtN;
 
 import java.io.File;
 import java.util.Arrays;

@@ -1,19 +1,27 @@
 import setupRegister from './register';
 import setupGame from './game';
+import setupLobbies from './lobbies';
+import { setToken } from './request';
 
-let rootElements;
-
-function show(element) {
-    rootElements.forEach(e => e.classList.add('hidden'));
-    element.classList.remove('hidden');
+let current;
+function show(state) {
+    if (current === state)
+        return;
+    current && current.element.classList.remove('show');
+    current && current.onClose && current.onClose();
+    state.element.classList.add('show');
+    state.onOpen && state.onOpen();
+    current = state;
 }
 
-const register = setupRegister(async (token) => {
-    const res = await fetch('state')
-    console.log('connected');
-});
+const states = {
+    register: setupRegister(async ({ token: newToken, lobby }) => {
+        setToken(newToken);
+        if (lobby) show(states.lobby);
+        else show(states.lobbies);
+    }),
+    lobbies: setupLobbies(),
+    game: setupGame()
+};
 
-const game = setupGame();
-
-rootElements = [register.element, game.element];
-show(register.element);
+show(states.register);

@@ -7,8 +7,7 @@ const uuid = require('uuid/v4');
 const { default: geckos, Data, Channel } = require('@geckos.io/server');
 const Game = require('../game');
 
-if (Array.prototype.remove)
-    console.warn('Overriding existing function!');
+Array.prototype.remove && console.warn('Overriding existing function!');
 Array.prototype.remove = function(e) {
     const i = this.indexOf(e);
     if (i === -1)
@@ -21,8 +20,18 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
-app.locals.users = new Map();
-app.locals.lobbies = [];
+app.locals.users = {};
+app.locals.lobbies = {};
+
+// TODO remove
+app.locals.lobbies['Ce lobby'] = {
+    name: 'Ce lobby',
+    users: [{ name: "Banna" }, { name: "Fabs" }]
+};
+app.locals.lobbies['YÉYÉYÉYÉ'] = {
+    name: 'YÉYÉYÉYÉ',
+    users: [{ name: "Georges" }]
+};
 
 const strs = {
     mdp_len: 'Mot de passe doit être au moins 4 caractères',
@@ -41,10 +50,10 @@ app.post('/register', ({ body: { name = '', pass = '' }}, res) => {
         return res.status(400).json({ error: errs.join('\n') });
 
     const users = app.locals.users;
-    let user = Array.from(users.values()).find(u => u.name === name);
+    let user = Object.values(users).find(u => u.name === name);
     if (!user) {
         user = { name, pass, token: uuid() };
-        users.set(user.token, user);
+        users[user.token] = user;
     } else if (user.pass !== pass) {
         return res.status(400).json({ error: strs.name_dup });
     }
@@ -56,50 +65,47 @@ app.post('/register', ({ body: { name = '', pass = '' }}, res) => {
     });
 });
 
-app.get('lobby', (_, res) =>
+app.get('/lobby', (_, res) =>
     res.status(200).json(
-        app.locals.lobbies.map(lobby => ({
+        Object.values(app.locals.lobbies).map(lobby => ({
             name: lobby.name,
-            users: lobby.users.length
+            users: lobby.users.map(u => ({ name: u.name }))
         }))));
 
-addToLobby(user, lobby) {
+function addToLobby(user, lobby) {
     user.lobby = lobby.name;
     lobby.users.push(user);
 }
 
-removeFromLobby(user, lobby) {
+function removeFromLobby(user, lobby) {
     delete user.lobby;
     lobby.users.remove(user);
 }
 
-app.post('lobby', ({ body: { token = '', name = '' }}, res) => {
-    name = name.trim();
-    const { lobbies, users } = app.locals;
-    const errs = [];
-
-    if (!name.length) errs.push(strs.name_len);
-    if (!token.length || !users[token]) errs.push(strs.bad_token);
-    if (errs.length)
-        return res.status(400).json({ error: errs.join('\n') });
-
-    let lobby = lobbies[name];
-    if (!lobby) {
-        lobby = { name, users: [] };
-        lobbies.set(name, lobby);
-    }
-    const user = users[token];
-    user.lobby && removeFromLobby(user, lobbies[user.lobby]);
-    addToLobby(user, lobby);
-});
-
-app.post('lobby/leave', ({ body: { token = '', name = '' }}, res) => {
+app.post('/lobby', ({ body: { token = '', name = '' }}, res) => {
     name = name.trim();
     const { lobbies, users } = app.locals;
     const errs = [];
 
     if (!token.length || !users[token])
-        errs.push(strs.bad_token);
+        return res.status(401).json({ error: strs.bad_token });
+    if (!name.length) errs.push(strs.name_len);
+    if (errs.length)
+        return res.status(400).json({ error: errs.join('\n') });
+
+    const lobby = lobbies[name] || (lobbies[name] = { name, users: [] });
+    const user = users[token];
+    user.lobby && removeFromLobby(user, lobbies[user.lobby]);
+    addToLobby(user, lobby);
+});
+
+app.post('/lobby/leave', ({ body: { token = '' }}, res) => {
+    name = name.trim();
+    const { lobbies, users } = app.locals;
+    const errs = [];
+
+    if (!token.length || !users[token])
+        return res.status(401).json({ error: strs.bad_token });
     if (!name.length || !lobbies[name])
         errs.push(strs.bad_lobby);
     if (errs.length)

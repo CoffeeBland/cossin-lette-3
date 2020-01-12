@@ -4,11 +4,10 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Cossin Lette 3 : Le Combat du Roy</title>
-        <link rel="stylesheet" href="client/style.css">
+        <link rel="stylesheet" href="client/style.scss">
     </head>
     <body>
-        <canvas id="game"></canvas>
-        <form id="register" method="POST">
+        <form id="register" action="register" method="POST">
             <h2>Connexion</h2>
             <label>
                 <span>Nom</span>
@@ -19,11 +18,10 @@
                 <input type="password" name="pass" placeholder="* * * *">
             </label>
             <button type="submit">Go</button>
-            <p class="danger">&nbsp;</p>
+            <p class="danger"></p>
         </form>
         <div id="lobbies">
-            <ul></ul>
-            <form method="POST">
+            <form action="lobby" method="POST">
                 <h2>Lobbies</h2>
                 <label>
                     <span>Nom</span>
@@ -31,8 +29,27 @@
                 </label>
                 <button type="submit">Nouveau lobby</button>
                 <button name="refresh" type="button">Rafraîchir</button>
-                <p class="danger">&nbsp;</p>
+                <p class="danger"></p>
             </form>
+            <ul class="lobbies"></ul>
+        </div>
+        <div id="lobby">
+            <form class="info leave" action="lobby/leave" method="post">
+                <h2></h2>
+                <p class="users"></p>
+                <input type="hidden" name="name" />
+                <button type="submit">Quitter</button>
+            </form>
+            <ul class="messages"></ul>
+            <form class="message" action="lobby/message" method="post">
+                <label>
+                    <span>Message</span>
+                    <input type="text" name="message" placeholder="- - - -" />
+                </label>
+                <input type="hidden" name="name" />
+                <button type="submit">Envoyer</button>
+            </form>
+            <canvas id="game"></canvas>
         </div>
         <script src="client/index.js"></script>
     </body>

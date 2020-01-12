@@ -1,0 +1,194 @@
+$white-100: #fff;
+$white-200: darken($white-100, 6%);
+$white-150: darken($white-100, 9%);
+$white-300: darken($white-100, 12%);
+$black-100: #333;
+$black-200: lighten($black-100, 6%);
+$black-300: lighten($black-100, 12%);
+$error: red;
+$spacing: 0.5rem;
+$indent: $spacing * 0.5;
+@mixin shadow-top($color) {
+    box-shadow: 0 $indent 0 $color inset;
+}
+@mixin shadow-bottom($color) {
+    box-shadow: 0 (-$indent) 0 $color inset;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+html {
+    font-family: sans-serif;
+    color: $black-100;
+    background: $white-100;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body>:not(.show) {
+    display: none !important;
+}
+
+input, button {
+    color: $black-100;
+    background: none;
+    border: none;
+    font-size: 1em;
+    letter-spacing: 1px;
+}
+
+:focus { outline: none; }
+::-moz-focus-inner { border: none; }
+
+#game, #lobbies, #lobby {
+    width: 100%;
+    height: 100%;
+}
+
+.danger {
+    color: $error;
+    &:empty::after {
+        content: " ";
+        display: inline-block;
+    }
+}
+
+form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: $spacing;
+
+    h2, p {
+        width: 100%;
+        white-space: pre-line;
+    }
+    >* {
+        margin: $spacing;
+    }
+}
+
+label, button, li {
+    padding: $spacing $spacing * 2;
+}
+
+label, button {
+    border-radius: $spacing;
+    background: $white-200;
+}
+
+label {
+    @include shadow-top($white-300);
+    flex-grow: 1;
+    width: 14rem;
+    padding-top: $spacing + $indent;
+
+    span {
+        color: $black-300;
+        &:after {
+            content: ":";
+        }
+    }
+
+    input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+button {
+    line-height: 2rem;
+    vertical-align: middle;
+    font-weight: 600;
+
+    &:disabled, &:not(:active) {
+        @include shadow-bottom($white-300);
+        padding-bottom: $spacing + $indent;
+    }
+    &:not(:disabled):active {
+        @include shadow-top($white-300);
+        padding-top: $spacing + $indent;
+    }
+
+    &:not(:disabled) {
+        cursor: pointer;
+        &:hover {
+            background: $white-150;
+        }
+    }
+
+    &:focus {
+        text-decoration: underline;
+    }
+}
+
+ul {
+    background: $white-200;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow: auto;
+}
+
+li {
+    margin: $spacing 0;
+    background: $white-100;
+}
+
+#register {
+    max-width: 40rem;
+}
+
+#lobbies {
+    display: flex;
+    flex-direction: column;
+}
+
+.lobbies {
+    flex-grow: 1;
+    li {
+        padding: 0;
+    }
+    form {
+        display: grid;
+        grid-template-columns: 10rem 1fr auto;
+        align-items: center;
+    }
+}
+
+#lobby {
+    display: grid;
+    grid-template-columns: 1fr 30rem;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "game info"
+        "game messages"
+        "game message";
+
+    .info { grid-area: info; }
+    .messages { grid-area: messages; }
+    .message { grid-area: message; }
+    canvas { grid-area: game; }
+}
+
+.info {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+        "title submit"
+        "users submit";
+
+    h2 { grid-area: title; }
+    [type=submit] { grid-area: submit; }
+    .users { grid-area: users; }
+}
